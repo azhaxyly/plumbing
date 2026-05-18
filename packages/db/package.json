@@ -1,0 +1,36 @@
+{
+  "name": "@whitehouse/db",
+  "version": "0.0.1",
+  "private": true,
+  "prisma": {
+    "schema": "./prisma/schema.prisma"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "prisma generate",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "seed": "tsx prisma/seed.ts",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "5.22.0"
+  },
+  "devDependencies": {
+    "argon2": "0.41.1",
+    "prisma": "5.22.0",
+    "tsx": "4.19.2",
+    "typescript": "5.7.2"
+  }
+}

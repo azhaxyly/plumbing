@@ -1,0 +1,194 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  customer
+  manager
+  admin
+}
+
+enum ProductStatus {
+  active
+  draft
+  archived
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  phone           String?
+  passwordHash    String
+  role            UserRole  @default(customer)
+  emailVerifiedAt DateTime?
+  phoneVerifiedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  settingsUpdated Setting[]
+}
+
+model Category {
+  id       String     @id @default(cuid())
+  parentId String?
+  parent   Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryChildren")
+
+  slug          String  @unique
+  name          String
+  description   String?
+  position      Int     @default(0)
+  productsCount Int     @default(0)
+
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products ProductCategory[]
+
+  @@index([slug])
+  @@index([parentId])
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  logoUrl     String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id      String @id @default(cuid())
+  slug    String @unique
+  name    String
+  sku     String @unique
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id])
+
+  shortDescription String?
+  description      String?
+
+  priceCents          Int
+  compareAtPriceCents Int?
+
+  status           ProductStatus @default(draft)
+  defaultVariantId String?
+
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants          ProductVariant[]
+  images            ProductImage[]
+  categories        ProductCategory[]
+  productAttributes ProductAttribute[]
+}
+
+model Attribute {
+  id        String             @id @default(cuid())
+  name      String             @unique
+  slug      String             @unique
+  values    AttributeValue[]
+  products  ProductAttribute[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model AttributeValue {
+  id          String             @id @default(cuid())
+  attributeId String
+  value       String
+  slug        String
+  attribute   Attribute          @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  products    ProductAttribute[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([attributeId, slug])
+}
+
+model ProductAttribute {
+  id               String         @id @default(cuid())
+  productId        String
+  attributeId      String
+  attributeValueId String
+  product          Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute        Attribute      @relation(fields: [attributeId], references: [id])
+  attributeValue   AttributeValue @relation(fields: [attributeValueId], references: [id])
+  createdAt        DateTime       @default(now())
+
+  @@unique([productId, attributeId])
+  @@index([productId])
+  @@index([attributeId])
+  @@index([attributeValueId])
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  sku        String @unique
+  priceCents Int
+  attributes Json   @default("{}")
+  quantity   Int    @default(0)
+  reserved   Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  url       String
+  alt       String  @default("")
+  position  Int     @default(0)
+  isPrimary Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductCategory {
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+
+  updatedByUserId String?
+  updatedBy       User?   @relation(fields: [updatedByUserId], references: [id])
+}

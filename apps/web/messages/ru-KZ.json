@@ -1,0 +1,274 @@
+{
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка",
+    "notFound": "Страница не найдена",
+    "backToHome": "На главную",
+    "search": "Поиск",
+    "searchPlaceholder": "Поиск товаров...",
+    "close": "Закрыть",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "add": "Добавить",
+    "more": "Подробнее",
+    "all": "Все",
+    "yes": "Да",
+    "no": "Нет",
+    "currency": "₸"
+  },
+  "nav": {
+    "catalog": "Каталог",
+    "brands": "Бренды",
+    "favorites": "Избранное",
+    "cart": "Корзина",
+    "profile": "Профиль",
+    "login": "Войти",
+    "logout": "Выйти",
+    "register": "Регистрация"
+  },
+  "home": {
+    "title": "Интернет-магазин сантехники",
+    "description": "Широкий выбор сантехники и мебели для ванной комнаты",
+    "hero": {
+      "title": "Сантехника и мебель для ванной",
+      "subtitle": "Широкий выбор качественных товаров с доставкой по Казахстану",
+      "cta": "Перейти в каталог"
+    },
+    "popularCategories": "Популярные категории",
+    "newArrivals": "Новинки",
+    "bestsellers": "Хиты продаж",
+    "delivery": {
+      "title": "Доставка и оплата",
+      "freeDelivery": "Бесплатная доставка",
+      "freeDeliveryDesc": "При заказе от 50 000 ₸",
+      "fastDelivery": "Быстрая доставка",
+      "fastDeliveryDesc": "По всему Казахстану",
+      "securePayment": "Безопасная оплата",
+      "securePaymentDesc": "Через Kaspi Pay"
+    }
+  },
+  "catalog": {
+    "title": "Каталог",
+    "filters": "Фильтры",
+    "sort": "Сортировка",
+    "sortOptions": {
+      "popular": "По популярности",
+      "priceAsc": "Цена: по возрастанию",
+      "priceDesc": "Цена: по убыванию",
+      "newest": "Новинки"
+    },
+    "noResults": "Товары не найдены",
+    "noResultsDesc": "Попробуйте изменить параметры фильтрации",
+    "showMore": "Показать ещё",
+    "productsCount": "{count, plural, one {# товар} few {# товара} many {# товаров} other {# товаров}}",
+    "priceRange": "Диапазон цен",
+    "from": "от",
+    "to": "до",
+    "apply": "Применить",
+    "reset": "Сбросить",
+    "inStock": "В наличии",
+    "outOfStock": "Нет в наличии"
+  },
+  "product": {
+    "addToCart": "В корзину",
+    "addToFavorites": "В избранное",
+    "removeFromFavorites": "Убрать из избранного",
+    "inStock": "В наличии",
+    "outOfStock": "Нет в наличии",
+    "sku": "Артикул",
+    "brand": "Бренд",
+    "description": "Описание",
+    "characteristics": "Характеристики",
+    "reviews": "Отзывы",
+    "relatedProducts": "Похожие товары",
+    "quantity": "Количество",
+    "price": "Цена",
+    "compareAtPrice": "Старая цена",
+    "discount": "Скидка"
+  },
+  "cart": {
+    "title": "Корзина",
+    "empty": "Корзина пуста",
+    "emptyDesc": "Добавьте товары из каталога",
+    "continueShopping": "Продолжить покупки",
+    "checkout": "Оформить заказ",
+    "total": "Итого",
+    "subtotal": "Сумма товаров",
+    "shipping": "Доставка",
+    "discount": "Скидка",
+    "grandTotal": "К оплате",
+    "remove": "Удалить",
+    "quantity": "Кол-во",
+    "freeShipping": "Бесплатно",
+    "calculated": "Рассчитывается при оформлении"
+  },
+  "checkout": {
+    "title": "Оформление заказа",
+    "contactInfo": "Контактные данные",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Email",
+    "phone": "Телефон",
+    "deliveryAddress": "Адрес доставки",
+    "city": "Город",
+    "street": "Улица",
+    "building": "Дом",
+    "apartment": "Квартира",
+    "postalCode": "Почтовый индекс",
+    "notes": "Комментарий к заказу",
+    "shippingMethod": "Способ доставки",
+    "paymentMethod": "Способ оплаты",
+    "shipping": {
+      "pickup": "Самовывоз",
+      "courier": "Курьерская доставка",
+      "tk": "Транспортная компания"
+    },
+    "payment": {
+      "kaspi": "Kaspi Pay",
+      "invoice": "Оплата по реквизитам",
+      "cod": "Наличными при получении"
+    },
+    "consent": "Я согласен(а) с обработкой персональных данных",
+    "consentRequired": "Необходимо согласие на обработку персональных данных",
+    "placeOrder": "Оформить заказ",
+    "orderSummary": "Состав заказа",
+    "success": {
+      "title": "Заказ оформлен!",
+      "description": "Ваш заказ №{orderId} успешно оформлен. Мы свяжемся с вами в ближайшее время.",
+      "continueShopping": "Продолжить покупки",
+      "viewOrder": "Посмотреть заказ"
+    },
+    "failed": {
+      "title": "Ошибка оплаты",
+      "description": "К сожалению, оплата не прошла. Попробуйте ещё раз или выберите другой способ оплаты.",
+      "retry": "Попробовать снова",
+      "changePayment": "Изменить способ оплаты"
+    }
+  },
+  "account": {
+    "title": "Личный кабинет",
+    "orders": "Мои заказы",
+    "addresses": "Адреса",
+    "profile": "Профиль",
+    "favorites": "Избранное",
+    "orderNumber": "Заказ №{orderId}",
+    "orderDate": "Дата заказа",
+    "orderStatus": {
+      "draft": "Черновик",
+      "pending_payment": "Ожидает оплаты",
+      "paid": "Оплачен",
+      "payment_failed": "Ошибка оплаты",
+      "processing": "В обработке",
+      "shipped": "Отправлен",
+      "delivered": "Доставлен",
+      "completed": "Завершён",
+      "cancelled": "Отменён",
+      "refund_requested": "Запрос на возврат",
+      "refunded": "Возвращён"
+    },
+    "noOrders": "У вас пока нет заказов",
+    "noOrdersDesc": "Оформите первый заказ в нашем каталоге"
+  },
+  "auth": {
+    "login": {
+      "title": "Вход",
+      "email": "Email",
+      "password": "Пароль",
+      "submit": "Войти",
+      "forgotPassword": "Забыли пароль?",
+      "noAccount": "Нет аккаунта?",
+      "register": "Зарегистрироваться",
+      "error": "Неверный email или пароль"
+    },
+    "register": {
+      "title": "Регистрация",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "email": "Email",
+      "phone": "Телефон",
+      "password": "Пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "submit": "Зарегистрироваться",
+      "hasAccount": "Уже есть аккаунт?",
+      "login": "Войти",
+      "consent": "Я согласен(а) с обработкой персональных данных согласно Политике конфиденциальности",
+      "consentRequired": "Необходимо согласие на обработку персональных данных"
+    },
+    "forgotPassword": {
+      "title": "Восстановление пароля",
+      "email": "Email",
+      "submit": "Отправить ссылку",
+      "success": "Ссылка для восстановления пароля отправлена на ваш email",
+      "backToLogin": "Вернуться к входу"
+    },
+    "resetPassword": {
+      "title": "Новый пароль",
+      "password": "Новый пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "submit": "Сохранить пароль",
+      "success": "Пароль успешно изменён"
+    }
+  },
+  "footer": {
+    "catalog": "Каталог",
+    "info": "Информация",
+    "contacts": "Контакты",
+    "aboutUs": "О нас",
+    "deliveryInfo": "Доставка и оплата",
+    "returns": "Возврат товара",
+    "privacyPolicy": "Политика конфиденциальности",
+    "publicOffer": "Публичная оферта",
+    "paymentInfo": "Способы оплаты",
+    "allRightsReserved": "Все права защищены",
+    "followUs": "Мы в социальных сетях"
+  },
+  "errors": {
+    "required": "Обязательное поле",
+    "invalidEmail": "Некорректный email",
+    "invalidPhone": "Некорректный номер телефона",
+    "minLength": "Минимальная длина: {min} символов",
+    "maxLength": "Максимальная длина: {max} символов",
+    "passwordMismatch": "Пароли не совпадают",
+    "serverError": "Ошибка сервера. Попробуйте позже.",
+    "networkError": "Ошибка сети. Проверьте подключение к интернету."
+  },
+  "cookies": {
+    "title": "Мы используем cookies",
+    "description": "Мы используем файлы cookie для улучшения работы сайта. Вы можете управлять настройками cookie.",
+    "acceptAll": "Принять все",
+    "rejectAll": "Отклонить необязательные",
+    "customize": "Настроить",
+    "essential": "Необходимые",
+    "essentialDesc": "Необходимы для работы сайта",
+    "analytics": "Аналитика",
+    "analyticsDesc": "Помогают улучшить сайт",
+    "marketing": "Маркетинг",
+    "marketingDesc": "Персонализированная реклама",
+    "save": "Сохранить настройки"
+  },
+  "search": {
+    "title": "Поиск",
+    "placeholder": "Введите запрос...",
+    "results": "Результаты поиска",
+    "noResults": "По вашему запросу ничего не найдено",
+    "noResultsDesc": "Попробуйте изменить запрос или перейдите в каталог",
+    "query": "Запрос: {query}"
+  },
+  "brands": {
+    "title": "Бренды",
+    "allBrands": "Все бренды",
+    "products": "Товары бренда"
+  },
+  "pages": {
+    "aboutUs": "О нас",
+    "deliveryInfo": "Доставка и оплата",
+    "contacts": "Контакты",
+    "privacyPolicy": "Политика конфиденциальности",
+    "publicOffer": "Публичная оферта",
+    "paymentInfo": "Способы оплаты",
+    "returns": "Возврат товара"
+  }
+}
