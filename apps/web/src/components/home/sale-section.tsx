@@ -1,16 +1,18 @@
-import { getSaleProducts } from "@/lib/homepage-data";
+import type { ProductCardData } from "@/components/catalog/product-card";
 import { SectionHeader } from "./section-header";
 import { ProductSliderClient } from "./product-slider-client";
 
-export async function SaleSection() {
-  const saleProducts = await getSaleProducts(20);
+interface SaleSectionProps {
+  products: ProductCardData[];
+}
 
-  if (!saleProducts || saleProducts.length === 0) {
+export function SaleSection({ products }: SaleSectionProps) {
+  if (!products || products.length === 0) {
     return null;
   }
 
   const maxDiscount = Math.max(
-    ...saleProducts.map((p) => {
+    ...products.map((p) => {
       if (!p.compareAtPriceCents) return 0;
       return Math.round((1 - p.priceCents / p.compareAtPriceCents) * 100);
     })
@@ -25,7 +27,7 @@ export async function SaleSection() {
           href="/catalog?sale=true"
           light
         />
-        <ProductSliderClient products={saleProducts} />
+        <ProductSliderClient products={products} />
       </div>
     </section>
   );

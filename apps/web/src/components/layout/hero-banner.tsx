@@ -1,9 +1,11 @@
-import { getActiveBanners } from "@/lib/homepage-data";
+import type { BannerWithProducts } from "@/lib/homepage-data";
 import { HeroBannerClient } from "../home/hero-banner-client";
 
-export async function HeroBanner() {
-  const banners = await getActiveBanners();
+interface HeroBannerProps {
+  banners: BannerWithProducts[];
+}
 
+export function HeroBanner({ banners }: HeroBannerProps) {
   if (!banners || banners.length === 0) {
     return null;
   }

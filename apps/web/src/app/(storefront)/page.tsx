@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 
 import { buildMetadata } from "@/lib/metadata";
+import {
+  getActiveBanners,
+  getRootCategories,
+  getBestsellers,
+  getNewArrivals,
+  getSaleProducts,
+  getBrandsWithLogo,
+} from "@/lib/homepage-data";
 import { HeroBanner } from "@/components/layout/hero-banner";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { BestsellerSection } from "@/components/home/bestseller-section";
@@ -21,7 +29,30 @@ export const metadata: Metadata = buildMetadata({
   canonical: "/",
 });
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [
+    bannersResult,
+    categoriesResult,
+    bestsellersResult,
+    newArrivalsResult,
+    saleProductsResult,
+    brandsResult,
+  ] = await Promise.allSettled([
+    getActiveBanners(),
+    getRootCategories(12),
+    getBestsellers(20),
+    getNewArrivals(20),
+    getSaleProducts(20),
+    getBrandsWithLogo(),
+  ]);
+
+  const banners = bannersResult.status === "fulfilled" ? bannersResult.value : [];
+  const categories = categoriesResult.status === "fulfilled" ? categoriesResult.value : [];
+  const bestsellers = bestsellersResult.status === "fulfilled" ? bestsellersResult.value : [];
+  const newArrivals = newArrivalsResult.status === "fulfilled" ? newArrivalsResult.value : [];
+  const saleProducts = saleProductsResult.status === "fulfilled" ? saleProductsResult.value : [];
+  const brands = brandsResult.status === "fulfilled" ? brandsResult.value : [];
+
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -55,12 +86,12 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
 
-      <HeroBanner />
-      <CategoryGrid />
-      <BestsellerSection />
-      <NewArrivalsSection />
-      <SaleSection />
-      <BrandsSection />
+      <HeroBanner banners={banners} />
+      <CategoryGrid categories={categories} />
+      <BestsellerSection products={bestsellers} />
+      <NewArrivalsSection products={newArrivals} />
+      <SaleSection products={saleProducts} />
+      <BrandsSection brands={brands} />
       <FeaturesStrip />
     </>
   );

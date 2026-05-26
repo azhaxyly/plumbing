@@ -3,11 +3,13 @@ import Link from "next/link";
 import { Folder } from "lucide-react";
 import type { Route } from "next";
 
-import { getRootCategories } from "@/lib/homepage-data";
+import type { CategoryItem } from "@/lib/homepage-data";
 
-export async function CategoryGrid() {
-  const categories = await getRootCategories(12);
+interface CategoryGridProps {
+  categories: CategoryItem[];
+}
 
+export function CategoryGrid({ categories }: CategoryGridProps) {
   if (!categories || categories.length === 0) {
     return null;
   }

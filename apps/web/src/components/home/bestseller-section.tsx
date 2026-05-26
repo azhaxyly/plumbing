@@ -1,11 +1,13 @@
-import { getBestsellers } from "@/lib/homepage-data";
+import type { ProductCardData } from "@/components/catalog/product-card";
 import { SectionHeader } from "./section-header";
 import { ProductSliderClient } from "./product-slider-client";
 
-export async function BestsellerSection() {
-  const bestsellers = await getBestsellers(20);
+interface BestsellerSectionProps {
+  products: ProductCardData[];
+}
 
-  if (!bestsellers || bestsellers.length === 0) {
+export function BestsellerSection({ products }: BestsellerSectionProps) {
+  if (!products || products.length === 0) {
     return null;
   }
 
@@ -13,7 +15,7 @@ export async function BestsellerSection() {
     <section className="py-8 md:py-12">
       <div className="container mx-auto px-4">
         <SectionHeader title="Хиты продаж" href="/catalog?sort=popular" />
-        <ProductSliderClient products={bestsellers} badge="Хит" />
+        <ProductSliderClient products={products} badge="Хит" />
       </div>
     </section>
   );

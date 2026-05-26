@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 
-import { getBrandsWithLogo } from "@/lib/homepage-data";
+import type { BrandItem } from "@/lib/homepage-data";
 
-export async function BrandsSection() {
-  const brands = await getBrandsWithLogo();
+interface BrandsSectionProps {
+  brands: BrandItem[];
+}
 
+export function BrandsSection({ brands }: BrandsSectionProps) {
   if (!brands || brands.length === 0) {
     return null;
   }
