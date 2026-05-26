@@ -1,11 +1,11 @@
-import type { NextConfig } from "next";
+﻿import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
     typedRoutes: true,
   },
   // Prisma and other Node.js-only packages must not be bundled by Next.js
-  serverExternalPackages: ["@prisma/client", "@whitehouse/db", "argon2"],
+  serverExternalPackages: ["@prisma/client", "@timsan/db", "argon2"],
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
@@ -23,10 +23,10 @@ const nextConfig: NextConfig = {
     ],
   },
   transpilePackages: [
-    "@whitehouse/ui",
-    "@whitehouse/shared",
-    "@whitehouse/domain",
-    "@whitehouse/search",
+    "@timsan/ui",
+    "@timsan/shared",
+    "@timsan/domain",
+    "@timsan/search",
   ],
 };
 

@@ -1,5 +1,5 @@
-/**
- * @whitehouse/payments
+﻿/**
+ * @timsan/payments
  * PaymentProvider abstraction + KaspiClient implementation.
  * Kaspi-specific logic will be added in Phase 4.
  */

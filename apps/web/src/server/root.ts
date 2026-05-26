@@ -1,0 +1,29 @@
+/**
+ * Root tRPC router.
+ * Combines all sub-routers into a single app router.
+ */
+
+import { createTRPCRouter } from "@/server/trpc";
+import { cartRouter } from "@/server/routers/cart";
+import { favoritesRouter } from "@/server/routers/favorites";
+import { adminCategoriesRouter } from "@/server/routers/admin-categories";
+import { adminBrandsRouter } from "@/server/routers/admin-brands";
+import { adminProductsRouter } from "@/server/routers/admin-products";
+import { adminAttributesRouter } from "@/server/routers/admin-attributes";
+import { adminPagesRouter } from "@/server/routers/admin-pages";
+import { adminBannersRouter } from "@/server/routers/admin-banners";
+import { adminCouponsRouter } from "@/server/routers/admin-coupons";
+
+export const appRouter = createTRPCRouter({
+  cart: cartRouter,
+  favorites: favoritesRouter,
+  adminCategories: adminCategoriesRouter,
+  adminBrands: adminBrandsRouter,
+  adminProducts: adminProductsRouter,
+  adminAttributes: adminAttributesRouter,
+  adminPages: adminPagesRouter,
+  adminBanners: adminBannersRouter,
+  adminCoupons: adminCouponsRouter,
+});
+
+export type AppRouter = typeof appRouter;

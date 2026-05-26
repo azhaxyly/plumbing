@@ -46,3 +46,13 @@ prisma/migrations/*.sql.bak
 
 # Misc
 .cache
+
+# Claude Code local settings
+.claude/
+
+# Temporary/scratch files
+asd.json
+
+# Browser-saved pages (accidentally copied from another folder)
+Интернет-магазин сантехники в Москве, купить сантехнические товары в гипермаркете СантехМолл_files/
+Комплекты смесителей с душем — купить по выгодной цене _ Заказать душевой комплект для ванной комнаты в интернет—магазине СантехМолл_files/

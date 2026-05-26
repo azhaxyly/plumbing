@@ -1,5 +1,5 @@
 {
-  "name": "@whitehouse/worker",
+  "name": "@timsan/worker",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -13,11 +13,13 @@
     "bullmq": "5.34.8",
     "dotenv": "16.4.7",
     "ioredis": "5.4.2",
-    "@whitehouse/db": "workspace:*",
-    "@whitehouse/search": "workspace:*"
+    "nodemailer": "6.9.16",
+    "@timsan/db": "workspace:*",
+    "@timsan/search": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "22.10.2",
+    "@types/nodemailer": "6.4.17",
     "tsx": "4.19.2",
     "typescript": "5.7.2"
   }

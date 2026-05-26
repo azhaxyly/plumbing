@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BullMQ Worker entry point.
  * Handles background jobs: catalog import, search indexing,
  * notifications, Kaspi reconciliation, etc.
@@ -9,13 +9,15 @@ import "dotenv/config";
 
 import { Worker, Queue } from "bullmq";
 import IORedis from "ioredis";
-import { prisma } from "@whitehouse/db";
+import { prisma } from "@timsan/db";
 import {
   configureProductIndex,
   indexProduct,
   deleteProductFromIndex,
-} from "@whitehouse/search";
-import type { ProductSearchDocument } from "@whitehouse/search";
+} from "@timsan/search";
+import type { ProductSearchDocument } from "@timsan/search";
+import { handleNotificationJob } from "./notification-handler";
+import type { NotificationJobData } from "./notification-handler";
 
 const REDIS_URL = process.env["REDIS_URL"] ?? "redis://localhost:6379";
 
@@ -137,6 +139,34 @@ searchIndexingWorker.on("completed", (job) => {
 searchIndexingWorker.on("failed", (job, err) => {
   console.error(
     `[worker] Search indexing job failed: ${job?.name} (id=${job?.id})`,
+    err,
+  );
+});
+
+// ─── Notification worker ──────────────────────────────────────────────────────
+// Consumes jobs from the "notifications" queue (produced by apps/web after
+// order events). Retry policy: 5 attempts, exponential backoff (configured
+// on the producer side via defaultJobOptions in notification-queue.ts).
+// Failed jobs are kept in Redis (dead-letter) for manual inspection.
+
+const notificationWorker = new Worker<NotificationJobData>(
+  "notifications",
+  async (job) => {
+    await handleNotificationJob(job);
+  },
+  {
+    connection,
+    concurrency: 5,
+  },
+);
+
+notificationWorker.on("completed", (job) => {
+  console.warn(`[worker] Notification job completed: ${job.name} (id=${job.id})`);
+});
+
+notificationWorker.on("failed", (job, err) => {
+  console.error(
+    `[worker] Notification job failed: ${job?.name} (id=${job?.id})`,
     err,
   );
 });

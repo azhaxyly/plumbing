@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 /**
  * Reset password form — client component using useActionState.
  * Token is passed as a hidden field from the page.
  */
-import { Button, Input } from "@whitehouse/ui";
+import { Button, Input } from "@timsan/ui";
 import Link from "next/link";
 import { useActionState } from "react";
 

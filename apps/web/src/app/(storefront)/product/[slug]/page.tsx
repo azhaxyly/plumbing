@@ -1,14 +1,14 @@
-import { getProductBySlug } from "@whitehouse/db";
-import type { ProductFull } from "@whitehouse/db";
-import { Button } from "@whitehouse/ui";
-import { ShoppingCart, Heart } from "lucide-react";
+import { getProductBySlug } from "@timsan/db";
+import type { ProductFull } from "@timsan/db";
+import { ShoppingCart } from "lucide-react";
 import type { Metadata , Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { addToCart, addToWishlist } from "@/lib/cart-actions";
+import { AddToCartButton } from "@/components/catalog/add-to-cart-button";
+import { WishlistButton } from "@/components/catalog/wishlist-button";
 
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
@@ -237,37 +237,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {/* Actions */}
             <div className="flex gap-3">
-              <form
-                action={addToCart.bind(
-                  null,
-                  defaultVariant?.id ?? product.id,
-                  1
-                )}
+              <AddToCartButton
+                variantId={defaultVariant?.id ?? product.id}
+                productId={product.id}
+                unitPrice={defaultVariant?.priceCents ?? product.priceCents}
+                productName={product.name}
+                productSku={defaultVariant?.sku ?? product.sku}
+                productImageUrl={getPrimaryImage(product.images)?.url ?? ""}
+                disabled={!inStock}
+                size="lg"
                 className="flex-1"
-              >
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full"
-                  disabled={!inStock}
-                  aria-label={`Добавить ${product.name} в корзину`}
-                >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  В корзину
-                </Button>
-              </form>
+              />
 
-              <form action={addToWishlist.bind(null, product.id)}>
-                <Button
-                  type="submit"
-                  variant="outline"
-                  size="lg"
-                  aria-label="Добавить в избранное"
-                  className="px-4"
-                >
-                  <Heart className="h-5 w-5" />
-                </Button>
-              </form>
+              <WishlistButton productId={product.id} variant="page" />
             </div>
 
             {/* Short description */}

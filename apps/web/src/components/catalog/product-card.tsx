@@ -1,8 +1,12 @@
-import { Button } from "@whitehouse/ui";
-import { ShoppingCart, Heart } from "lucide-react";
+import { Button } from "@timsan/ui";
+import { ShoppingCart } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+import { formatPrice } from "@/lib/format-price";
+
+import { WishlistButton } from "./wishlist-button";
 
 export interface ProductCardData {
   id: string;
@@ -18,19 +22,11 @@ export interface ProductCardData {
 
 interface ProductCardProps {
   product: ProductCardData;
+  badge?: "Хит" | "Новинка" | null | undefined;
 }
 
-/** Formats price in tiyins to KZT string */
-function formatPrice(tiyins: number): string {
-  const kzt = tiyins / 100;
-  return new Intl.NumberFormat("ru-KZ", {
-    style: "currency",
-    currency: "KZT",
-    maximumFractionDigits: 0,
-  }).format(kzt);
-}
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, badge }: ProductCardProps) {
   const hasDiscount =
     product.compareAtPriceCents !== null &&
     product.compareAtPriceCents > product.priceCents;
@@ -44,21 +40,32 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <article className="group relative flex flex-col rounded-xl border bg-white shadow-sm transition-shadow hover:shadow-md">
-      {/* Discount badge */}
-      {hasDiscount && discountPercent > 0 && (
-        <span className="absolute left-3 top-3 z-10 rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
-          -{discountPercent}%
-        </span>
-      )}
+      {/* Badges container */}
+      <div className="absolute left-3 top-3 z-10 flex flex-col items-start gap-1">
+        {/* Discount badge */}
+        {hasDiscount && discountPercent > 0 && (
+          <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
+            -{discountPercent}%
+          </span>
+        )}
+        {/* Type badge */}
+        {badge && (
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs font-bold text-white ${
+              badge === "Хит" ? "bg-amber-500" : "bg-blue-500"
+            }`}
+          >
+            {badge}
+          </span>
+        )}
+      </div>
 
       {/* Wishlist button */}
-      <button
-        type="button"
-        aria-label="Добавить в избранное"
-        className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-gray-400 opacity-0 shadow transition-all hover:text-red-500 group-hover:opacity-100"
-      >
-        <Heart className="h-4 w-4" />
-      </button>
+      <WishlistButton
+        productId={product.id}
+        variant="card"
+        className="absolute right-3 top-3 z-10"
+      />
 
       {/* Product image */}
       <Link

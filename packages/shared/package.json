@@ -1,5 +1,5 @@
 {
-  "name": "@whitehouse/shared",
+  "name": "@timsan/shared",
   "version": "0.0.1",
   "private": true,
   "exports": {
@@ -20,6 +20,7 @@
     "zod": "3.24.1"
   },
   "devDependencies": {
+    "@types/node": "22.10.2",
     "@vitest/coverage-v8": "2.1.8",
     "fast-check": "3.23.2",
     "typescript": "5.7.2",

@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { Button } from "@whitehouse/ui";
+import { Button } from "@timsan/ui";
 import { X, Cookie } from "lucide-react";
 import { useState, useEffect } from "react";
 

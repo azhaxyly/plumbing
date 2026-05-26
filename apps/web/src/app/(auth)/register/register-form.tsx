@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 /**
  * Registration form — client component using useActionState.
  * Includes ПДн consent checkbox (required by Kazakhstan law).
  */
-import { Button, Input } from "@whitehouse/ui";
+import { Button, Input } from "@timsan/ui";
 import type { Route } from "next";
 import Link from "next/link";
 import { useActionState } from "react";

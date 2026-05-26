@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 /**
  * Forgot password form — client component using useActionState.
  */
-import { Button, Input } from "@whitehouse/ui";
+import { Button, Input } from "@timsan/ui";
 import { useActionState } from "react";
 
 import { forgotPasswordAction } from "@/lib/auth-actions";

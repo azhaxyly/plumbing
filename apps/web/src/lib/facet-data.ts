@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Facet data fetcher — tries Redis cache first, falls back to DB.
  */
 
-import { prisma } from "@whitehouse/db";
+import { prisma } from "@timsan/db";
 
 import {
   getCachedFacets,

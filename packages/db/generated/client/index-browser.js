@@ -130,6 +130,9 @@ exports.Prisma.UserScalarFieldEnum = {
   role: 'role',
   emailVerifiedAt: 'emailVerifiedAt',
   phoneVerifiedAt: 'phoneVerifiedAt',
+  blockedAt: 'blockedAt',
+  pdnConsentAt: 'pdnConsentAt',
+  pdnConsentVersion: 'pdnConsentVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -170,6 +173,7 @@ exports.Prisma.ProductScalarFieldEnum = {
   priceCents: 'priceCents',
   compareAtPriceCents: 'compareAtPriceCents',
   status: 'status',
+  isFeatured: 'isFeatured',
   defaultVariantId: 'defaultVariantId',
   seoTitle: 'seoTitle',
   seoDescription: 'seoDescription',
@@ -239,12 +243,133 @@ exports.Prisma.SettingScalarFieldEnum = {
   updatedByUserId: 'updatedByUserId'
 };
 
+exports.Prisma.CartScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  guestId: 'guestId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CartItemScalarFieldEnum = {
+  id: 'id',
+  cartId: 'cartId',
+  variantId: 'variantId',
+  productId: 'productId',
+  quantity: 'quantity',
+  unitPriceCents: 'unitPriceCents',
+  productName: 'productName',
+  productSku: 'productSku',
+  productImageUrl: 'productImageUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.OrderScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  guestId: 'guestId',
+  status: 'status',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  addressStreet: 'addressStreet',
+  addressBuilding: 'addressBuilding',
+  addressApartment: 'addressApartment',
+  addressCity: 'addressCity',
+  comment: 'comment',
+  consentGiven: 'consentGiven',
+  consentAt: 'consentAt',
+  subtotalCents: 'subtotalCents',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.OrderItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  variantId: 'variantId',
+  productId: 'productId',
+  nameSnapshot: 'nameSnapshot',
+  skuSnapshot: 'skuSnapshot',
+  unitPriceCents: 'unitPriceCents',
+  quantity: 'quantity',
+  imageUrlSnapshot: 'imageUrlSnapshot',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CmsPageScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  title: 'title',
+  content: 'content',
+  isPublished: 'isPublished',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BannerScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  imageUrl: 'imageUrl',
+  linkUrl: 'linkUrl',
+  position: 'position',
+  isActive: 'isActive',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BannerProductScalarFieldEnum = {
+  id: 'id',
+  bannerId: 'bannerId',
+  productId: 'productId',
+  position: 'position'
+};
+
+exports.Prisma.CouponScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  type: 'type',
+  value: 'value',
+  usageLimit: 'usageLimit',
+  usageCount: 'usageCount',
+  expiresAt: 'expiresAt',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  actorUserId: 'actorUserId',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  before: 'before',
+  after: 'after',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.FavoriteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  productId: 'productId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
 exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
   JsonNull: Prisma.JsonNull
 };
 
@@ -275,6 +400,18 @@ exports.ProductStatus = exports.$Enums.ProductStatus = {
   archived: 'archived'
 };
 
+exports.OrderStatus = exports.$Enums.OrderStatus = {
+  new: 'new',
+  confirmed: 'confirmed',
+  delivered: 'delivered',
+  cancelled: 'cancelled'
+};
+
+exports.CouponType = exports.$Enums.CouponType = {
+  percent: 'percent',
+  fixed: 'fixed'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Category: 'Category',
@@ -286,7 +423,17 @@ exports.Prisma.ModelName = {
   ProductVariant: 'ProductVariant',
   ProductImage: 'ProductImage',
   ProductCategory: 'ProductCategory',
-  Setting: 'Setting'
+  Setting: 'Setting',
+  Cart: 'Cart',
+  CartItem: 'CartItem',
+  Order: 'Order',
+  OrderItem: 'OrderItem',
+  CmsPage: 'CmsPage',
+  Banner: 'Banner',
+  BannerProduct: 'BannerProduct',
+  Coupon: 'Coupon',
+  AuditLog: 'AuditLog',
+  Favorite: 'Favorite'
 };
 
 /**

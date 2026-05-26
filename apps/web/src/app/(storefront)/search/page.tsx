@@ -1,6 +1,6 @@
-import { prisma } from "@whitehouse/db";
-import { searchProducts } from "@whitehouse/search";
-import type { SearchResult } from "@whitehouse/search";
+﻿import { prisma } from "@timsan/db";
+import { searchProducts } from "@timsan/search";
+import type { SearchResult } from "@timsan/search";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { Suspense } from "react";

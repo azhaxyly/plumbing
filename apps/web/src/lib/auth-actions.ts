@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 /**
  * Server Actions for authentication flows.
@@ -109,7 +109,7 @@ export async function registerAction(
   const normalizedEmail = email.toLowerCase();
 
   // Check if user already exists
-  const { prisma } = await import("@whitehouse/db");
+  const { prisma } = await import("@timsan/db");
   const existing = await prisma.user.findUnique({
     where: { email: normalizedEmail },
     select: { id: true },
@@ -133,12 +133,15 @@ export async function registerAction(
     parallelism: 4,
   });
 
-  // Create user
+  // Create user — store ПДн consent timestamp and policy version (task 55.3)
+  const consentAt = new Date();
   await prisma.user.create({
     data: {
       email: normalizedEmail,
       passwordHash,
       role: "customer",
+      pdnConsentAt: consentAt,
+      pdnConsentVersion: "1.0",
     },
   });
 
@@ -185,7 +188,7 @@ export async function forgotPasswordAction(
   const normalizedEmail = parsed.data.email.toLowerCase();
 
   // Check if user exists (don't reveal whether email is registered)
-  const { prisma } = await import("@whitehouse/db");
+  const { prisma } = await import("@timsan/db");
   const user = await prisma.user.findUnique({
     where: { email: normalizedEmail },
     select: { id: true },
@@ -279,7 +282,7 @@ export async function resetPasswordAction(
   });
 
   // Update password in DB
-  const { prisma } = await import("@whitehouse/db");
+  const { prisma } = await import("@timsan/db");
   await prisma.user.update({
     where: { id: userId },
     data: { passwordHash },

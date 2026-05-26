@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Typed environment variable validation via @t3-oss/env-nextjs.
  * Server-only vars go in `server`, public vars (NEXT_PUBLIC_*) go in `client`.
  *
  * Usage:
- *   import { env } from "@whitehouse/shared";
+ *   import { env } from "@timsan/shared";
  *   env.DATABASE_URL  // typed, validated at startup
  */
 

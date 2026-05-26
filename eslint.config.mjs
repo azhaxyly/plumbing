@@ -28,6 +28,12 @@ const config = [
   },
   ...compat.extends("next/core-web-vitals"),
   {
+    rules: {
+      // Monorepo: Next.js app lives in apps/web/, not the repo root
+      "@next/next/no-html-link-for-pages": "off",
+    },
+  },
+  {
     files: ["**/*.{ts,tsx}"],
     plugins: {
       "@typescript-eslint": tseslint,

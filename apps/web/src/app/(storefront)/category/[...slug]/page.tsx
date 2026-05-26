@@ -1,4 +1,4 @@
-import { getCategoryBySlugPath , prisma } from "@whitehouse/db";
+﻿import { getCategoryBySlugPath , prisma } from "@timsan/db";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -192,7 +192,7 @@ export default async function CategoryPage({
     { name: "Главная", href: "/" },
     ...ancestors.map((ancestor, index) => ({
       name: ancestor.name,
-      href: `/category/${slug.slice(0, index + 1).join("/")}`,
+      href: `/category/${ancestors.slice(0, index + 1).map((a) => a.slug).join("/")}`,
     })),
     { name: category.name, href: `/category/${slug.join("/")}` },
   ];

@@ -1,5 +1,5 @@
-/**
- * @whitehouse/search
+﻿/**
+ * @timsan/search
  * Meilisearch wrapper for product search and indexing.
  */
 
@@ -43,7 +43,7 @@ export interface SearchResult {
 
 /**
  * Minimal Prisma client interface required for the Postgres FTS fallback.
- * Accepts the real PrismaClient from @whitehouse/db.
+ * Accepts the real PrismaClient from @timsan/db.
  */
 export interface PrismaClientLike {
   setting: {
@@ -66,6 +66,8 @@ const MEILISEARCH_API_KEY = process.env["MEILISEARCH_API_KEY"] ?? "";
 const INDEX_NAME = "products";
 
 let _client: MeiliSearch | null = null;
+// Cached: undefined = not checked yet, true/false = result
+let _indexHasDocs: boolean | undefined = undefined;
 
 function getClient(): MeiliSearch {
   if (!_client) {
@@ -75,6 +77,17 @@ function getClient(): MeiliSearch {
     });
   }
   return _client;
+}
+
+async function isIndexPopulated(): Promise<boolean> {
+  if (_indexHasDocs !== undefined) return _indexHasDocs;
+  try {
+    const stats = await getClient().index(INDEX_NAME).getStats();
+    _indexHasDocs = stats.numberOfDocuments > 0;
+  } catch {
+    _indexHasDocs = false;
+  }
+  return _indexHasDocs;
 }
 
 // ─── Index configuration ──────────────────────────────────────────────────────
@@ -138,7 +151,7 @@ export async function deleteProductFromIndex(
  * Falls back to Postgres FTS if Meilisearch is unavailable.
  *
  * @param prismaClient - Optional Prisma client for the Postgres FTS fallback.
- *   Pass the prisma singleton from @whitehouse/db when calling from server code.
+ *   Pass the prisma singleton from @timsan/db when calling from server code.
  */
 export async function searchProducts(
   query: string,
@@ -159,6 +172,12 @@ export async function searchProducts(
     }
     if (options?.sort && options.sort.length > 0) {
       searchParams.sort = options.sort;
+    }
+
+    // If the index has never been populated, skip Meilisearch and use Postgres FTS
+    if (prismaClient && !(await isIndexPopulated())) {
+      console.warn("[search] Meilisearch index is empty, using Postgres FTS fallback");
+      return getProductFallbackSearch(query, options, prismaClient);
     }
 
     const result = await index.search<ProductSearchDocument>(
@@ -219,7 +238,7 @@ type CategoryRow = {
  * Fallback search using PostgreSQL tsvector + GIN index.
  * Used when Meilisearch is unavailable or when search_fallback_enabled is set.
  *
- * @param prismaClient - Prisma client instance from @whitehouse/db.
+ * @param prismaClient - Prisma client instance from @timsan/db.
  */
 export async function getProductFallbackSearch(
   query: string,
@@ -292,13 +311,16 @@ export async function getProductFallbackSearch(
     LEFT JOIN "ProductVariant" pv ON pv."productId" = p.id
     WHERE
       p.status = 'active'
-      AND to_tsvector('russian', p.name || ' ' || COALESCE(p.description, ''))
-          @@ plainto_tsquery('russian', ${query})
+      AND (
+        to_tsvector('russian', p.name || ' ' || COALESCE(p."shortDescription", '') || ' ' || COALESCE(p.description, ''))
+        || to_tsvector('simple', COALESCE(b.name, '') || ' ' || COALESCE(p.sku, ''))
+      ) @@ (plainto_tsquery('russian', ${query}) || plainto_tsquery('simple', ${query}))
     GROUP BY p.id, b.name, b.slug
     ORDER BY
       ts_rank(
-        to_tsvector('russian', p.name || ' ' || COALESCE(p.description, '')),
-        plainto_tsquery('russian', ${query})
+        to_tsvector('russian', p.name || ' ' || COALESCE(p."shortDescription", '') || ' ' || COALESCE(p.description, ''))
+        || to_tsvector('simple', COALESCE(b.name, '') || ' ' || COALESCE(p.sku, '')),
+        plainto_tsquery('russian', ${query}) || plainto_tsquery('simple', ${query})
       ) DESC
     LIMIT ${limit}
     OFFSET ${offset}
@@ -308,10 +330,13 @@ export async function getProductFallbackSearch(
   const countRows = await prismaClient.$queryRaw<CountRow[]>`
     SELECT COUNT(*) AS count
     FROM "Product" p
+    LEFT JOIN "Brand" b ON b.id = p."brandId"
     WHERE
       p.status = 'active'
-      AND to_tsvector('russian', p.name || ' ' || COALESCE(p.description, ''))
-          @@ plainto_tsquery('russian', ${query})
+      AND (
+        to_tsvector('russian', p.name || ' ' || COALESCE(p."shortDescription", '') || ' ' || COALESCE(p.description, ''))
+        || to_tsvector('simple', COALESCE(b.name, '') || ' ' || COALESCE(p.sku, ''))
+      ) @@ (plainto_tsquery('russian', ${query}) || plainto_tsquery('simple', ${query}))
   `;
   const totalHits = Number(countRows[0]?.count ?? 0);
 

@@ -1,5 +1,5 @@
 {
-  "name": "whitehouse-kz-fork",
+  "name": "timsan",
   "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@9.15.0",
@@ -14,6 +14,8 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:pbt": "turbo run test:pbt",
+    "seed": "pnpm --filter @timsan/db seed",
+    "seed:phase4": "pnpm --filter @timsan/db seed:phase4",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "prepare": "husky"

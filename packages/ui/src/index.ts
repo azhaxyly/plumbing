@@ -1,5 +1,5 @@
-/**
- * @whitehouse/ui
+﻿/**
+ * @timsan/ui
  * Shared UI components based on shadcn/ui + Radix UI.
  */
 

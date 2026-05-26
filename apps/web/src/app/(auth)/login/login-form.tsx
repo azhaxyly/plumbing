@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 /**
  * Login form — client component using useActionState for Server Action.
  */
-import { Button, Input } from "@whitehouse/ui";
+import { Button, Input } from "@timsan/ui";
 import { useActionState } from "react";
 
 import type { ActionResult } from "@/lib/auth-actions";

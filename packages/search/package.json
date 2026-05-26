@@ -1,5 +1,5 @@
 {
-  "name": "@whitehouse/search",
+  "name": "@timsan/search",
   "version": "0.0.1",
   "private": true,
   "exports": {
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "meilisearch": "0.47.0",
-    "@whitehouse/db": "workspace:*"
+    "@timsan/db": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "22.10.2",

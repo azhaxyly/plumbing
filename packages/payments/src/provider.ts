@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Abstract PaymentProvider interface.
  * All payment integrations (Kaspi, Invoice, COD) implement this contract.
  */
 
-import type { Money } from "@whitehouse/domain";
+import type { Money } from "@timsan/domain";
 
 export interface CreatePaymentInput {
   orderId: string;

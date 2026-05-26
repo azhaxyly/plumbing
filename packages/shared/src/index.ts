@@ -1,5 +1,5 @@
-/**
- * @whitehouse/shared
+﻿/**
+ * @timsan/shared
  * Shared utilities, Zod schemas, environment config, and common types.
  * Used across all apps and packages.
  */

@@ -1,10 +1,10 @@
-/**
- * @whitehouse/db
+﻿/**
+ * @timsan/db
  * Prisma client singleton + database utilities.
  *
  * IMPORTANT: The `../generated/client` directory is created by `prisma generate`.
  * Run `pnpm install` (which triggers the `postinstall` script) or
- * `pnpm --filter @whitehouse/db generate` before importing this package.
+ * `pnpm --filter @timsan/db generate` before importing this package.
  */
 
 import { PrismaClient } from "../generated/client";

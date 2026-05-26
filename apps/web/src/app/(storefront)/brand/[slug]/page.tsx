@@ -1,4 +1,4 @@
-import { getBrandBySlug } from "@whitehouse/db";
+﻿import { getBrandBySlug } from "@timsan/db";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";

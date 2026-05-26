@@ -1,5 +1,5 @@
 {
-  "name": "@whitehouse/payments",
+  "name": "@timsan/payments",
   "version": "0.0.1",
   "private": true,
   "exports": {
@@ -16,10 +16,11 @@
     "test:pbt": "vitest run --reporter=verbose"
   },
   "dependencies": {
-    "@whitehouse/domain": "workspace:*",
-    "@whitehouse/shared": "workspace:*"
+    "@timsan/domain": "workspace:*",
+    "@timsan/shared": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "22.10.2",
     "@vitest/coverage-v8": "2.1.8",
     "fast-check": "3.23.2",
     "typescript": "5.7.2",

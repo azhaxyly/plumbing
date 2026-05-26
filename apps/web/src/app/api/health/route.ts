@@ -1,4 +1,4 @@
-/**
+﻿/**
  * GET /api/health
  * Health check endpoint — verifies PostgreSQL and Redis connectivity.
  * Used by docker-compose healthchecks and monitoring systems.
@@ -25,7 +25,7 @@ export async function GET(): Promise<NextResponse<HealthStatus>> {
 
   // ── Check PostgreSQL ───────────────────────────────────────────────────────
   try {
-    const { prisma } = await import("@whitehouse/db");
+    const { prisma } = await import("@timsan/db");
     await prisma.$queryRaw`SELECT 1`;
     services.postgres = "ok";
   } catch {

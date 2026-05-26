@@ -140,6 +140,9 @@ export function fromKzt(kzt: number): Money {
   return { amount: kzt * 100, currency: "KZT" };
 }
 
+/** Alias for `toFormatted` — formats a Money value as a human-readable KZT string. */
+export const formatMoney = toFormatted;
+
 /**
  * Converts a Money value in tiyins to whole KZT (÷ 100).
  * Returns a number that may have up to 2 decimal places.

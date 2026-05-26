@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -78,4 +78,4 @@ jobs:
           NODE_ENV: production
           # Minimal env for Next.js build (all validated vars need values)
           NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
-          NEXT_PUBLIC_SITE_NAME: "Whitehouse"
+          NEXT_PUBLIC_SITE_NAME: "Timsan"

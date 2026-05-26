@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Main Auth.js v5 configuration (Node.js runtime only).
  * Handles credentials provider with argon2id password verification,
  * Redis-based lockout, JWT sessions, and RBAC role in token.
@@ -33,7 +33,7 @@ async function getRedis() {
 }
 
 async function getPrisma() {
-  const { prisma } = await import("@whitehouse/db");
+  const { prisma } = await import("@timsan/db");
   return prisma;
 }
 
@@ -137,15 +137,26 @@ const nextAuth = NextAuth({
     },
   },
   callbacks: {
-    jwt({ token, user, trigger }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         // Initial sign-in: embed role and id into JWT
         token["role"] = (user as { role?: string }).role ?? "customer";
         token["id"] = user.id;
       }
       // Rotate JWT on every sign-in trigger
-      if (trigger === "signIn") {
+      if (trigger === "signIn" && user?.id) {
         token["iat"] = Math.floor(Date.now() / 1000);
+
+        // Migrate guest cart to DB cart on login
+        try {
+          const { mergeGuestCartOnLogin } = await import(
+            "@/lib/cart-actions"
+          );
+          await mergeGuestCartOnLogin(user.id);
+        } catch (err) {
+          // Cart migration failure must not block login
+          console.error("[auth] cart migration failed:", err);
+        }
       }
       return token;
     },

@@ -21,9 +21,9 @@ const legalLinks = [
 ];
 
 // Contact info — sourced from env/Setting (placeholders until admin configures)
-const phone = process.env["NEXT_PUBLIC_SHOP_PHONE"] ?? "+7 (700) 000-00-00";
-const email = process.env["NEXT_PUBLIC_SHOP_EMAIL"] ?? "info@whitehouse.kz";
-const instagram = process.env["NEXT_PUBLIC_SHOP_INSTAGRAM"] ?? "@whitehouse.kz";
+const phone = process.env["NEXT_PUBLIC_SHOP_PHONE"] ?? "+7 (776) 201-64-66";
+const email = process.env["NEXT_PUBLIC_SHOP_EMAIL"] ?? "info@timsan.kz";
+const instagram = process.env["NEXT_PUBLIC_SHOP_INSTAGRAM"] ?? "@timsan.kz";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -31,16 +31,27 @@ export function Footer() {
   return (
     <footer className="border-t bg-gray-50">
       <div className="container mx-auto px-4 py-12 md:px-6">
+        {/* Prominent phone block */}
+        <div className="mb-8 flex flex-col items-start gap-2 border-b pb-8 md:flex-row md:items-center md:justify-between">
+          <Link
+            href="/"
+            aria-label="Timsan — на главную"
+            className="text-xl font-extrabold text-gray-900"
+          >
+            Timsan
+          </Link>
+          <a
+            href={`tel:${phone.replace(/\s/g, "")}`}
+            className="flex items-center gap-3 text-3xl font-bold text-stone-900 transition-colors hover:text-emerald-700"
+          >
+            <Phone className="h-7 w-7 text-emerald-700" />
+            {phone}
+          </a>
+        </div>
+
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="flex flex-col gap-4">
-            <Link
-              href="/"
-              className="text-xl font-extrabold text-gray-900 hover:text-gray-700 transition-colors"
-              aria-label="Whitehouse — на главную"
-            >
-              Whitehouse
-            </Link>
             <p className="text-sm text-gray-500 leading-relaxed">
               Интернет-магазин сантехники и мебели для ванной комнаты. Широкий
               выбор, доставка по Казахстану.
@@ -98,7 +109,7 @@ export function Footer() {
             </ul>
 
             <h3 className="mb-4 mt-6 text-sm font-semibold uppercase tracking-wider text-gray-900">
-              Правовые
+              Правовая информация
             </h3>
             <ul className="flex flex-col gap-2">
               {legalLinks.map((link) => (
@@ -156,7 +167,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-10 border-t pt-6 text-center">
           <p className="text-xs text-gray-400">
-            © {currentYear} Whitehouse. Все права защищены.
+            © {currentYear} Timsan. Все права защищены.
           </p>
         </div>
       </div>
