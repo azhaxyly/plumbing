@@ -4,69 +4,69 @@
 
 @layer base {
   :root {
-    /* Eco-minimalism palette */
-    --background: 40 59% 98%;        /* #FDFBF7 — ivory/milk */
-    --foreground: 48 4% 23%;         /* #3E3D39 — warm dark */
+    /* TIMOSAN brand palette — steel navy & water blue */
+    --background: 210 33% 98%;        /* #F8FAFB — cool white */
+    --foreground: 213 47% 18%;        /* #182D47 — deep navy */
 
     --card: 0 0% 100%;
-    --card-foreground: 48 4% 23%;
+    --card-foreground: 213 47% 18%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 48 4% 23%;
+    --popover-foreground: 213 47% 18%;
 
-    /* Primary: deep sage green #2D6A4F */
-    --primary: 153 40% 30%;
+    /* Primary: deep navy #1C3A5E (logo text color) */
+    --primary: 213 54% 24%;
     --primary-foreground: 0 0% 98%;
 
-    /* Secondary: warm light stone */
-    --secondary: 40 15% 94%;
-    --secondary-foreground: 48 4% 23%;
+    /* Secondary: light steel blue */
+    --secondary: 214 30% 95%;
+    --secondary-foreground: 213 47% 18%;
 
-    --muted: 40 15% 94%;
-    --muted-foreground: 48 4% 45%;
+    --muted: 214 30% 95%;
+    --muted-foreground: 213 14% 49%;  /* steel gray #6B7A8D */
 
-    /* Accent: sage green #52B788 */
-    --accent: 152 41% 52%;
+    /* Accent: water blue #2B7BC8 (logo drop) */
+    --accent: 210 65% 48%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 40 15% 88%;
-    --input: 40 15% 88%;
-    --ring: 153 40% 30%;
+    --border: 213 24% 87%;
+    --input: 213 24% 87%;
+    --ring: 213 54% 24%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 48 4% 12%;
-    --foreground: 40 20% 95%;
+    --background: 213 47% 10%;
+    --foreground: 210 33% 95%;
 
-    --card: 48 4% 15%;
-    --card-foreground: 40 20% 95%;
+    --card: 213 47% 13%;
+    --card-foreground: 210 33% 95%;
 
-    --popover: 48 4% 15%;
-    --popover-foreground: 40 20% 95%;
+    --popover: 213 47% 13%;
+    --popover-foreground: 210 33% 95%;
 
-    --primary: 152 41% 52%;
+    --primary: 210 65% 55%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 48 4% 20%;
-    --secondary-foreground: 40 20% 95%;
+    --secondary: 213 30% 18%;
+    --secondary-foreground: 210 33% 95%;
 
-    --muted: 48 4% 20%;
-    --muted-foreground: 40 15% 60%;
+    --muted: 213 30% 18%;
+    --muted-foreground: 213 14% 60%;
 
-    --accent: 152 41% 52%;
+    --accent: 210 65% 55%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 40 20% 95%;
+    --destructive-foreground: 210 33% 95%;
 
-    --border: 48 4% 20%;
-    --input: 48 4% 20%;
-    --ring: 152 41% 52%;
+    --border: 213 30% 18%;
+    --input: 213 30% 18%;
+    --ring: 210 65% 55%;
   }
 }
 

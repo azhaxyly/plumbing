@@ -13,6 +13,7 @@ import { adminAttributesRouter } from "@/server/routers/admin-attributes";
 import { adminPagesRouter } from "@/server/routers/admin-pages";
 import { adminBannersRouter } from "@/server/routers/admin-banners";
 import { adminCouponsRouter } from "@/server/routers/admin-coupons";
+import { adminBestsellersRouter } from "@/server/routers/admin-bestsellers";
 
 export const appRouter = createTRPCRouter({
   cart: cartRouter,
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
   adminPages: adminPagesRouter,
   adminBanners: adminBannersRouter,
   adminCoupons: adminCouponsRouter,
+  adminBestsellers: adminBestsellersRouter,
 });
 
 export type AppRouter = typeof appRouter;

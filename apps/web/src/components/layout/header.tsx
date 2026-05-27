@@ -2,6 +2,7 @@
 import { getCategoryTree } from "@timsan/db";
 import { LayoutDashboard, Mail, Phone, ShoppingCart, User } from "lucide-react";
 import type { Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { auth } from "@/auth";
@@ -34,10 +35,10 @@ export async function Header() {
   const cartCount = 0;
 
   return (
-    <header className="sticky top-0 z-40 w-full shadow-sm">
-      {/* Top bar */}
-      <div className="border-b border-stone-100 bg-white">
-        <div className="container mx-auto flex min-h-[36px] items-center px-6 text-xs text-stone-500">
+    <>
+      {/* Top bar — не sticky, уходит при скролле */}
+      <div className="border-b border-stone-100 bg-white w-full">
+        <div className="container mx-auto flex min-h-[40px] items-center px-6 text-xs text-stone-500">
           <nav className="hidden items-center gap-5 md:flex" aria-label="Вспомогательная навигация">
             {topLinks.map((link) => (
               <Link
@@ -68,17 +69,23 @@ export async function Header() {
         </div>
       </div>
 
-      {/* Main header row */}
-      <div className="border-b border-stone-100 bg-white">
-        <div className="container mx-auto flex min-h-[80px] items-center gap-5 px-6">
-          {/* Logo */}
+      {/* Main header row — sticky, компактный */}
+      <div className="sticky top-0 z-40 border-b border-stone-100 bg-white shadow-sm">
+        <div className="container mx-auto flex min-h-[80px] items-center gap-4 pl-2 pr-6 py-1">
+          {/* Logo — прижат к краю, растянут по ширине */}
           <Link
             href="/"
-            className="shrink-0 text-2xl font-extrabold tracking-tight transition-colors hover:opacity-80"
+            className="shrink-0 transition-opacity hover:opacity-80"
             aria-label="Timsan — на главную"
           >
-            <span className="text-stone-800">WHITE</span>
-            <span className="text-emerald-700">HOUSE</span>
+            <Image
+              src="/logo.png"
+              alt="Timsan Сантехника"
+              width={173}
+              height={115}
+              className="h-[115px] w-[173px] object-contain"
+              priority
+            />
           </Link>
 
           {/* Каталог */}
@@ -95,8 +102,8 @@ export async function Header() {
                 className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
                 aria-label="Панель администратора"
               >
-                <LayoutDashboard className="h-6 w-6" />
-                <span className="text-[11px] font-medium">Админка</span>
+                <LayoutDashboard className="h-7 w-7" />
+                <span className="text-[12px] font-medium">Админка</span>
               </Link>
             ) : (
               <Link
@@ -104,8 +111,8 @@ export async function Header() {
                 className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
                 aria-label="Личный кабинет"
               >
-                <User className="h-6 w-6" />
-                <span className="text-[11px] font-medium">Кабинет</span>
+                <User className="h-7 w-7" />
+                <span className="text-[12px] font-medium">Кабинет</span>
               </Link>
             )}
 
@@ -116,10 +123,10 @@ export async function Header() {
               className="relative flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
               aria-label={`Корзина${cartCount > 0 ? `, ${cartCount} товаров` : ""}`}
             >
-              <ShoppingCart className="h-6 w-6" />
-              <span className="text-[11px] font-medium">Корзина</span>
+              <ShoppingCart className="h-7 w-7" />
+              <span className="text-[12px] font-medium">Корзина</span>
               {cartCount > 0 && (
-                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-700 text-[10px] font-bold text-white">
+                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
@@ -129,6 +136,6 @@ export async function Header() {
           </div>
         </div>
       </div>
-    </header>
+    </>
   );
 }

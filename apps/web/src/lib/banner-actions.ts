@@ -18,6 +18,9 @@ export async function createBannerAction(input: {
   title: string;
   imageUrl: string;
   linkUrl?: string;
+  backgroundColor?: string;
+  posterPosition?: "left" | "right" | "none";
+  maxProducts?: number;
   position: number;
   isActive: boolean;
   startsAt?: string | null;
@@ -25,7 +28,10 @@ export async function createBannerAction(input: {
 }): Promise<ActionResult<{ id: string }>> {
   try {
     const trpc = await createServerTrpc();
-    const banner = await trpc.adminBanners.create(input);
+    const banner = await trpc.adminBanners.create({
+      ...input,
+      linkUrl: input.linkUrl?.trim() || undefined,
+    });
     return { data: { id: banner.id } };
   } catch (err) {
     return { error: extractError(err) };
@@ -37,6 +43,9 @@ export async function updateBannerAction(input: {
   title?: string;
   imageUrl?: string;
   linkUrl?: string | null;
+  backgroundColor?: string;
+  posterPosition?: "left" | "right" | "none";
+  maxProducts?: number;
   position?: number;
   isActive?: boolean;
   startsAt?: string | null;
@@ -44,7 +53,10 @@ export async function updateBannerAction(input: {
 }): Promise<ActionResult> {
   try {
     const trpc = await createServerTrpc();
-    await trpc.adminBanners.update(input);
+    await trpc.adminBanners.update({
+      ...input,
+      linkUrl: input.linkUrl?.trim() || null,
+    });
     return {};
   } catch (err) {
     return { error: extractError(err) };
@@ -56,6 +68,57 @@ export async function deleteBannerAction(input: { id: string }): Promise<ActionR
     const trpc = await createServerTrpc();
     await trpc.adminBanners.delete(input);
     return {};
+  } catch (err) {
+    return { error: extractError(err) };
+  }
+}
+
+export async function addBannerProductAction(input: {
+  bannerId: string;
+  productId: string;
+}): Promise<ActionResult> {
+  try {
+    const trpc = await createServerTrpc();
+    await trpc.adminBanners.addProduct(input);
+    return {};
+  } catch (err) {
+    return { error: extractError(err) };
+  }
+}
+
+export async function removeBannerProductAction(input: {
+  bannerId: string;
+  productId: string;
+}): Promise<ActionResult> {
+  try {
+    const trpc = await createServerTrpc();
+    await trpc.adminBanners.removeProduct(input);
+    return {};
+  } catch (err) {
+    return { error: extractError(err) };
+  }
+}
+
+export async function reorderBannerProductsAction(input: {
+  bannerId: string;
+  productIds: string[];
+}): Promise<ActionResult> {
+  try {
+    const trpc = await createServerTrpc();
+    await trpc.adminBanners.reorderProducts(input);
+    return {};
+  } catch (err) {
+    return { error: extractError(err) };
+  }
+}
+
+export async function searchProductsForBannerAction(input: {
+  q: string;
+}): Promise<ActionResult<{ id: string; name: string; priceCents: number; slug: string; images: { url: string }[] }[]>> {
+  try {
+    const trpc = await createServerTrpc();
+    const products = await trpc.adminBanners.searchProducts(input);
+    return { data: products };
   } catch (err) {
     return { error: extractError(err) };
   }

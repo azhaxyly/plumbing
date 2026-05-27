@@ -23,12 +23,12 @@ export function SearchBar() {
         ref={inputRef}
         type="search"
         placeholder="Поиск по сайту"
-        className="flex-1 bg-transparent px-4 py-2 text-sm text-stone-700 outline-none placeholder:text-stone-400"
+        className="flex-1 bg-transparent px-4 py-2.5 text-sm text-stone-700 outline-none placeholder:text-stone-400"
         aria-label="Поиск по сайту"
       />
       <button
         type="submit"
-        className="flex items-center gap-1.5 bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-800 h-full"
+        className="flex items-center gap-1.5 bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 h-full"
         aria-label="Найти"
       >
         <Search className="h-4 w-4" />

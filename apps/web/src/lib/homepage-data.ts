@@ -1,5 +1,5 @@
 import { prisma } from "@timsan/db";
-import type { Prisma, Product, Brand, ProductImage } from "@timsan/db";
+import type { Prisma, Product, Brand, ProductImage, ProductVariant } from "@timsan/db";
 import type { ProductCardData } from "@/components/catalog/product-card";
 
 export type BannerWithProducts = Prisma.BannerGetPayload<{
@@ -21,6 +21,7 @@ export interface CategoryItem {
   slug: string;
   name: string;
   imageUrl?: string | null;
+  children?: { id: string; slug: string; name: string }[];
 }
 
 export interface BrandItem {
@@ -69,12 +70,20 @@ export async function getRootCategories(limit = 12): Promise<CategoryItem[]> {
       where: { parentId: null },
       take: limit,
       orderBy: { position: "asc" },
+      include: {
+        children: {
+          select: { id: true, slug: true, name: true },
+          take: 5,
+          orderBy: { position: "asc" },
+        },
+      },
     });
     return categories.map((c) => ({
       id: c.id,
       slug: c.slug,
       name: c.name,
-      imageUrl: null, // Category model doesn't have an image in schema
+      imageUrl: c.imageUrl ?? null,
+      children: c.children,
     }));
   } catch (error) {
     console.error("Failed to fetch root categories:", error);
@@ -83,8 +92,16 @@ export async function getRootCategories(limit = 12): Promise<CategoryItem[]> {
 }
 
 function mapToProductCardData(
-  product: Product & { brand: Brand | null; images: ProductImage[] }
+  product: Product & {
+    brand: Brand | null;
+    images: ProductImage[];
+    variants: Pick<ProductVariant, "quantity" | "reserved">[];
+  }
 ): ProductCardData {
+  const totalAvailable = product.variants.reduce(
+    (sum, v) => sum + Math.max(0, v.quantity - v.reserved),
+    0
+  );
   return {
     id: product.id,
     slug: product.slug,
@@ -94,21 +111,28 @@ function mapToProductCardData(
     primaryImageUrl: product.images?.[0]?.url ?? null,
     primaryImageAlt: product.images?.[0]?.alt ?? "",
     brandName: product.brand?.name ?? null,
-    inStock: true, // Assumed true for simplicity or fetch variants
+    inStock: totalAvailable > 0,
+    imageUrls: product.images.map((img) => img.url),
   };
 }
 
 export async function getBestsellers(limit = 20): Promise<ProductCardData[]> {
   try {
-    const products = await prisma.product.findMany({
-      where: { status: "active", isFeatured: true },
-      include: {
-        images: { where: { isPrimary: true } },
-        brand: true,
-      },
+    const items = await prisma.bestsellerItem.findMany({
       take: limit,
+      orderBy: { position: "asc" },
+      where: { product: { status: "active" } },
+      include: {
+        product: {
+          include: {
+            images: { orderBy: [{ isPrimary: "desc" }, { position: "asc" }], take: 4 },
+            brand: true,
+            variants: { select: { quantity: true, reserved: true } },
+          },
+        },
+      },
     });
-    return products.map(mapToProductCardData);
+    return items.map((item) => mapToProductCardData(item.product));
   } catch (error) {
     console.error("Failed to fetch bestsellers:", error);
     return [];
@@ -121,8 +145,9 @@ export async function getNewArrivals(limit = 20): Promise<ProductCardData[]> {
       where: { status: "active" },
       orderBy: { createdAt: "desc" },
       include: {
-        images: { where: { isPrimary: true } },
+        images: { orderBy: [{ isPrimary: "desc" }, { position: "asc" }], take: 4 },
         brand: true,
+        variants: { select: { quantity: true, reserved: true } },
       },
       take: limit,
     });
@@ -141,8 +166,9 @@ export async function getSaleProducts(limit = 20): Promise<ProductCardData[]> {
         compareAtPriceCents: { not: null },
       },
       include: {
-        images: { where: { isPrimary: true } },
+        images: { orderBy: [{ isPrimary: "desc" }, { position: "asc" }], take: 4 },
         brand: true,
+        variants: { select: { quantity: true, reserved: true } },
       },
     });
     const saleProducts = products.filter(
@@ -158,7 +184,6 @@ export async function getSaleProducts(limit = 20): Promise<ProductCardData[]> {
 export async function getBrandsWithLogo(): Promise<BrandItem[]> {
   try {
     const brands = await prisma.brand.findMany({
-      where: { logoUrl: { not: null } },
       orderBy: { name: "asc" },
     });
     return brands.map((b) => ({

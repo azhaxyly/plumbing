@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@timsan/ui";
 import { ShoppingCart } from "lucide-react";
 import type { Route } from "next";
@@ -18,6 +21,7 @@ export interface ProductCardData {
   primaryImageAlt: string;
   brandName: string | null;
   inStock: boolean;
+  imageUrls?: string[];
 }
 
 interface ProductCardProps {
@@ -27,6 +31,14 @@ interface ProductCardProps {
 
 
 export function ProductCard({ product, badge }: ProductCardProps) {
+  const images = product.imageUrls && product.imageUrls.length > 0
+    ? product.imageUrls
+    : product.primaryImageUrl
+    ? [product.primaryImageUrl]
+    : [];
+
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const hasDiscount =
     product.compareAtPriceCents !== null &&
     product.compareAtPriceCents > product.priceCents;
@@ -38,17 +50,22 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         )
       : 0;
 
+  function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (images.length <= 1) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const zone = Math.floor(((e.clientX - rect.left) / rect.width) * images.length);
+    setActiveIndex(Math.min(zone, images.length - 1));
+  }
+
   return (
     <article className="group relative flex flex-col rounded-xl border bg-white shadow-sm transition-shadow hover:shadow-md">
       {/* Badges container */}
       <div className="absolute left-3 top-3 z-10 flex flex-col items-start gap-1">
-        {/* Discount badge */}
         {hasDiscount && discountPercent > 0 && (
           <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
             -{discountPercent}%
           </span>
         )}
-        {/* Type badge */}
         {badge && (
           <span
             className={`rounded-full px-2 py-0.5 text-xs font-bold text-white ${
@@ -70,18 +87,40 @@ export function ProductCard({ product, badge }: ProductCardProps) {
       {/* Product image */}
       <Link
         href={`/product/${product.slug}` as Route}
-        className="relative block aspect-square overflow-hidden rounded-t-xl bg-gray-50"
+        className="relative block aspect-[4/3] overflow-hidden rounded-t-xl bg-gray-50"
         aria-label={product.name}
         tabIndex={-1}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setActiveIndex(0)}
       >
-        {product.primaryImageUrl ? (
-          <Image
-            src={product.primaryImageUrl}
-            alt={product.primaryImageAlt || product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain p-4 transition-transform duration-300 group-hover:scale-105"
-          />
+        {images.length > 0 ? (
+          <>
+            {images.map((url, i) => (
+              <Image
+                key={url}
+                src={url}
+                alt={i === 0 ? (product.primaryImageAlt || product.name) : product.name}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className={`object-contain p-4 transition-opacity duration-150 ${
+                  i === activeIndex ? "opacity-100" : "opacity-0"
+                }`}
+                loading={i === 0 ? "eager" : "lazy"}
+              />
+            ))}
+            {images.length > 1 && (
+              <div className="absolute bottom-1.5 left-2 right-2 z-10 flex gap-0.5">
+                {images.map((_, i) => (
+                  <span
+                    key={i}
+                    className={`h-0.5 flex-1 rounded-full transition-colors duration-150 ${
+                      i === activeIndex ? "bg-gray-600" : "bg-gray-200"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex h-full items-center justify-center text-gray-300">
             <ShoppingCart className="h-12 w-12" />
@@ -91,43 +130,41 @@ export function ProductCard({ product, badge }: ProductCardProps) {
 
       {/* Card body */}
       <div className="flex flex-1 flex-col gap-2 p-4">
-        {/* Brand */}
-        {product.brandName && (
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-            {product.brandName}
-          </p>
-        )}
+        <p className="text-xs font-medium uppercase tracking-wide text-gray-400 min-h-[1rem]">
+          {product.brandName ?? ' '}
+        </p>
 
-        {/* Name */}
         <Link
           href={`/product/${product.slug}` as Route}
-          className="line-clamp-2 text-sm font-medium text-gray-800 hover:text-amber-600 transition-colors"
+          className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-800 hover:text-amber-600 transition-colors"
         >
           {product.name}
         </Link>
 
-        {/* Price */}
         <div className="mt-auto flex items-end gap-2">
-          <span className="text-base font-bold text-gray-900">
+          <span className="text-lg font-bold text-gray-900">
             {formatPrice(product.priceCents)}
           </span>
-          {hasDiscount && product.compareAtPriceCents && (
-            <span className="text-sm text-gray-400 line-through">
-              {formatPrice(product.compareAtPriceCents)}
-            </span>
-          )}
+          <span className={`text-sm line-through text-red-400 ${(!hasDiscount || !product.compareAtPriceCents) ? "invisible" : ""}`}>
+            {product.compareAtPriceCents ? formatPrice(product.compareAtPriceCents) : " "}
+          </span>
         </div>
 
-        {/* Stock status */}
-        <p
-          className={`text-xs font-medium ${
-            product.inStock ? "text-green-600" : "text-red-500"
+        <span
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+            product.inStock
+              ? "border-green-200 bg-green-50 text-green-700"
+              : "border-red-200 bg-red-50 text-red-600"
           }`}
         >
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              product.inStock ? "bg-green-500" : "bg-red-400"
+            }`}
+          />
           {product.inStock ? "В наличии" : "Нет в наличии"}
-        </p>
+        </span>
 
-        {/* Add to cart */}
         <Button
           size="sm"
           className="mt-1 w-full"

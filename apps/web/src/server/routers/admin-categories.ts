@@ -40,6 +40,7 @@ export interface CategoryNode {
   slug: string;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   position: number;
   productsCount: number;
   seoTitle: string | null;
@@ -78,6 +79,7 @@ const createCategoryInput = z.object({
     ),
   parentId: z.string().optional(),
   description: z.string().optional(),
+  imageUrl: z.string().url().nullable().optional(),
   position: z.number().int().nonnegative().optional(),
 });
 
@@ -92,6 +94,7 @@ const updateCategoryInput = z.object({
     .optional(),
   parentId: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
+  imageUrl: z.string().url().nullable().optional(),
   position: z.number().int().nonnegative().optional(),
 });
 
@@ -122,6 +125,7 @@ export const adminCategoriesRouter = createTRPCRouter({
         slug: true,
         name: true,
         description: true,
+        imageUrl: true,
         position: true,
         productsCount: true,
         seoTitle: true,
@@ -181,6 +185,7 @@ export const adminCategoriesRouter = createTRPCRouter({
           slug: input.slug,
           parentId: input.parentId ?? null,
           description: input.description ?? null,
+          imageUrl: input.imageUrl ?? null,
           position,
         },
       });
@@ -261,6 +266,7 @@ export const adminCategoriesRouter = createTRPCRouter({
           ...(input.description !== undefined
             ? { description: input.description }
             : {}),
+          ...(input.imageUrl !== undefined ? { imageUrl: input.imageUrl } : {}),
           ...(input.position !== undefined ? { position: input.position } : {}),
         },
       });

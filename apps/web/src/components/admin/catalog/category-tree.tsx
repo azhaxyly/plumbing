@@ -18,11 +18,14 @@ import {
   ArrowUp,
   ChevronDown,
   ChevronRight,
+  ImageIcon,
   Loader2,
   Pencil,
   Plus,
   Trash2,
+  X,
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState, useTransition } from "react";
 
@@ -53,6 +56,7 @@ export interface CategoryNode {
   slug: string;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   position: number;
   productsCount: number;
   seoTitle: string | null;
@@ -64,6 +68,21 @@ export interface CategoryNode {
 
 interface CategoryTreeClientProps {
   initialCategories: CategoryNode[];
+}
+
+// ─── Image upload ─────────────────────────────────────────────────────────────
+
+async function uploadCategoryImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", "categories");
+  const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+  if (!res.ok) {
+    const d = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(d.error ?? "Ошибка загрузки");
+  }
+  const { publicUrl } = (await res.json()) as { publicUrl: string };
+  return publicUrl;
 }
 
 // ─── Slug generation ──────────────────────────────────────────────────────────
@@ -110,6 +129,7 @@ interface CategoryFormData {
   slug: string;
   parentId: string;
   description: string;
+  imageUrl: string | null;
 }
 
 interface CategoryDialogProps {
@@ -122,6 +142,7 @@ interface CategoryDialogProps {
   editingId: string | undefined;
   isPending: boolean;
   error: string | null;
+  initialImageUrl?: string | null;
 }
 
 function CategoryDialog({
@@ -134,6 +155,7 @@ function CategoryDialog({
   editingId,
   isPending,
   error,
+  initialImageUrl,
 }: CategoryDialogProps) {
   const [name, setName] = useState(initialData?.name ?? "");
   const [slug, setSlug] = useState(initialData?.slug ?? "");
@@ -141,6 +163,10 @@ function CategoryDialog({
   const [description, setDescription] = useState(
     initialData?.description ?? "",
   );
+  const [imageUrl, setImageUrl] = useState<string | null>(initialImageUrl ?? null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   // Reset form when dialog opens
@@ -150,6 +176,8 @@ function CategoryDialog({
       setSlug(initialData?.slug ?? "");
       setParentId(initialData?.parentId ?? "");
       setDescription(initialData?.description ?? "");
+      setImageUrl(initialImageUrl ?? null);
+      setUploadError(null);
       setSlugManuallyEdited(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -167,9 +195,33 @@ function CategoryDialog({
     setSlug(value);
   }
 
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Выберите изображение");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError("Файл не должен превышать 10 МБ");
+      return;
+    }
+    setUploadError(null);
+    setUploading(true);
+    try {
+      const url = await uploadCategoryImage(file);
+      setImageUrl(url);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Ошибка загрузки");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    await onSubmit({ name, slug, parentId, description });
+    await onSubmit({ name, slug, parentId, description, imageUrl });
   }
 
   const flatCategories = flattenTree(allCategories);
@@ -290,6 +342,66 @@ function CategoryDialog({
               disabled={isPending}
               className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Фото категории
+            </label>
+            <div className="flex items-center gap-3">
+              {imageUrl ? (
+                <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-gray-200">
+                  <Image
+                    src={imageUrl}
+                    alt="Фото категории"
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setImageUrl(null)}
+                    disabled={isPending || uploading}
+                    className="absolute right-0.5 top-0.5 rounded-full bg-white/90 p-0.5 text-gray-600 shadow hover:bg-red-50 hover:text-red-600"
+                    aria-label="Удалить фото"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-gray-300">
+                  <ImageIcon className="h-8 w-8" />
+                </div>
+              )}
+              <div className="flex flex-col gap-1.5">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileChange}
+                  disabled={isPending || uploading}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isPending || uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <ImageIcon className="mr-2 h-3.5 w-3.5" />
+                  )}
+                  {uploading ? "Загрузка..." : imageUrl ? "Заменить" : "Загрузить"}
+                </Button>
+                {uploadError && (
+                  <p className="text-xs text-red-600">{uploadError}</p>
+                )}
+                <p className="text-xs text-gray-400">JPG, PNG, WebP · до 10 МБ</p>
+              </div>
+            </div>
           </div>
 
           <DialogFooter>
@@ -619,6 +731,7 @@ export function CategoryTreeClient({
         slug: data.slug,
         ...(data.parentId ? { parentId: data.parentId } : {}),
         ...(data.description ? { description: data.description } : {}),
+        imageUrl: data.imageUrl ?? null,
       });
       if (result.error) {
         setDialogError(result.error);
@@ -645,6 +758,7 @@ export function CategoryTreeClient({
         slug: data.slug,
         parentId: data.parentId || null,
         description: data.description || null,
+        imageUrl: data.imageUrl ?? null,
       });
       if (result.error) {
         setDialogError(result.error);
@@ -762,6 +876,7 @@ export function CategoryTreeClient({
               }
             : {}
         }
+        initialImageUrl={editDialog.node?.imageUrl ?? null}
         title="Редактировать категорию"
         allCategories={initialCategories}
         editingId={editDialog.node?.id}

@@ -146,25 +146,15 @@ function flattenCategories(
 }
 
 async function uploadImage(file: File, folder = "products") {
-  const res = await fetch("/api/admin/upload", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ filename: file.name, contentType: file.type, folder }),
-  });
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", folder);
+  const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
   if (!res.ok) {
     const d = (await res.json().catch(() => ({}))) as { error?: string };
-    throw new Error(d.error ?? "Ошибка получения URL для загрузки");
+    throw new Error(d.error ?? "Ошибка загрузки");
   }
-  const { uploadUrl, publicUrl } = (await res.json()) as {
-    uploadUrl: string;
-    publicUrl: string;
-  };
-  const put = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: { "Content-Type": file.type },
-    body: file,
-  });
-  if (!put.ok) throw new Error("Ошибка загрузки файла в хранилище");
+  const { publicUrl } = (await res.json()) as { publicUrl: string };
   return { publicUrl };
 }
 

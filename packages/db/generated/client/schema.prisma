@@ -57,6 +57,7 @@ model Category {
   slug          String  @unique
   name          String
   description   String?
+  imageUrl      String?
   position      Int     @default(0)
   productsCount Int     @default(0)
 
@@ -117,6 +118,7 @@ model Product {
   cartItems         CartItem[]
   favorites         Favorite[]
   bannerProducts    BannerProduct[]
+  bestsellerItem    BestsellerItem?
 
   @@index([isFeatured])
 }
@@ -330,16 +332,19 @@ model CmsPage {
 // ─── Banners ──────────────────────────────────────────────────────────────────
 
 model Banner {
-  id        String    @id @default(cuid())
-  title     String
-  imageUrl  String
-  linkUrl   String?
-  position  Int       @default(0)
-  isActive  Boolean   @default(true)
-  startsAt  DateTime?
-  endsAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  title           String
+  imageUrl        String
+  linkUrl         String?
+  backgroundColor String    @default("#f5f5f4")
+  posterPosition  String    @default("left") // "left" | "right" | "none"
+  maxProducts     Int       @default(4)
+  position        Int       @default(0)
+  isActive        Boolean   @default(true)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   products BannerProduct[]
 
@@ -358,6 +363,18 @@ model BannerProduct {
   @@unique([bannerId, productId])
   @@index([bannerId])
   @@index([productId])
+}
+
+// ─── Bestsellers ─────────────────────────────────────────────────────────────
+
+model BestsellerItem {
+  id        String   @id @default(cuid())
+  productId String   @unique
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([position])
 }
 
 // ─── Coupons ──────────────────────────────────────────────────────────────────

@@ -13,6 +13,7 @@ export interface CategoryTreeNode {
   slug: string;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   position: number;
   productsCount: number;
   seoTitle: string | null;
@@ -29,6 +30,7 @@ interface CategoryCteRow {
   slug: string;
   name: string;
   description: string | null;
+  imageUrl: string | null;
   position: number;
   productsCount: number;
   seoTitle: string | null;
@@ -53,6 +55,7 @@ export async function getCategoryTree(): Promise<CategoryTreeNode[]> {
         slug,
         name,
         description,
+        "imageUrl",
         position,
         "productsCount",
         "seoTitle",
@@ -71,6 +74,7 @@ export async function getCategoryTree(): Promise<CategoryTreeNode[]> {
         c.slug,
         c.name,
         c.description,
+        c."imageUrl",
         c.position,
         c."productsCount",
         c."seoTitle",
@@ -106,6 +110,7 @@ export async function getCategoryBySlug(slug: string): Promise<{
       slug: true,
       name: true,
       description: true,
+      imageUrl: true,
       position: true,
       productsCount: true,
       seoTitle: true,
@@ -126,6 +131,7 @@ export async function getCategoryBySlug(slug: string): Promise<{
         slug,
         name,
         description,
+        "imageUrl",
         position,
         "productsCount",
         "seoTitle",
@@ -144,6 +150,7 @@ export async function getCategoryBySlug(slug: string): Promise<{
         c.slug,
         c.name,
         c.description,
+        c."imageUrl",
         c.position,
         c."productsCount",
         c."seoTitle",
@@ -166,6 +173,7 @@ export async function getCategoryBySlug(slug: string): Promise<{
       slug,
       name,
       description,
+      "imageUrl",
       position,
       "productsCount",
       "seoTitle",

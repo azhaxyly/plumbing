@@ -104,6 +104,11 @@ export type Banner = $Result.DefaultSelection<Prisma.$BannerPayload>
  */
 export type BannerProduct = $Result.DefaultSelection<Prisma.$BannerProductPayload>
 /**
+ * Model BestsellerItem
+ * 
+ */
+export type BestsellerItem = $Result.DefaultSelection<Prisma.$BestsellerItemPayload>
+/**
  * Model Coupon
  * 
  */
@@ -478,6 +483,16 @@ export class PrismaClient<
     * ```
     */
   get bannerProduct(): Prisma.BannerProductDelegate<ExtArgs>;
+
+  /**
+   * `prisma.bestsellerItem`: Exposes CRUD operations for the **BestsellerItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BestsellerItems
+    * const bestsellerItems = await prisma.bestsellerItem.findMany()
+    * ```
+    */
+  get bestsellerItem(): Prisma.BestsellerItemDelegate<ExtArgs>;
 
   /**
    * `prisma.coupon`: Exposes CRUD operations for the **Coupon** model.
@@ -967,6 +982,7 @@ export namespace Prisma {
     CmsPage: 'CmsPage',
     Banner: 'Banner',
     BannerProduct: 'BannerProduct',
+    BestsellerItem: 'BestsellerItem',
     Coupon: 'Coupon',
     AuditLog: 'AuditLog',
     Favorite: 'Favorite'
@@ -985,7 +1001,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "user" | "category" | "brand" | "product" | "attribute" | "attributeValue" | "productAttribute" | "productVariant" | "productImage" | "productCategory" | "setting" | "cart" | "cartItem" | "order" | "orderItem" | "cmsPage" | "banner" | "bannerProduct" | "coupon" | "auditLog" | "favorite"
+      modelProps: "user" | "category" | "brand" | "product" | "attribute" | "attributeValue" | "productAttribute" | "productVariant" | "productImage" | "productCategory" | "setting" | "cart" | "cartItem" | "order" | "orderItem" | "cmsPage" | "banner" | "bannerProduct" | "bestsellerItem" | "coupon" | "auditLog" | "favorite"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2246,6 +2262,76 @@ export namespace Prisma {
           count: {
             args: Prisma.BannerProductCountArgs<ExtArgs>
             result: $Utils.Optional<BannerProductCountAggregateOutputType> | number
+          }
+        }
+      }
+      BestsellerItem: {
+        payload: Prisma.$BestsellerItemPayload<ExtArgs>
+        fields: Prisma.BestsellerItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BestsellerItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BestsellerItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>
+          }
+          findFirst: {
+            args: Prisma.BestsellerItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BestsellerItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>
+          }
+          findMany: {
+            args: Prisma.BestsellerItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>[]
+          }
+          create: {
+            args: Prisma.BestsellerItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>
+          }
+          createMany: {
+            args: Prisma.BestsellerItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BestsellerItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>[]
+          }
+          delete: {
+            args: Prisma.BestsellerItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>
+          }
+          update: {
+            args: Prisma.BestsellerItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.BestsellerItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BestsellerItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BestsellerItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BestsellerItemPayload>
+          }
+          aggregate: {
+            args: Prisma.BestsellerItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBestsellerItem>
+          }
+          groupBy: {
+            args: Prisma.BestsellerItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BestsellerItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BestsellerItemCountArgs<ExtArgs>
+            result: $Utils.Optional<BestsellerItemCountAggregateOutputType> | number
           }
         }
       }
@@ -4193,6 +4279,7 @@ export namespace Prisma {
     slug: string | null
     name: string | null
     description: string | null
+    imageUrl: string | null
     position: number | null
     productsCount: number | null
     seoTitle: string | null
@@ -4208,6 +4295,7 @@ export namespace Prisma {
     slug: string | null
     name: string | null
     description: string | null
+    imageUrl: string | null
     position: number | null
     productsCount: number | null
     seoTitle: string | null
@@ -4223,6 +4311,7 @@ export namespace Prisma {
     slug: number
     name: number
     description: number
+    imageUrl: number
     position: number
     productsCount: number
     seoTitle: number
@@ -4250,6 +4339,7 @@ export namespace Prisma {
     slug?: true
     name?: true
     description?: true
+    imageUrl?: true
     position?: true
     productsCount?: true
     seoTitle?: true
@@ -4265,6 +4355,7 @@ export namespace Prisma {
     slug?: true
     name?: true
     description?: true
+    imageUrl?: true
     position?: true
     productsCount?: true
     seoTitle?: true
@@ -4280,6 +4371,7 @@ export namespace Prisma {
     slug?: true
     name?: true
     description?: true
+    imageUrl?: true
     position?: true
     productsCount?: true
     seoTitle?: true
@@ -4382,6 +4474,7 @@ export namespace Prisma {
     slug: string
     name: string
     description: string | null
+    imageUrl: string | null
     position: number
     productsCount: number
     seoTitle: string | null
@@ -4416,6 +4509,7 @@ export namespace Prisma {
     slug?: boolean
     name?: boolean
     description?: boolean
+    imageUrl?: boolean
     position?: boolean
     productsCount?: boolean
     seoTitle?: boolean
@@ -4435,6 +4529,7 @@ export namespace Prisma {
     slug?: boolean
     name?: boolean
     description?: boolean
+    imageUrl?: boolean
     position?: boolean
     productsCount?: boolean
     seoTitle?: boolean
@@ -4451,6 +4546,7 @@ export namespace Prisma {
     slug?: boolean
     name?: boolean
     description?: boolean
+    imageUrl?: boolean
     position?: boolean
     productsCount?: boolean
     seoTitle?: boolean
@@ -4483,6 +4579,7 @@ export namespace Prisma {
       slug: string
       name: string
       description: string | null
+      imageUrl: string | null
       position: number
       productsCount: number
       seoTitle: string | null
@@ -4891,6 +4988,7 @@ export namespace Prisma {
     readonly slug: FieldRef<"Category", 'String'>
     readonly name: FieldRef<"Category", 'String'>
     readonly description: FieldRef<"Category", 'String'>
+    readonly imageUrl: FieldRef<"Category", 'String'>
     readonly position: FieldRef<"Category", 'Int'>
     readonly productsCount: FieldRef<"Category", 'Int'>
     readonly seoTitle: FieldRef<"Category", 'String'>
@@ -6563,6 +6661,7 @@ export namespace Prisma {
     cartItems?: boolean | Product$cartItemsArgs<ExtArgs>
     favorites?: boolean | Product$favoritesArgs<ExtArgs>
     bannerProducts?: boolean | Product$bannerProductsArgs<ExtArgs>
+    bestsellerItem?: boolean | Product$bestsellerItemArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["product"]>
 
@@ -6616,6 +6715,7 @@ export namespace Prisma {
     cartItems?: boolean | Product$cartItemsArgs<ExtArgs>
     favorites?: boolean | Product$favoritesArgs<ExtArgs>
     bannerProducts?: boolean | Product$bannerProductsArgs<ExtArgs>
+    bestsellerItem?: boolean | Product$bestsellerItemArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ProductIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6633,6 +6733,7 @@ export namespace Prisma {
       cartItems: Prisma.$CartItemPayload<ExtArgs>[]
       favorites: Prisma.$FavoritePayload<ExtArgs>[]
       bannerProducts: Prisma.$BannerProductPayload<ExtArgs>[]
+      bestsellerItem: Prisma.$BestsellerItemPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7024,6 +7125,7 @@ export namespace Prisma {
     cartItems<T extends Product$cartItemsArgs<ExtArgs> = {}>(args?: Subset<T, Product$cartItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CartItemPayload<ExtArgs>, T, "findMany"> | Null>
     favorites<T extends Product$favoritesArgs<ExtArgs> = {}>(args?: Subset<T, Product$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findMany"> | Null>
     bannerProducts<T extends Product$bannerProductsArgs<ExtArgs> = {}>(args?: Subset<T, Product$bannerProductsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BannerProductPayload<ExtArgs>, T, "findMany"> | Null>
+    bestsellerItem<T extends Product$bestsellerItemArgs<ExtArgs> = {}>(args?: Subset<T, Product$bestsellerItemArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7525,6 +7627,21 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BannerProductScalarFieldEnum | BannerProductScalarFieldEnum[]
+  }
+
+  /**
+   * Product.bestsellerItem
+   */
+  export type Product$bestsellerItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    where?: BestsellerItemWhereInput
   }
 
   /**
@@ -19456,10 +19573,12 @@ export namespace Prisma {
   }
 
   export type BannerAvgAggregateOutputType = {
+    maxProducts: number | null
     position: number | null
   }
 
   export type BannerSumAggregateOutputType = {
+    maxProducts: number | null
     position: number | null
   }
 
@@ -19468,6 +19587,9 @@ export namespace Prisma {
     title: string | null
     imageUrl: string | null
     linkUrl: string | null
+    backgroundColor: string | null
+    posterPosition: string | null
+    maxProducts: number | null
     position: number | null
     isActive: boolean | null
     startsAt: Date | null
@@ -19481,6 +19603,9 @@ export namespace Prisma {
     title: string | null
     imageUrl: string | null
     linkUrl: string | null
+    backgroundColor: string | null
+    posterPosition: string | null
+    maxProducts: number | null
     position: number | null
     isActive: boolean | null
     startsAt: Date | null
@@ -19494,6 +19619,9 @@ export namespace Prisma {
     title: number
     imageUrl: number
     linkUrl: number
+    backgroundColor: number
+    posterPosition: number
+    maxProducts: number
     position: number
     isActive: number
     startsAt: number
@@ -19505,10 +19633,12 @@ export namespace Prisma {
 
 
   export type BannerAvgAggregateInputType = {
+    maxProducts?: true
     position?: true
   }
 
   export type BannerSumAggregateInputType = {
+    maxProducts?: true
     position?: true
   }
 
@@ -19517,6 +19647,9 @@ export namespace Prisma {
     title?: true
     imageUrl?: true
     linkUrl?: true
+    backgroundColor?: true
+    posterPosition?: true
+    maxProducts?: true
     position?: true
     isActive?: true
     startsAt?: true
@@ -19530,6 +19663,9 @@ export namespace Prisma {
     title?: true
     imageUrl?: true
     linkUrl?: true
+    backgroundColor?: true
+    posterPosition?: true
+    maxProducts?: true
     position?: true
     isActive?: true
     startsAt?: true
@@ -19543,6 +19679,9 @@ export namespace Prisma {
     title?: true
     imageUrl?: true
     linkUrl?: true
+    backgroundColor?: true
+    posterPosition?: true
+    maxProducts?: true
     position?: true
     isActive?: true
     startsAt?: true
@@ -19643,6 +19782,9 @@ export namespace Prisma {
     title: string
     imageUrl: string
     linkUrl: string | null
+    backgroundColor: string
+    posterPosition: string
+    maxProducts: number
     position: number
     isActive: boolean
     startsAt: Date | null
@@ -19675,6 +19817,9 @@ export namespace Prisma {
     title?: boolean
     imageUrl?: boolean
     linkUrl?: boolean
+    backgroundColor?: boolean
+    posterPosition?: boolean
+    maxProducts?: boolean
     position?: boolean
     isActive?: boolean
     startsAt?: boolean
@@ -19690,6 +19835,9 @@ export namespace Prisma {
     title?: boolean
     imageUrl?: boolean
     linkUrl?: boolean
+    backgroundColor?: boolean
+    posterPosition?: boolean
+    maxProducts?: boolean
     position?: boolean
     isActive?: boolean
     startsAt?: boolean
@@ -19703,6 +19851,9 @@ export namespace Prisma {
     title?: boolean
     imageUrl?: boolean
     linkUrl?: boolean
+    backgroundColor?: boolean
+    posterPosition?: boolean
+    maxProducts?: boolean
     position?: boolean
     isActive?: boolean
     startsAt?: boolean
@@ -19727,6 +19878,9 @@ export namespace Prisma {
       title: string
       imageUrl: string
       linkUrl: string | null
+      backgroundColor: string
+      posterPosition: string
+      maxProducts: number
       position: number
       isActive: boolean
       startsAt: Date | null
@@ -20131,6 +20285,9 @@ export namespace Prisma {
     readonly title: FieldRef<"Banner", 'String'>
     readonly imageUrl: FieldRef<"Banner", 'String'>
     readonly linkUrl: FieldRef<"Banner", 'String'>
+    readonly backgroundColor: FieldRef<"Banner", 'String'>
+    readonly posterPosition: FieldRef<"Banner", 'String'>
+    readonly maxProducts: FieldRef<"Banner", 'Int'>
     readonly position: FieldRef<"Banner", 'Int'>
     readonly isActive: FieldRef<"Banner", 'Boolean'>
     readonly startsAt: FieldRef<"Banner", 'DateTime'>
@@ -21443,6 +21600,961 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BannerProductInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BestsellerItem
+   */
+
+  export type AggregateBestsellerItem = {
+    _count: BestsellerItemCountAggregateOutputType | null
+    _avg: BestsellerItemAvgAggregateOutputType | null
+    _sum: BestsellerItemSumAggregateOutputType | null
+    _min: BestsellerItemMinAggregateOutputType | null
+    _max: BestsellerItemMaxAggregateOutputType | null
+  }
+
+  export type BestsellerItemAvgAggregateOutputType = {
+    position: number | null
+  }
+
+  export type BestsellerItemSumAggregateOutputType = {
+    position: number | null
+  }
+
+  export type BestsellerItemMinAggregateOutputType = {
+    id: string | null
+    productId: string | null
+    position: number | null
+    createdAt: Date | null
+  }
+
+  export type BestsellerItemMaxAggregateOutputType = {
+    id: string | null
+    productId: string | null
+    position: number | null
+    createdAt: Date | null
+  }
+
+  export type BestsellerItemCountAggregateOutputType = {
+    id: number
+    productId: number
+    position: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type BestsellerItemAvgAggregateInputType = {
+    position?: true
+  }
+
+  export type BestsellerItemSumAggregateInputType = {
+    position?: true
+  }
+
+  export type BestsellerItemMinAggregateInputType = {
+    id?: true
+    productId?: true
+    position?: true
+    createdAt?: true
+  }
+
+  export type BestsellerItemMaxAggregateInputType = {
+    id?: true
+    productId?: true
+    position?: true
+    createdAt?: true
+  }
+
+  export type BestsellerItemCountAggregateInputType = {
+    id?: true
+    productId?: true
+    position?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type BestsellerItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BestsellerItem to aggregate.
+     */
+    where?: BestsellerItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BestsellerItems to fetch.
+     */
+    orderBy?: BestsellerItemOrderByWithRelationInput | BestsellerItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BestsellerItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BestsellerItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BestsellerItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BestsellerItems
+    **/
+    _count?: true | BestsellerItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BestsellerItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BestsellerItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BestsellerItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BestsellerItemMaxAggregateInputType
+  }
+
+  export type GetBestsellerItemAggregateType<T extends BestsellerItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateBestsellerItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBestsellerItem[P]>
+      : GetScalarType<T[P], AggregateBestsellerItem[P]>
+  }
+
+
+
+
+  export type BestsellerItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BestsellerItemWhereInput
+    orderBy?: BestsellerItemOrderByWithAggregationInput | BestsellerItemOrderByWithAggregationInput[]
+    by: BestsellerItemScalarFieldEnum[] | BestsellerItemScalarFieldEnum
+    having?: BestsellerItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BestsellerItemCountAggregateInputType | true
+    _avg?: BestsellerItemAvgAggregateInputType
+    _sum?: BestsellerItemSumAggregateInputType
+    _min?: BestsellerItemMinAggregateInputType
+    _max?: BestsellerItemMaxAggregateInputType
+  }
+
+  export type BestsellerItemGroupByOutputType = {
+    id: string
+    productId: string
+    position: number
+    createdAt: Date
+    _count: BestsellerItemCountAggregateOutputType | null
+    _avg: BestsellerItemAvgAggregateOutputType | null
+    _sum: BestsellerItemSumAggregateOutputType | null
+    _min: BestsellerItemMinAggregateOutputType | null
+    _max: BestsellerItemMaxAggregateOutputType | null
+  }
+
+  type GetBestsellerItemGroupByPayload<T extends BestsellerItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BestsellerItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BestsellerItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BestsellerItemGroupByOutputType[P]>
+            : GetScalarType<T[P], BestsellerItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BestsellerItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    position?: boolean
+    createdAt?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bestsellerItem"]>
+
+  export type BestsellerItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    productId?: boolean
+    position?: boolean
+    createdAt?: boolean
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bestsellerItem"]>
+
+  export type BestsellerItemSelectScalar = {
+    id?: boolean
+    productId?: boolean
+    position?: boolean
+    createdAt?: boolean
+  }
+
+  export type BestsellerItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+  export type BestsellerItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    product?: boolean | ProductDefaultArgs<ExtArgs>
+  }
+
+  export type $BestsellerItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BestsellerItem"
+    objects: {
+      product: Prisma.$ProductPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      productId: string
+      position: number
+      createdAt: Date
+    }, ExtArgs["result"]["bestsellerItem"]>
+    composites: {}
+  }
+
+  type BestsellerItemGetPayload<S extends boolean | null | undefined | BestsellerItemDefaultArgs> = $Result.GetResult<Prisma.$BestsellerItemPayload, S>
+
+  type BestsellerItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BestsellerItemFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BestsellerItemCountAggregateInputType | true
+    }
+
+  export interface BestsellerItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BestsellerItem'], meta: { name: 'BestsellerItem' } }
+    /**
+     * Find zero or one BestsellerItem that matches the filter.
+     * @param {BestsellerItemFindUniqueArgs} args - Arguments to find a BestsellerItem
+     * @example
+     * // Get one BestsellerItem
+     * const bestsellerItem = await prisma.bestsellerItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BestsellerItemFindUniqueArgs>(args: SelectSubset<T, BestsellerItemFindUniqueArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BestsellerItem that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BestsellerItemFindUniqueOrThrowArgs} args - Arguments to find a BestsellerItem
+     * @example
+     * // Get one BestsellerItem
+     * const bestsellerItem = await prisma.bestsellerItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BestsellerItemFindUniqueOrThrowArgs>(args: SelectSubset<T, BestsellerItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BestsellerItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BestsellerItemFindFirstArgs} args - Arguments to find a BestsellerItem
+     * @example
+     * // Get one BestsellerItem
+     * const bestsellerItem = await prisma.bestsellerItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BestsellerItemFindFirstArgs>(args?: SelectSubset<T, BestsellerItemFindFirstArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BestsellerItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BestsellerItemFindFirstOrThrowArgs} args - Arguments to find a BestsellerItem
+     * @example
+     * // Get one BestsellerItem
+     * const bestsellerItem = await prisma.bestsellerItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BestsellerItemFindFirstOrThrowArgs>(args?: SelectSubset<T, BestsellerItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BestsellerItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BestsellerItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BestsellerItems
+     * const bestsellerItems = await prisma.bestsellerItem.findMany()
+     * 
+     * // Get first 10 BestsellerItems
+     * const bestsellerItems = await prisma.bestsellerItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bestsellerItemWithIdOnly = await prisma.bestsellerItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BestsellerItemFindManyArgs>(args?: SelectSubset<T, BestsellerItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BestsellerItem.
+     * @param {BestsellerItemCreateArgs} args - Arguments to create a BestsellerItem.
+     * @example
+     * // Create one BestsellerItem
+     * const BestsellerItem = await prisma.bestsellerItem.create({
+     *   data: {
+     *     // ... data to create a BestsellerItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends BestsellerItemCreateArgs>(args: SelectSubset<T, BestsellerItemCreateArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BestsellerItems.
+     * @param {BestsellerItemCreateManyArgs} args - Arguments to create many BestsellerItems.
+     * @example
+     * // Create many BestsellerItems
+     * const bestsellerItem = await prisma.bestsellerItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BestsellerItemCreateManyArgs>(args?: SelectSubset<T, BestsellerItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BestsellerItems and returns the data saved in the database.
+     * @param {BestsellerItemCreateManyAndReturnArgs} args - Arguments to create many BestsellerItems.
+     * @example
+     * // Create many BestsellerItems
+     * const bestsellerItem = await prisma.bestsellerItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BestsellerItems and only return the `id`
+     * const bestsellerItemWithIdOnly = await prisma.bestsellerItem.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BestsellerItemCreateManyAndReturnArgs>(args?: SelectSubset<T, BestsellerItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BestsellerItem.
+     * @param {BestsellerItemDeleteArgs} args - Arguments to delete one BestsellerItem.
+     * @example
+     * // Delete one BestsellerItem
+     * const BestsellerItem = await prisma.bestsellerItem.delete({
+     *   where: {
+     *     // ... filter to delete one BestsellerItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BestsellerItemDeleteArgs>(args: SelectSubset<T, BestsellerItemDeleteArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BestsellerItem.
+     * @param {BestsellerItemUpdateArgs} args - Arguments to update one BestsellerItem.
+     * @example
+     * // Update one BestsellerItem
+     * const bestsellerItem = await prisma.bestsellerItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BestsellerItemUpdateArgs>(args: SelectSubset<T, BestsellerItemUpdateArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BestsellerItems.
+     * @param {BestsellerItemDeleteManyArgs} args - Arguments to filter BestsellerItems to delete.
+     * @example
+     * // Delete a few BestsellerItems
+     * const { count } = await prisma.bestsellerItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BestsellerItemDeleteManyArgs>(args?: SelectSubset<T, BestsellerItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BestsellerItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BestsellerItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BestsellerItems
+     * const bestsellerItem = await prisma.bestsellerItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BestsellerItemUpdateManyArgs>(args: SelectSubset<T, BestsellerItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BestsellerItem.
+     * @param {BestsellerItemUpsertArgs} args - Arguments to update or create a BestsellerItem.
+     * @example
+     * // Update or create a BestsellerItem
+     * const bestsellerItem = await prisma.bestsellerItem.upsert({
+     *   create: {
+     *     // ... data to create a BestsellerItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BestsellerItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BestsellerItemUpsertArgs>(args: SelectSubset<T, BestsellerItemUpsertArgs<ExtArgs>>): Prisma__BestsellerItemClient<$Result.GetResult<Prisma.$BestsellerItemPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BestsellerItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BestsellerItemCountArgs} args - Arguments to filter BestsellerItems to count.
+     * @example
+     * // Count the number of BestsellerItems
+     * const count = await prisma.bestsellerItem.count({
+     *   where: {
+     *     // ... the filter for the BestsellerItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends BestsellerItemCountArgs>(
+      args?: Subset<T, BestsellerItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BestsellerItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BestsellerItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BestsellerItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BestsellerItemAggregateArgs>(args: Subset<T, BestsellerItemAggregateArgs>): Prisma.PrismaPromise<GetBestsellerItemAggregateType<T>>
+
+    /**
+     * Group by BestsellerItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BestsellerItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BestsellerItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BestsellerItemGroupByArgs['orderBy'] }
+        : { orderBy?: BestsellerItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BestsellerItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBestsellerItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BestsellerItem model
+   */
+  readonly fields: BestsellerItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BestsellerItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BestsellerItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    product<T extends ProductDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProductDefaultArgs<ExtArgs>>): Prisma__ProductClient<$Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BestsellerItem model
+   */ 
+  interface BestsellerItemFieldRefs {
+    readonly id: FieldRef<"BestsellerItem", 'String'>
+    readonly productId: FieldRef<"BestsellerItem", 'String'>
+    readonly position: FieldRef<"BestsellerItem", 'Int'>
+    readonly createdAt: FieldRef<"BestsellerItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BestsellerItem findUnique
+   */
+  export type BestsellerItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * Filter, which BestsellerItem to fetch.
+     */
+    where: BestsellerItemWhereUniqueInput
+  }
+
+  /**
+   * BestsellerItem findUniqueOrThrow
+   */
+  export type BestsellerItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * Filter, which BestsellerItem to fetch.
+     */
+    where: BestsellerItemWhereUniqueInput
+  }
+
+  /**
+   * BestsellerItem findFirst
+   */
+  export type BestsellerItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * Filter, which BestsellerItem to fetch.
+     */
+    where?: BestsellerItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BestsellerItems to fetch.
+     */
+    orderBy?: BestsellerItemOrderByWithRelationInput | BestsellerItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BestsellerItems.
+     */
+    cursor?: BestsellerItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BestsellerItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BestsellerItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BestsellerItems.
+     */
+    distinct?: BestsellerItemScalarFieldEnum | BestsellerItemScalarFieldEnum[]
+  }
+
+  /**
+   * BestsellerItem findFirstOrThrow
+   */
+  export type BestsellerItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * Filter, which BestsellerItem to fetch.
+     */
+    where?: BestsellerItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BestsellerItems to fetch.
+     */
+    orderBy?: BestsellerItemOrderByWithRelationInput | BestsellerItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BestsellerItems.
+     */
+    cursor?: BestsellerItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BestsellerItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BestsellerItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BestsellerItems.
+     */
+    distinct?: BestsellerItemScalarFieldEnum | BestsellerItemScalarFieldEnum[]
+  }
+
+  /**
+   * BestsellerItem findMany
+   */
+  export type BestsellerItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * Filter, which BestsellerItems to fetch.
+     */
+    where?: BestsellerItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BestsellerItems to fetch.
+     */
+    orderBy?: BestsellerItemOrderByWithRelationInput | BestsellerItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BestsellerItems.
+     */
+    cursor?: BestsellerItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BestsellerItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BestsellerItems.
+     */
+    skip?: number
+    distinct?: BestsellerItemScalarFieldEnum | BestsellerItemScalarFieldEnum[]
+  }
+
+  /**
+   * BestsellerItem create
+   */
+  export type BestsellerItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BestsellerItem.
+     */
+    data: XOR<BestsellerItemCreateInput, BestsellerItemUncheckedCreateInput>
+  }
+
+  /**
+   * BestsellerItem createMany
+   */
+  export type BestsellerItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BestsellerItems.
+     */
+    data: BestsellerItemCreateManyInput | BestsellerItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BestsellerItem createManyAndReturn
+   */
+  export type BestsellerItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BestsellerItems.
+     */
+    data: BestsellerItemCreateManyInput | BestsellerItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BestsellerItem update
+   */
+  export type BestsellerItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BestsellerItem.
+     */
+    data: XOR<BestsellerItemUpdateInput, BestsellerItemUncheckedUpdateInput>
+    /**
+     * Choose, which BestsellerItem to update.
+     */
+    where: BestsellerItemWhereUniqueInput
+  }
+
+  /**
+   * BestsellerItem updateMany
+   */
+  export type BestsellerItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BestsellerItems.
+     */
+    data: XOR<BestsellerItemUpdateManyMutationInput, BestsellerItemUncheckedUpdateManyInput>
+    /**
+     * Filter which BestsellerItems to update
+     */
+    where?: BestsellerItemWhereInput
+  }
+
+  /**
+   * BestsellerItem upsert
+   */
+  export type BestsellerItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BestsellerItem to update in case it exists.
+     */
+    where: BestsellerItemWhereUniqueInput
+    /**
+     * In case the BestsellerItem found by the `where` argument doesn't exist, create a new BestsellerItem with this data.
+     */
+    create: XOR<BestsellerItemCreateInput, BestsellerItemUncheckedCreateInput>
+    /**
+     * In case the BestsellerItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BestsellerItemUpdateInput, BestsellerItemUncheckedUpdateInput>
+  }
+
+  /**
+   * BestsellerItem delete
+   */
+  export type BestsellerItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
+    /**
+     * Filter which BestsellerItem to delete.
+     */
+    where: BestsellerItemWhereUniqueInput
+  }
+
+  /**
+   * BestsellerItem deleteMany
+   */
+  export type BestsellerItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BestsellerItems to delete
+     */
+    where?: BestsellerItemWhereInput
+  }
+
+  /**
+   * BestsellerItem without action
+   */
+  export type BestsellerItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BestsellerItem
+     */
+    select?: BestsellerItemSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BestsellerItemInclude<ExtArgs> | null
   }
 
 
@@ -24367,6 +25479,7 @@ export namespace Prisma {
     slug: 'slug',
     name: 'name',
     description: 'description',
+    imageUrl: 'imageUrl',
     position: 'position',
     productsCount: 'productsCount',
     seoTitle: 'seoTitle',
@@ -24582,6 +25695,9 @@ export namespace Prisma {
     title: 'title',
     imageUrl: 'imageUrl',
     linkUrl: 'linkUrl',
+    backgroundColor: 'backgroundColor',
+    posterPosition: 'posterPosition',
+    maxProducts: 'maxProducts',
     position: 'position',
     isActive: 'isActive',
     startsAt: 'startsAt',
@@ -24601,6 +25717,16 @@ export namespace Prisma {
   };
 
   export type BannerProductScalarFieldEnum = (typeof BannerProductScalarFieldEnum)[keyof typeof BannerProductScalarFieldEnum]
+
+
+  export const BestsellerItemScalarFieldEnum: {
+    id: 'id',
+    productId: 'productId',
+    position: 'position',
+    createdAt: 'createdAt'
+  };
+
+  export type BestsellerItemScalarFieldEnum = (typeof BestsellerItemScalarFieldEnum)[keyof typeof BestsellerItemScalarFieldEnum]
 
 
   export const CouponScalarFieldEnum: {
@@ -24936,6 +26062,7 @@ export namespace Prisma {
     slug?: StringFilter<"Category"> | string
     name?: StringFilter<"Category"> | string
     description?: StringNullableFilter<"Category"> | string | null
+    imageUrl?: StringNullableFilter<"Category"> | string | null
     position?: IntFilter<"Category"> | number
     productsCount?: IntFilter<"Category"> | number
     seoTitle?: StringNullableFilter<"Category"> | string | null
@@ -24954,6 +26081,7 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     position?: SortOrder
     productsCount?: SortOrder
     seoTitle?: SortOrderInput | SortOrder
@@ -24975,6 +26103,7 @@ export namespace Prisma {
     parentId?: StringNullableFilter<"Category"> | string | null
     name?: StringFilter<"Category"> | string
     description?: StringNullableFilter<"Category"> | string | null
+    imageUrl?: StringNullableFilter<"Category"> | string | null
     position?: IntFilter<"Category"> | number
     productsCount?: IntFilter<"Category"> | number
     seoTitle?: StringNullableFilter<"Category"> | string | null
@@ -24993,6 +26122,7 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    imageUrl?: SortOrderInput | SortOrder
     position?: SortOrder
     productsCount?: SortOrder
     seoTitle?: SortOrderInput | SortOrder
@@ -25016,6 +26146,7 @@ export namespace Prisma {
     slug?: StringWithAggregatesFilter<"Category"> | string
     name?: StringWithAggregatesFilter<"Category"> | string
     description?: StringNullableWithAggregatesFilter<"Category"> | string | null
+    imageUrl?: StringNullableWithAggregatesFilter<"Category"> | string | null
     position?: IntWithAggregatesFilter<"Category"> | number
     productsCount?: IntWithAggregatesFilter<"Category"> | number
     seoTitle?: StringNullableWithAggregatesFilter<"Category"> | string | null
@@ -25119,6 +26250,7 @@ export namespace Prisma {
     cartItems?: CartItemListRelationFilter
     favorites?: FavoriteListRelationFilter
     bannerProducts?: BannerProductListRelationFilter
+    bestsellerItem?: XOR<BestsellerItemNullableRelationFilter, BestsellerItemWhereInput> | null
   }
 
   export type ProductOrderByWithRelationInput = {
@@ -25147,6 +26279,7 @@ export namespace Prisma {
     cartItems?: CartItemOrderByRelationAggregateInput
     favorites?: FavoriteOrderByRelationAggregateInput
     bannerProducts?: BannerProductOrderByRelationAggregateInput
+    bestsellerItem?: BestsellerItemOrderByWithRelationInput
   }
 
   export type ProductWhereUniqueInput = Prisma.AtLeast<{
@@ -25178,6 +26311,7 @@ export namespace Prisma {
     cartItems?: CartItemListRelationFilter
     favorites?: FavoriteListRelationFilter
     bannerProducts?: BannerProductListRelationFilter
+    bestsellerItem?: XOR<BestsellerItemNullableRelationFilter, BestsellerItemWhereInput> | null
   }, "id" | "slug" | "sku">
 
   export type ProductOrderByWithAggregationInput = {
@@ -26086,6 +27220,9 @@ export namespace Prisma {
     title?: StringFilter<"Banner"> | string
     imageUrl?: StringFilter<"Banner"> | string
     linkUrl?: StringNullableFilter<"Banner"> | string | null
+    backgroundColor?: StringFilter<"Banner"> | string
+    posterPosition?: StringFilter<"Banner"> | string
+    maxProducts?: IntFilter<"Banner"> | number
     position?: IntFilter<"Banner"> | number
     isActive?: BoolFilter<"Banner"> | boolean
     startsAt?: DateTimeNullableFilter<"Banner"> | Date | string | null
@@ -26100,6 +27237,9 @@ export namespace Prisma {
     title?: SortOrder
     imageUrl?: SortOrder
     linkUrl?: SortOrderInput | SortOrder
+    backgroundColor?: SortOrder
+    posterPosition?: SortOrder
+    maxProducts?: SortOrder
     position?: SortOrder
     isActive?: SortOrder
     startsAt?: SortOrderInput | SortOrder
@@ -26117,6 +27257,9 @@ export namespace Prisma {
     title?: StringFilter<"Banner"> | string
     imageUrl?: StringFilter<"Banner"> | string
     linkUrl?: StringNullableFilter<"Banner"> | string | null
+    backgroundColor?: StringFilter<"Banner"> | string
+    posterPosition?: StringFilter<"Banner"> | string
+    maxProducts?: IntFilter<"Banner"> | number
     position?: IntFilter<"Banner"> | number
     isActive?: BoolFilter<"Banner"> | boolean
     startsAt?: DateTimeNullableFilter<"Banner"> | Date | string | null
@@ -26131,6 +27274,9 @@ export namespace Prisma {
     title?: SortOrder
     imageUrl?: SortOrder
     linkUrl?: SortOrderInput | SortOrder
+    backgroundColor?: SortOrder
+    posterPosition?: SortOrder
+    maxProducts?: SortOrder
     position?: SortOrder
     isActive?: SortOrder
     startsAt?: SortOrderInput | SortOrder
@@ -26152,6 +27298,9 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Banner"> | string
     imageUrl?: StringWithAggregatesFilter<"Banner"> | string
     linkUrl?: StringNullableWithAggregatesFilter<"Banner"> | string | null
+    backgroundColor?: StringWithAggregatesFilter<"Banner"> | string
+    posterPosition?: StringWithAggregatesFilter<"Banner"> | string
+    maxProducts?: IntWithAggregatesFilter<"Banner"> | number
     position?: IntWithAggregatesFilter<"Banner"> | number
     isActive?: BoolWithAggregatesFilter<"Banner"> | boolean
     startsAt?: DateTimeNullableWithAggregatesFilter<"Banner"> | Date | string | null
@@ -26214,6 +27363,58 @@ export namespace Prisma {
     bannerId?: StringWithAggregatesFilter<"BannerProduct"> | string
     productId?: StringWithAggregatesFilter<"BannerProduct"> | string
     position?: IntWithAggregatesFilter<"BannerProduct"> | number
+  }
+
+  export type BestsellerItemWhereInput = {
+    AND?: BestsellerItemWhereInput | BestsellerItemWhereInput[]
+    OR?: BestsellerItemWhereInput[]
+    NOT?: BestsellerItemWhereInput | BestsellerItemWhereInput[]
+    id?: StringFilter<"BestsellerItem"> | string
+    productId?: StringFilter<"BestsellerItem"> | string
+    position?: IntFilter<"BestsellerItem"> | number
+    createdAt?: DateTimeFilter<"BestsellerItem"> | Date | string
+    product?: XOR<ProductRelationFilter, ProductWhereInput>
+  }
+
+  export type BestsellerItemOrderByWithRelationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    product?: ProductOrderByWithRelationInput
+  }
+
+  export type BestsellerItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    productId?: string
+    AND?: BestsellerItemWhereInput | BestsellerItemWhereInput[]
+    OR?: BestsellerItemWhereInput[]
+    NOT?: BestsellerItemWhereInput | BestsellerItemWhereInput[]
+    position?: IntFilter<"BestsellerItem"> | number
+    createdAt?: DateTimeFilter<"BestsellerItem"> | Date | string
+    product?: XOR<ProductRelationFilter, ProductWhereInput>
+  }, "id" | "productId">
+
+  export type BestsellerItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+    _count?: BestsellerItemCountOrderByAggregateInput
+    _avg?: BestsellerItemAvgOrderByAggregateInput
+    _max?: BestsellerItemMaxOrderByAggregateInput
+    _min?: BestsellerItemMinOrderByAggregateInput
+    _sum?: BestsellerItemSumOrderByAggregateInput
+  }
+
+  export type BestsellerItemScalarWhereWithAggregatesInput = {
+    AND?: BestsellerItemScalarWhereWithAggregatesInput | BestsellerItemScalarWhereWithAggregatesInput[]
+    OR?: BestsellerItemScalarWhereWithAggregatesInput[]
+    NOT?: BestsellerItemScalarWhereWithAggregatesInput | BestsellerItemScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BestsellerItem"> | string
+    productId?: StringWithAggregatesFilter<"BestsellerItem"> | string
+    position?: IntWithAggregatesFilter<"BestsellerItem"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"BestsellerItem"> | Date | string
   }
 
   export type CouponWhereInput = {
@@ -26549,6 +27750,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -26567,6 +27769,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -26583,6 +27786,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26601,6 +27805,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26618,6 +27823,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -26632,6 +27838,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26647,6 +27854,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26755,6 +27963,7 @@ export namespace Prisma {
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateInput = {
@@ -26782,6 +27991,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductUpdateInput = {
@@ -26809,6 +28019,7 @@ export namespace Prisma {
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateInput = {
@@ -26836,6 +28047,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type ProductCreateManyInput = {
@@ -27794,6 +29006,9 @@ export namespace Prisma {
     title: string
     imageUrl: string
     linkUrl?: string | null
+    backgroundColor?: string
+    posterPosition?: string
+    maxProducts?: number
     position?: number
     isActive?: boolean
     startsAt?: Date | string | null
@@ -27808,6 +29023,9 @@ export namespace Prisma {
     title: string
     imageUrl: string
     linkUrl?: string | null
+    backgroundColor?: string
+    posterPosition?: string
+    maxProducts?: number
     position?: number
     isActive?: boolean
     startsAt?: Date | string | null
@@ -27822,6 +29040,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     imageUrl?: StringFieldUpdateOperationsInput | string
     linkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    backgroundColor?: StringFieldUpdateOperationsInput | string
+    posterPosition?: StringFieldUpdateOperationsInput | string
+    maxProducts?: IntFieldUpdateOperationsInput | number
     position?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27836,6 +29057,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     imageUrl?: StringFieldUpdateOperationsInput | string
     linkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    backgroundColor?: StringFieldUpdateOperationsInput | string
+    posterPosition?: StringFieldUpdateOperationsInput | string
+    maxProducts?: IntFieldUpdateOperationsInput | number
     position?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27850,6 +29074,9 @@ export namespace Prisma {
     title: string
     imageUrl: string
     linkUrl?: string | null
+    backgroundColor?: string
+    posterPosition?: string
+    maxProducts?: number
     position?: number
     isActive?: boolean
     startsAt?: Date | string | null
@@ -27863,6 +29090,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     imageUrl?: StringFieldUpdateOperationsInput | string
     linkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    backgroundColor?: StringFieldUpdateOperationsInput | string
+    posterPosition?: StringFieldUpdateOperationsInput | string
+    maxProducts?: IntFieldUpdateOperationsInput | number
     position?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27876,6 +29106,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     imageUrl?: StringFieldUpdateOperationsInput | string
     linkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    backgroundColor?: StringFieldUpdateOperationsInput | string
+    posterPosition?: StringFieldUpdateOperationsInput | string
+    maxProducts?: IntFieldUpdateOperationsInput | number
     position?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27929,6 +29162,54 @@ export namespace Prisma {
     bannerId?: StringFieldUpdateOperationsInput | string
     productId?: StringFieldUpdateOperationsInput | string
     position?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type BestsellerItemCreateInput = {
+    id?: string
+    position?: number
+    createdAt?: Date | string
+    product: ProductCreateNestedOneWithoutBestsellerItemInput
+  }
+
+  export type BestsellerItemUncheckedCreateInput = {
+    id?: string
+    productId: string
+    position?: number
+    createdAt?: Date | string
+  }
+
+  export type BestsellerItemUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    product?: ProductUpdateOneRequiredWithoutBestsellerItemNestedInput
+  }
+
+  export type BestsellerItemUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BestsellerItemCreateManyInput = {
+    id?: string
+    productId: string
+    position?: number
+    createdAt?: Date | string
+  }
+
+  export type BestsellerItemUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BestsellerItemUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    productId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CouponCreateInput = {
@@ -28420,6 +29701,7 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    imageUrl?: SortOrder
     position?: SortOrder
     productsCount?: SortOrder
     seoTitle?: SortOrder
@@ -28440,6 +29722,7 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    imageUrl?: SortOrder
     position?: SortOrder
     productsCount?: SortOrder
     seoTitle?: SortOrder
@@ -28455,6 +29738,7 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    imageUrl?: SortOrder
     position?: SortOrder
     productsCount?: SortOrder
     seoTitle?: SortOrder
@@ -28581,6 +29865,11 @@ export namespace Prisma {
     every?: BannerProductWhereInput
     some?: BannerProductWhereInput
     none?: BannerProductWhereInput
+  }
+
+  export type BestsellerItemNullableRelationFilter = {
+    is?: BestsellerItemWhereInput | null
+    isNot?: BestsellerItemWhereInput | null
   }
 
   export type ProductVariantOrderByRelationAggregateInput = {
@@ -29275,6 +30564,9 @@ export namespace Prisma {
     title?: SortOrder
     imageUrl?: SortOrder
     linkUrl?: SortOrder
+    backgroundColor?: SortOrder
+    posterPosition?: SortOrder
+    maxProducts?: SortOrder
     position?: SortOrder
     isActive?: SortOrder
     startsAt?: SortOrder
@@ -29284,6 +30576,7 @@ export namespace Prisma {
   }
 
   export type BannerAvgOrderByAggregateInput = {
+    maxProducts?: SortOrder
     position?: SortOrder
   }
 
@@ -29292,6 +30585,9 @@ export namespace Prisma {
     title?: SortOrder
     imageUrl?: SortOrder
     linkUrl?: SortOrder
+    backgroundColor?: SortOrder
+    posterPosition?: SortOrder
+    maxProducts?: SortOrder
     position?: SortOrder
     isActive?: SortOrder
     startsAt?: SortOrder
@@ -29305,6 +30601,9 @@ export namespace Prisma {
     title?: SortOrder
     imageUrl?: SortOrder
     linkUrl?: SortOrder
+    backgroundColor?: SortOrder
+    posterPosition?: SortOrder
+    maxProducts?: SortOrder
     position?: SortOrder
     isActive?: SortOrder
     startsAt?: SortOrder
@@ -29314,6 +30613,7 @@ export namespace Prisma {
   }
 
   export type BannerSumOrderByAggregateInput = {
+    maxProducts?: SortOrder
     position?: SortOrder
   }
 
@@ -29353,6 +30653,35 @@ export namespace Prisma {
   }
 
   export type BannerProductSumOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type BestsellerItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BestsellerItemAvgOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type BestsellerItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BestsellerItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    productId?: SortOrder
+    position?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BestsellerItemSumOrderByAggregateInput = {
     position?: SortOrder
   }
 
@@ -29966,6 +31295,12 @@ export namespace Prisma {
     connect?: BannerProductWhereUniqueInput | BannerProductWhereUniqueInput[]
   }
 
+  export type BestsellerItemCreateNestedOneWithoutProductInput = {
+    create?: XOR<BestsellerItemCreateWithoutProductInput, BestsellerItemUncheckedCreateWithoutProductInput>
+    connectOrCreate?: BestsellerItemCreateOrConnectWithoutProductInput
+    connect?: BestsellerItemWhereUniqueInput
+  }
+
   export type ProductVariantUncheckedCreateNestedManyWithoutProductInput = {
     create?: XOR<ProductVariantCreateWithoutProductInput, ProductVariantUncheckedCreateWithoutProductInput> | ProductVariantCreateWithoutProductInput[] | ProductVariantUncheckedCreateWithoutProductInput[]
     connectOrCreate?: ProductVariantCreateOrConnectWithoutProductInput | ProductVariantCreateOrConnectWithoutProductInput[]
@@ -30013,6 +31348,12 @@ export namespace Prisma {
     connectOrCreate?: BannerProductCreateOrConnectWithoutProductInput | BannerProductCreateOrConnectWithoutProductInput[]
     createMany?: BannerProductCreateManyProductInputEnvelope
     connect?: BannerProductWhereUniqueInput | BannerProductWhereUniqueInput[]
+  }
+
+  export type BestsellerItemUncheckedCreateNestedOneWithoutProductInput = {
+    create?: XOR<BestsellerItemCreateWithoutProductInput, BestsellerItemUncheckedCreateWithoutProductInput>
+    connectOrCreate?: BestsellerItemCreateOrConnectWithoutProductInput
+    connect?: BestsellerItemWhereUniqueInput
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -30137,6 +31478,16 @@ export namespace Prisma {
     deleteMany?: BannerProductScalarWhereInput | BannerProductScalarWhereInput[]
   }
 
+  export type BestsellerItemUpdateOneWithoutProductNestedInput = {
+    create?: XOR<BestsellerItemCreateWithoutProductInput, BestsellerItemUncheckedCreateWithoutProductInput>
+    connectOrCreate?: BestsellerItemCreateOrConnectWithoutProductInput
+    upsert?: BestsellerItemUpsertWithoutProductInput
+    disconnect?: BestsellerItemWhereInput | boolean
+    delete?: BestsellerItemWhereInput | boolean
+    connect?: BestsellerItemWhereUniqueInput
+    update?: XOR<XOR<BestsellerItemUpdateToOneWithWhereWithoutProductInput, BestsellerItemUpdateWithoutProductInput>, BestsellerItemUncheckedUpdateWithoutProductInput>
+  }
+
   export type ProductVariantUncheckedUpdateManyWithoutProductNestedInput = {
     create?: XOR<ProductVariantCreateWithoutProductInput, ProductVariantUncheckedCreateWithoutProductInput> | ProductVariantCreateWithoutProductInput[] | ProductVariantUncheckedCreateWithoutProductInput[]
     connectOrCreate?: ProductVariantCreateOrConnectWithoutProductInput | ProductVariantCreateOrConnectWithoutProductInput[]
@@ -30233,6 +31584,16 @@ export namespace Prisma {
     update?: BannerProductUpdateWithWhereUniqueWithoutProductInput | BannerProductUpdateWithWhereUniqueWithoutProductInput[]
     updateMany?: BannerProductUpdateManyWithWhereWithoutProductInput | BannerProductUpdateManyWithWhereWithoutProductInput[]
     deleteMany?: BannerProductScalarWhereInput | BannerProductScalarWhereInput[]
+  }
+
+  export type BestsellerItemUncheckedUpdateOneWithoutProductNestedInput = {
+    create?: XOR<BestsellerItemCreateWithoutProductInput, BestsellerItemUncheckedCreateWithoutProductInput>
+    connectOrCreate?: BestsellerItemCreateOrConnectWithoutProductInput
+    upsert?: BestsellerItemUpsertWithoutProductInput
+    disconnect?: BestsellerItemWhereInput | boolean
+    delete?: BestsellerItemWhereInput | boolean
+    connect?: BestsellerItemWhereUniqueInput
+    update?: XOR<XOR<BestsellerItemUpdateToOneWithWhereWithoutProductInput, BestsellerItemUpdateWithoutProductInput>, BestsellerItemUncheckedUpdateWithoutProductInput>
   }
 
   export type AttributeValueCreateNestedManyWithoutAttributeInput = {
@@ -30775,6 +32136,20 @@ export namespace Prisma {
     upsert?: ProductUpsertWithoutBannerProductsInput
     connect?: ProductWhereUniqueInput
     update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutBannerProductsInput, ProductUpdateWithoutBannerProductsInput>, ProductUncheckedUpdateWithoutBannerProductsInput>
+  }
+
+  export type ProductCreateNestedOneWithoutBestsellerItemInput = {
+    create?: XOR<ProductCreateWithoutBestsellerItemInput, ProductUncheckedCreateWithoutBestsellerItemInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutBestsellerItemInput
+    connect?: ProductWhereUniqueInput
+  }
+
+  export type ProductUpdateOneRequiredWithoutBestsellerItemNestedInput = {
+    create?: XOR<ProductCreateWithoutBestsellerItemInput, ProductUncheckedCreateWithoutBestsellerItemInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutBestsellerItemInput
+    upsert?: ProductUpsertWithoutBestsellerItemInput
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutBestsellerItemInput, ProductUpdateWithoutBestsellerItemInput>, ProductUncheckedUpdateWithoutBestsellerItemInput>
   }
 
   export type EnumCouponTypeFieldUpdateOperationsInput = {
@@ -31444,6 +32819,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -31461,6 +32837,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -31481,6 +32858,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -31497,6 +32875,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -31552,6 +32931,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31569,6 +32949,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31604,6 +32985,7 @@ export namespace Prisma {
     slug?: StringFilter<"Category"> | string
     name?: StringFilter<"Category"> | string
     description?: StringNullableFilter<"Category"> | string | null
+    imageUrl?: StringNullableFilter<"Category"> | string | null
     position?: IntFilter<"Category"> | number
     productsCount?: IntFilter<"Category"> | number
     seoTitle?: StringNullableFilter<"Category"> | string | null
@@ -31661,6 +33043,7 @@ export namespace Prisma {
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutBrandInput = {
@@ -31687,6 +33070,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutBrandInput = {
@@ -31949,6 +33333,23 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BestsellerItemCreateWithoutProductInput = {
+    id?: string
+    position?: number
+    createdAt?: Date | string
+  }
+
+  export type BestsellerItemUncheckedCreateWithoutProductInput = {
+    id?: string
+    position?: number
+    createdAt?: Date | string
+  }
+
+  export type BestsellerItemCreateOrConnectWithoutProductInput = {
+    where: BestsellerItemWhereUniqueInput
+    create: XOR<BestsellerItemCreateWithoutProductInput, BestsellerItemUncheckedCreateWithoutProductInput>
+  }
+
   export type BrandUpsertWithoutProductsInput = {
     update: XOR<BrandUpdateWithoutProductsInput, BrandUncheckedUpdateWithoutProductsInput>
     create: XOR<BrandCreateWithoutProductsInput, BrandUncheckedCreateWithoutProductsInput>
@@ -32157,6 +33558,29 @@ export namespace Prisma {
     bannerId?: StringFilter<"BannerProduct"> | string
     productId?: StringFilter<"BannerProduct"> | string
     position?: IntFilter<"BannerProduct"> | number
+  }
+
+  export type BestsellerItemUpsertWithoutProductInput = {
+    update: XOR<BestsellerItemUpdateWithoutProductInput, BestsellerItemUncheckedUpdateWithoutProductInput>
+    create: XOR<BestsellerItemCreateWithoutProductInput, BestsellerItemUncheckedCreateWithoutProductInput>
+    where?: BestsellerItemWhereInput
+  }
+
+  export type BestsellerItemUpdateToOneWithWhereWithoutProductInput = {
+    where?: BestsellerItemWhereInput
+    data: XOR<BestsellerItemUpdateWithoutProductInput, BestsellerItemUncheckedUpdateWithoutProductInput>
+  }
+
+  export type BestsellerItemUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BestsellerItemUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AttributeValueCreateWithoutAttributeInput = {
@@ -32371,6 +33795,7 @@ export namespace Prisma {
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutProductAttributesInput = {
@@ -32397,6 +33822,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutProductAttributesInput = {
@@ -32485,6 +33911,7 @@ export namespace Prisma {
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutProductAttributesInput = {
@@ -32511,6 +33938,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type AttributeUpsertWithoutProductsInput = {
@@ -32595,6 +34023,7 @@ export namespace Prisma {
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutVariantsInput = {
@@ -32621,6 +34050,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutVariantsInput = {
@@ -32699,6 +34129,7 @@ export namespace Prisma {
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutVariantsInput = {
@@ -32725,6 +34156,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type CartItemUpsertWithWhereUniqueWithoutVariantInput = {
@@ -32767,6 +34199,7 @@ export namespace Prisma {
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutImagesInput = {
@@ -32793,6 +34226,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutImagesInput = {
@@ -32835,6 +34269,7 @@ export namespace Prisma {
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutImagesInput = {
@@ -32861,6 +34296,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type ProductCreateWithoutCategoriesInput = {
@@ -32887,6 +34323,7 @@ export namespace Prisma {
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutCategoriesInput = {
@@ -32913,6 +34350,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutCategoriesInput = {
@@ -32925,6 +34363,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -32942,6 +34381,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -32992,6 +34432,7 @@ export namespace Prisma {
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutCategoriesInput = {
@@ -33018,6 +34459,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type CategoryUpsertWithoutProductsInput = {
@@ -33036,6 +34478,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33053,6 +34496,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33375,6 +34819,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutCartItemsInput = {
@@ -33401,6 +34846,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutCartItemsInput = {
@@ -33507,6 +34953,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutCartItemsInput = {
@@ -33533,6 +34980,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -33828,6 +35276,9 @@ export namespace Prisma {
     title: string
     imageUrl: string
     linkUrl?: string | null
+    backgroundColor?: string
+    posterPosition?: string
+    maxProducts?: number
     position?: number
     isActive?: boolean
     startsAt?: Date | string | null
@@ -33841,6 +35292,9 @@ export namespace Prisma {
     title: string
     imageUrl: string
     linkUrl?: string | null
+    backgroundColor?: string
+    posterPosition?: string
+    maxProducts?: number
     position?: number
     isActive?: boolean
     startsAt?: Date | string | null
@@ -33878,6 +35332,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     favorites?: FavoriteCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutBannerProductsInput = {
@@ -33904,6 +35359,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutBannerProductsInput = {
@@ -33927,6 +35383,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     imageUrl?: StringFieldUpdateOperationsInput | string
     linkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    backgroundColor?: StringFieldUpdateOperationsInput | string
+    posterPosition?: StringFieldUpdateOperationsInput | string
+    maxProducts?: IntFieldUpdateOperationsInput | number
     position?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -33940,6 +35399,9 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     imageUrl?: StringFieldUpdateOperationsInput | string
     linkUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    backgroundColor?: StringFieldUpdateOperationsInput | string
+    posterPosition?: StringFieldUpdateOperationsInput | string
+    maxProducts?: IntFieldUpdateOperationsInput | number
     position?: IntFieldUpdateOperationsInput | number
     isActive?: BoolFieldUpdateOperationsInput | boolean
     startsAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -33983,6 +35445,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutBannerProductsInput = {
@@ -34009,6 +35472,131 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
+  }
+
+  export type ProductCreateWithoutBestsellerItemInput = {
+    id?: string
+    slug: string
+    name: string
+    sku: string
+    shortDescription?: string | null
+    description?: string | null
+    priceCents: number
+    compareAtPriceCents?: number | null
+    status?: $Enums.ProductStatus
+    isFeatured?: boolean
+    defaultVariantId?: string | null
+    seoTitle?: string | null
+    seoDescription?: string | null
+    seoKeywords?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    brand: BrandCreateNestedOneWithoutProductsInput
+    variants?: ProductVariantCreateNestedManyWithoutProductInput
+    images?: ProductImageCreateNestedManyWithoutProductInput
+    categories?: ProductCategoryCreateNestedManyWithoutProductInput
+    productAttributes?: ProductAttributeCreateNestedManyWithoutProductInput
+    cartItems?: CartItemCreateNestedManyWithoutProductInput
+    favorites?: FavoriteCreateNestedManyWithoutProductInput
+    bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductUncheckedCreateWithoutBestsellerItemInput = {
+    id?: string
+    slug: string
+    name: string
+    sku: string
+    brandId: string
+    shortDescription?: string | null
+    description?: string | null
+    priceCents: number
+    compareAtPriceCents?: number | null
+    status?: $Enums.ProductStatus
+    isFeatured?: boolean
+    defaultVariantId?: string | null
+    seoTitle?: string | null
+    seoDescription?: string | null
+    seoKeywords?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    variants?: ProductVariantUncheckedCreateNestedManyWithoutProductInput
+    images?: ProductImageUncheckedCreateNestedManyWithoutProductInput
+    categories?: ProductCategoryUncheckedCreateNestedManyWithoutProductInput
+    productAttributes?: ProductAttributeUncheckedCreateNestedManyWithoutProductInput
+    cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
+    favorites?: FavoriteUncheckedCreateNestedManyWithoutProductInput
+    bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+  }
+
+  export type ProductCreateOrConnectWithoutBestsellerItemInput = {
+    where: ProductWhereUniqueInput
+    create: XOR<ProductCreateWithoutBestsellerItemInput, ProductUncheckedCreateWithoutBestsellerItemInput>
+  }
+
+  export type ProductUpsertWithoutBestsellerItemInput = {
+    update: XOR<ProductUpdateWithoutBestsellerItemInput, ProductUncheckedUpdateWithoutBestsellerItemInput>
+    create: XOR<ProductCreateWithoutBestsellerItemInput, ProductUncheckedCreateWithoutBestsellerItemInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutBestsellerItemInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutBestsellerItemInput, ProductUncheckedUpdateWithoutBestsellerItemInput>
+  }
+
+  export type ProductUpdateWithoutBestsellerItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: StringFieldUpdateOperationsInput | string
+    shortDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priceCents?: IntFieldUpdateOperationsInput | number
+    compareAtPriceCents?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    defaultVariantId?: NullableStringFieldUpdateOperationsInput | string | null
+    seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    seoKeywords?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brand?: BrandUpdateOneRequiredWithoutProductsNestedInput
+    variants?: ProductVariantUpdateManyWithoutProductNestedInput
+    images?: ProductImageUpdateManyWithoutProductNestedInput
+    categories?: ProductCategoryUpdateManyWithoutProductNestedInput
+    productAttributes?: ProductAttributeUpdateManyWithoutProductNestedInput
+    cartItems?: CartItemUpdateManyWithoutProductNestedInput
+    favorites?: FavoriteUpdateManyWithoutProductNestedInput
+    bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutBestsellerItemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    sku?: StringFieldUpdateOperationsInput | string
+    brandId?: StringFieldUpdateOperationsInput | string
+    shortDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priceCents?: IntFieldUpdateOperationsInput | number
+    compareAtPriceCents?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+    isFeatured?: BoolFieldUpdateOperationsInput | boolean
+    defaultVariantId?: NullableStringFieldUpdateOperationsInput | string | null
+    seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    seoDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    seoKeywords?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    variants?: ProductVariantUncheckedUpdateManyWithoutProductNestedInput
+    images?: ProductImageUncheckedUpdateManyWithoutProductNestedInput
+    categories?: ProductCategoryUncheckedUpdateManyWithoutProductNestedInput
+    productAttributes?: ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
+    cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
+    favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
+    bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -34170,6 +35758,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeCreateNestedManyWithoutProductInput
     cartItems?: CartItemCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemCreateNestedOneWithoutProductInput
   }
 
   export type ProductUncheckedCreateWithoutFavoritesInput = {
@@ -34196,6 +35785,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUncheckedCreateNestedManyWithoutProductInput
     cartItems?: CartItemUncheckedCreateNestedManyWithoutProductInput
     bannerProducts?: BannerProductUncheckedCreateNestedManyWithoutProductInput
+    bestsellerItem?: BestsellerItemUncheckedCreateNestedOneWithoutProductInput
   }
 
   export type ProductCreateOrConnectWithoutFavoritesInput = {
@@ -34287,6 +35877,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutFavoritesInput = {
@@ -34313,6 +35904,7 @@ export namespace Prisma {
     productAttributes?: ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type SettingCreateManyUpdatedByInput = {
@@ -34520,6 +36112,7 @@ export namespace Prisma {
     slug: string
     name: string
     description?: string | null
+    imageUrl?: string | null
     position?: number
     productsCount?: number
     seoTitle?: string | null
@@ -34538,6 +36131,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34554,6 +36148,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34570,6 +36165,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     productsCount?: IntFieldUpdateOperationsInput | number
     seoTitle?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34634,6 +36230,7 @@ export namespace Prisma {
     cartItems?: CartItemUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateWithoutBrandInput = {
@@ -34660,6 +36257,7 @@ export namespace Prisma {
     cartItems?: CartItemUncheckedUpdateManyWithoutProductNestedInput
     favorites?: FavoriteUncheckedUpdateManyWithoutProductNestedInput
     bannerProducts?: BannerProductUncheckedUpdateManyWithoutProductNestedInput
+    bestsellerItem?: BestsellerItemUncheckedUpdateOneWithoutProductNestedInput
   }
 
   export type ProductUncheckedUpdateManyWithoutBrandInput = {
@@ -35294,6 +36892,10 @@ export namespace Prisma {
      * @deprecated Use BannerProductDefaultArgs instead
      */
     export type BannerProductArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BannerProductDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BestsellerItemDefaultArgs instead
+     */
+    export type BestsellerItemArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BestsellerItemDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CouponDefaultArgs instead
      */

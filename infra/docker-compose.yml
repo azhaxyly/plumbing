@@ -73,7 +73,9 @@
         mc alias set local http://minio:9000 minioadmin minioadmin;
         mc mb --ignore-existing local/media;
         mc anonymous set public local/media;
-        echo 'MinIO bucket media created and set to public';
+        printf '<?xml version="1.0" encoding="UTF-8"?><CORSConfiguration><CORSRule><AllowedOrigin>*</AllowedOrigin><AllowedMethod>GET</AllowedMethod><AllowedMethod>PUT</AllowedMethod><AllowedMethod>POST</AllowedMethod><AllowedMethod>DELETE</AllowedMethod><AllowedMethod>HEAD</AllowedMethod><AllowedHeader>*</AllowedHeader><ExposeHeader>ETag</ExposeHeader><MaxAgeSeconds>3600</MaxAgeSeconds></CORSRule></CORSConfiguration>' > /tmp/cors.xml;
+        mc cors set local/media /tmp/cors.xml;
+        echo 'MinIO bucket media created and set to public with CORS';
       "
 
   mailhog:

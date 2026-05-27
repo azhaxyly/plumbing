@@ -20,6 +20,7 @@
     "migrate": "prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
     "seed:phase4": "tsx prisma/seed-phase4.ts",
+    "seed:banner": "tsx prisma/seed-banner.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@timsan/ui";
 
 import type { BannerWithProducts } from "@/lib/homepage-data";
 import { BannerProductCard } from "./banner-product-card";
@@ -24,16 +23,16 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-  const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
 
-  const onInit = useCallback((emblaApi: any) => {
-    setScrollSnaps(emblaApi.scrollSnapList());
+  const onInit = useCallback((api: typeof emblaApi) => {
+    setScrollSnaps(api!.scrollSnapList());
   }, []);
 
-  const onSelect = useCallback((emblaApi: any) => {
-    setSelectedIndex(emblaApi.selectedScrollSnap());
+  const onSelect = useCallback((api: typeof emblaApi) => {
+    setSelectedIndex(api!.selectedScrollSnap());
   }, []);
 
   useEffect(() => {
@@ -45,89 +44,137 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
 
   if (!banners || banners.length === 0) return null;
 
+  const activePosterPosition = (banners[selectedIndex]?.posterPosition as "left" | "right" | "none") ?? "left";
+
+  const dotsPositionClass =
+    activePosterPosition === "right"
+      ? "absolute bottom-3 right-[19%] z-20 flex gap-1.5"
+      : activePosterPosition === "none"
+      ? "absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1.5"
+      : "absolute bottom-3 left-[19%] z-20 flex -translate-x-1/2 gap-1.5";
+
   return (
-    <div className="relative w-full overflow-hidden bg-stone-100" ref={emblaRef}>
+    <div className="relative overflow-hidden rounded-2xl" ref={emblaRef}>
       <div className="flex touch-pan-y">
-        {banners.map((banner, index) => (
-          <div
-            key={banner.id}
-            className="relative min-w-0 flex-[0_0_100%]"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 h-full">
-              {/* Левая колонка (PromoBlock) */}
-              <div className="relative flex min-h-[300px] flex-col justify-center p-8 md:min-h-[400px]">
-                {/* Background Image */}
+        {banners.map((banner, slideIndex) => {
+          const posterPosition = (banner.posterPosition as "left" | "right" | "none") ?? "left";
+          const maxProducts = banner.maxProducts ?? 4;
+          const hasPoster = posterPosition !== "none";
+
+          const products = banner.products
+            .slice()
+            .sort((a, b) => a.position - b.position)
+            .slice(0, maxProducts)
+            .map((bp) => bp.product);
+
+          const posterEl = hasPoster ? (
+            banner.linkUrl ? (
+              <Link
+                href={banner.linkUrl as Route}
+                className="relative flex-[0_0_38%] overflow-hidden rounded-xl"
+              >
                 <Image
                   src={banner.imageUrl}
                   alt={banner.title}
                   fill
-                  priority={index === 0}
-                  className="object-cover"
+                  priority={slideIndex === 0}
+                  className="object-cover transition-transform duration-300 hover:scale-[1.02]"
+                  sizes="(max-width: 768px) 40vw, 38vw"
                 />
-                <div className="absolute inset-0 bg-black/40" />
-                
-                {/* Content */}
-                <div className="relative z-10 flex flex-col items-start gap-4 text-white">
-                  <h2 className="text-3xl font-bold md:text-5xl">{banner.title}</h2>
-                  {banner.linkUrl && (
-                    <Button asChild variant="default" size="lg" className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white">
-                      <Link href={banner.linkUrl as Route}>Подробнее</Link>
-                    </Button>
-                  )}
-                </div>
+              </Link>
+            ) : (
+              <div className="relative flex-[0_0_38%] overflow-hidden rounded-xl">
+                <Image
+                  src={banner.imageUrl}
+                  alt={banner.title}
+                  fill
+                  priority={slideIndex === 0}
+                  className="object-cover"
+                  sizes="(max-width: 768px) 40vw, 38vw"
+                />
               </div>
+            )
+          ) : null;
 
-              {/* Правая колонка: карточки товаров */}
-              <div className="flex items-center bg-stone-50 p-6">
-                <div className="flex w-full gap-3 overflow-x-auto pb-4 md:grid md:grid-cols-2 md:gap-4 md:overflow-visible md:pb-0 lg:grid-cols-4">
-                  {banner.products.map((bp) => bp.product).slice(0, 4).map((product) => (
-                    <BannerProductCard
-                      key={product.id}
-                      id={product.id}
-                      slug={product.slug}
-                      name={product.name}
-                      priceCents={product.priceCents}
-                      compareAtPriceCents={product.compareAtPriceCents}
-                      primaryImageUrl={product.images?.[0]?.url ?? null}
-                    />
-                  ))}
-                </div>
+          const gridClass = (() => {
+            const n = products.length;
+            if (hasPoster) {
+              if (n === 1) return "grid-cols-1";
+              if (n === 2) return "grid-cols-2";
+              if (n === 3) return "grid-cols-3";
+              if (n === 4) return "grid-cols-2 md:grid-cols-4";
+              if (n === 5) return "grid-cols-3 md:grid-cols-5";
+              return "grid-cols-3 md:grid-cols-6";
+            }
+            if (n === 1) return "grid-cols-1";
+            if (n === 2) return "grid-cols-2";
+            if (n === 3) return "grid-cols-3";
+            if (n <= 4) return "grid-cols-2 md:grid-cols-4";
+            if (n === 5) return "grid-cols-3 md:grid-cols-5";
+            return "grid-cols-3 md:grid-cols-6";
+          })();
+
+          const productsEl = products.length > 0 ? (
+            <div className={`flex-1 grid gap-2 md:gap-3 ${gridClass}`}>
+              {products.map((product) => (
+                <BannerProductCard
+                  key={product.id}
+                  id={product.id}
+                  slug={product.slug}
+                  name={product.name}
+                  priceCents={product.priceCents}
+                  compareAtPriceCents={product.compareAtPriceCents}
+                  primaryImageUrl={product.images?.[0]?.url ?? null}
+                />
+              ))}
+            </div>
+          ) : null;
+
+          return (
+            <div key={banner.id} className="min-w-0 flex-[0_0_100%]">
+              <div
+                className="flex min-h-[280px] items-stretch gap-2 p-2 md:min-h-[340px] md:gap-3 md:p-3"
+                style={{ backgroundColor: banner.backgroundColor ?? "#f5f5f4" }}
+              >
+                {posterPosition === "right" ? (
+                  <>{productsEl}{posterEl}</>
+                ) : (
+                  <>{posterEl}{productsEl}</>
+                )}
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Controls */}
+      {/* Navigation arrows */}
       {banners.length > 1 && (
         <>
           <button
             onClick={scrollPrev}
-            className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-stone-800 shadow-md transition-colors hover:bg-white md:left-8"
-            aria-label="Previous slide"
+            className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-stone-700 shadow transition hover:bg-white"
+            aria-label="Предыдущий слайд"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={scrollNext}
-            className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-stone-800 shadow-md transition-colors hover:bg-white md:right-8"
-            aria-label="Next slide"
+            className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-stone-700 shadow transition hover:bg-white"
+            aria-label="Следующий слайд"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-5 w-5" />
           </button>
 
-          {/* Dots */}
-          <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-            {scrollSnaps.map((_, index) => (
+          {/* Dots — positioned relative to active banner's poster side */}
+          <div className={dotsPositionClass}>
+            {scrollSnaps.map((_, i) => (
               <button
-                key={index}
-                onClick={() => scrollTo(index)}
-                className={`h-2.5 w-2.5 rounded-full transition-all ${
-                  index === selectedIndex
-                    ? "w-8 bg-emerald-600"
-                    : "bg-white/60 hover:bg-white"
+                key={i}
+                onClick={() => scrollTo(i)}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === selectedIndex ? "w-6 bg-white" : "w-1.5 bg-white/50"
                 }`}
-                aria-label={`Go to slide ${index + 1}`}
+                aria-label={`Слайд ${i + 1}`}
               />
             ))}
           </div>

@@ -143,6 +143,7 @@ exports.Prisma.CategoryScalarFieldEnum = {
   slug: 'slug',
   name: 'name',
   description: 'description',
+  imageUrl: 'imageUrl',
   position: 'position',
   productsCount: 'productsCount',
   seoTitle: 'seoTitle',
@@ -313,6 +314,9 @@ exports.Prisma.BannerScalarFieldEnum = {
   title: 'title',
   imageUrl: 'imageUrl',
   linkUrl: 'linkUrl',
+  backgroundColor: 'backgroundColor',
+  posterPosition: 'posterPosition',
+  maxProducts: 'maxProducts',
   position: 'position',
   isActive: 'isActive',
   startsAt: 'startsAt',
@@ -326,6 +330,13 @@ exports.Prisma.BannerProductScalarFieldEnum = {
   bannerId: 'bannerId',
   productId: 'productId',
   position: 'position'
+};
+
+exports.Prisma.BestsellerItemScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  position: 'position',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.CouponScalarFieldEnum = {
@@ -431,6 +442,7 @@ exports.Prisma.ModelName = {
   CmsPage: 'CmsPage',
   Banner: 'Banner',
   BannerProduct: 'BannerProduct',
+  BestsellerItem: 'BestsellerItem',
   Coupon: 'Coupon',
   AuditLog: 'AuditLog',
   Favorite: 'Favorite'

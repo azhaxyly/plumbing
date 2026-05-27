@@ -37,6 +37,7 @@ export async function createCategoryAction(input: {
   slug: string;
   parentId?: string;
   description?: string;
+  imageUrl?: string | null;
   position?: number;
 }): Promise<ActionResult> {
   try {
@@ -54,6 +55,7 @@ export async function updateCategoryAction(input: {
   slug?: string;
   parentId?: string | null;
   description?: string | null;
+  imageUrl?: string | null;
   position?: number;
 }): Promise<ActionResult> {
   try {

@@ -19,11 +19,11 @@ export function SaleSection({ products }: SaleSectionProps) {
   );
 
   return (
-    <section className="bg-stone-900 py-14">
+    <section className="bg-red-700 py-14">
       <div className="container mx-auto px-4">
         <SectionHeader
           title="Распродажа"
-          subtitle={`До ${maxDiscount}% скидки`}
+          subtitle={`Скидки до ${maxDiscount}%`}
           href="/catalog?sale=true"
           light
         />

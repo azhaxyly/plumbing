@@ -57,18 +57,6 @@ export function Footer() {
               выбор, доставка по Казахстану.
             </p>
 
-            {/* Social links */}
-            <div className="flex items-center gap-3 mt-2">
-              <a
-                href={`https://instagram.com/${instagram.replace("@", "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="text-gray-400 hover:text-pink-500 transition-colors"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-            </div>
           </div>
 
           {/* Catalog column */}

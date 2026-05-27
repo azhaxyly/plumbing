@@ -1,14 +1,13 @@
 import { getProductBySlug } from "@timsan/db";
 import type { ProductFull } from "@timsan/db";
-import { ShoppingCart } from "lucide-react";
 import type { Metadata , Route } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { AddToCartButton } from "@/components/catalog/add-to-cart-button";
 import { WishlistButton } from "@/components/catalog/wishlist-button";
+import { ProductGallery } from "@/components/catalog/product-gallery";
 
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
@@ -288,70 +287,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
-interface ProductGalleryProps {
-  images: ProductFull["images"];
-  productName: string;
-}
-
-function ProductGallery({ images, productName }: ProductGalleryProps) {
-  const primaryImage = getPrimaryImage(images);
-
-  if (images.length === 0) {
-    return (
-      <div className="flex aspect-square items-center justify-center rounded-2xl bg-gray-100 text-gray-300">
-        <ShoppingCart className="h-24 w-24" aria-hidden="true" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      {/* Main image */}
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-50">
-        {primaryImage && (
-          <Image
-            src={primaryImage.url}
-            alt={primaryImage.alt || productName}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-contain p-6"
-            priority
-          />
-        )}
-      </div>
-
-      {/* Thumbnails */}
-      {images.length > 1 && (
-        <div
-          className="flex gap-2 overflow-x-auto pb-1"
-          role="list"
-          aria-label="Фотографии товара"
-        >
-          {images.map((img) => (
-            <div
-              key={img.id}
-              role="listitem"
-              className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 bg-gray-50 transition-colors ${
-                img.isPrimary
-                  ? "border-amber-400"
-                  : "border-transparent hover:border-gray-300"
-              }`}
-            >
-              <Image
-                src={img.url}
-                alt={img.alt || productName}
-                fill
-                sizes="64px"
-                className="object-contain p-1"
-              />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 interface VariantsSelectorProps {
   variants: ProductFull["variants"];

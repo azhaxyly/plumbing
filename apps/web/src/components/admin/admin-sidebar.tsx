@@ -13,6 +13,7 @@ import {
   Store,
   Tag,
   Ticket,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import type { Route } from "next";
@@ -59,6 +60,7 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Страницы", href: "/admin/content/pages", icon: FileText },
       { label: "Баннеры", href: "/admin/content/banners", icon: Image },
+      { label: "Хиты продаж", href: "/admin/content/bestsellers", icon: TrendingUp },
     ],
   },
   {
