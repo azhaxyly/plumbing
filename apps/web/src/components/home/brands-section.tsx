@@ -23,7 +23,7 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
           </h2>
           <Link
             href={"/brand" as Route}
-            className="flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="flex items-center rounded-lg border border-stone-300 px-3 py-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-stone-900"
           >
             Смотреть все бренды
             <ChevronRight className="ml-1 h-4 w-4" />

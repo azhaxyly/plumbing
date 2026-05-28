@@ -3,9 +3,8 @@
  *
  * Creates:
  *  - 1 admin user (admin@example.com / admin123)
- *  - 3 root categories + 2 sub-categories under "Ванны"
- *  - 2 brands: Roca, Grohe
- *  - 2 demo products with variants and images
+ *  - 22 brands
+ *  - Default settings & CMS pages
  *
  * Idempotent: uses upsert throughout — safe to run multiple times.
  *
@@ -40,95 +39,7 @@ async function main() {
   });
   console.log(`✅ Admin user: ${admin.email}`);
 
-  // ─── Root categories ───────────────────────────────────────────────────────
-  const catBathtubs = await prisma.category.upsert({
-    where: { slug: "bathtubs" },
-    update: {},
-    create: {
-      slug: "bathtubs",
-      name: "Ванны",
-      description: "Акриловые, чугунные и стальные ванны",
-      position: 1,
-      seoTitle: "Ванны — купить в Казахстане",
-      seoDescription: "Широкий выбор ванн: акриловые, чугунные, стальные. Доставка по Казахстану.",
-      seoKeywords: "ванны, купить ванну, акриловые ванны, чугунные ванны",
-    },
-  });
-
-  const catShowerCabins = await prisma.category.upsert({
-    where: { slug: "shower-cabins" },
-    update: {},
-    create: {
-      slug: "shower-cabins",
-      name: "Душевые кабины",
-      description: "Душевые кабины и поддоны",
-      position: 2,
-      seoTitle: "Душевые кабины — купить в Казахстане",
-      seoDescription: "Душевые кабины и поддоны. Доставка по Казахстану.",
-      seoKeywords: "душевые кабины, душевой поддон, купить душевую кабину",
-    },
-  });
-
-  const catBathroomFurniture = await prisma.category.upsert({
-    where: { slug: "bathroom-furniture" },
-    update: {},
-    create: {
-      slug: "bathroom-furniture",
-      name: "Мебель для ванной",
-      description: "Тумбы, зеркала, шкафы для ванной комнаты",
-      position: 3,
-      seoTitle: "Мебель для ванной — купить в Казахстане",
-      seoDescription: "Мебель для ванной комнаты: тумбы, зеркала, шкафы. Доставка по Казахстану.",
-      seoKeywords: "мебель для ванной, тумба под раковину, зеркало в ванную",
-    },
-  });
-
-  console.log(`✅ Root categories: ${catBathtubs.name}, ${catShowerCabins.name}, ${catBathroomFurniture.name}`);
-
-  // ─── Sub-categories under "Ванны" ──────────────────────────────────────────
-  const catAcrylicBathtubs = await prisma.category.upsert({
-    where: { slug: "acrylic-bathtubs" },
-    update: {},
-    create: {
-      slug: "acrylic-bathtubs",
-      name: "Акриловые ванны",
-      description: "Лёгкие и тёплые акриловые ванны",
-      parentId: catBathtubs.id,
-      position: 1,
-      seoTitle: "Акриловые ванны — купить в Казахстане",
-      seoDescription: "Акриловые ванны различных форм и размеров. Доставка по Казахстану.",
-      seoKeywords: "акриловые ванны, купить акриловую ванну",
-    },
-  });
-
-  const catCastIronBathtubs = await prisma.category.upsert({
-    where: { slug: "cast-iron-bathtubs" },
-    update: {},
-    create: {
-      slug: "cast-iron-bathtubs",
-      name: "Чугунные ванны",
-      description: "Классические чугунные ванны с долгим сроком службы",
-      parentId: catBathtubs.id,
-      position: 2,
-      seoTitle: "Чугунные ванны — купить в Казахстане",
-      seoDescription: "Чугунные ванны — надёжность и долговечность. Доставка по Казахстану.",
-      seoKeywords: "чугунные ванны, купить чугунную ванну",
-    },
-  });
-
-  console.log(`✅ Sub-categories: ${catAcrylicBathtubs.name}, ${catCastIronBathtubs.name}`);
-
   // ─── Brands ────────────────────────────────────────────────────────────────
-  const brandRoca = await prisma.brand.upsert({
-    where: { slug: "roca" },
-    update: {},
-    create: {
-      slug: "roca",
-      name: "Roca",
-      description: "Испанский производитель сантехники с более чем 100-летней историей.",
-    },
-  });
-
   const brandGrohe = await prisma.brand.upsert({
     where: { slug: "grohe" },
     update: {},
@@ -139,148 +50,223 @@ async function main() {
     },
   });
 
-  console.log(`✅ Brands: ${brandRoca.name}, ${brandGrohe.name}`);
-
-  // ─── Demo product 1: Roca acrylic bathtub ─────────────────────────────────
-  const product1 = await prisma.product.upsert({
-    where: { sku: "ROCA-HALL-170" },
+  const brandLemark = await prisma.brand.upsert({
+    where: { slug: "lemark" },
     update: {},
     create: {
-      slug: "roca-hall-170",
-      name: "Ванна акриловая Roca Hall 170×75",
-      sku: "ROCA-HALL-170",
-      brandId: brandRoca.id,
-      shortDescription: "Прямоугольная акриловая ванна Roca Hall, 170×75 см",
-      description:
-        "Акриловая ванна Roca Hall — классическая прямоугольная форма, усиленное дно, " +
-        "антискользящее покрытие. Изготовлена из высококачественного акрила толщиной 5 мм. " +
-        "Идеально подходит для стандартных ванных комнат.",
-      // 89 900 KZT × 100 = 8 990 000 тийинов
-      priceCents: 8_990_000,
-      // 99 900 KZT × 100
-      compareAtPriceCents: 9_990_000,
-      status: "active",
-      seoTitle: "Ванна акриловая Roca Hall 170×75 — купить в Казахстане",
-      seoDescription:
-        "Купить акриловую ванну Roca Hall 170×75 в Казахстане. Доставка по всей стране.",
-      seoKeywords: "roca hall, акриловая ванна 170, купить ванну roca",
+      slug: "lemark",
+      name: "Lemark",
+      description: "Российский бренд смесителей и сантехнического оборудования.",
     },
   });
 
-  // Variant for product 1
-  const variant1 = await prisma.productVariant.upsert({
-    where: { sku: "ROCA-HALL-170-WHT" },
+  const brandHaiba = await prisma.brand.upsert({
+    where: { slug: "haiba" },
     update: {},
     create: {
-      productId: product1.id,
-      sku: "ROCA-HALL-170-WHT",
-      priceCents: 8_990_000,
-      attributes: { color: "Белый", size: "170×75" },
-      quantity: 5,
-      reserved: 0,
+      slug: "haiba",
+      name: "Haiba",
+      description: "Производитель смесителей и аксессуаров для ванной комнаты.",
     },
   });
 
-  // Update defaultVariantId
-  await prisma.product.update({
-    where: { id: product1.id },
-    data: { defaultVariantId: variant1.id },
-  });
-
-  // Image for product 1
-  await prisma.productImage.upsert({
-    where: { id: `img-${product1.id}-1` },
+  const brandTriton = await prisma.brand.upsert({
+    where: { slug: "triton" },
     update: {},
     create: {
-      id: `img-${product1.id}-1`,
-      productId: product1.id,
-      url: "https://placehold.co/800x600/e2e8f0/64748b?text=Roca+Hall+170",
-      alt: "Ванна акриловая Roca Hall 170×75",
-      position: 0,
-      isPrimary: true,
+      slug: "triton",
+      name: "Тритон",
+      description: "Российский производитель акриловых ванн и душевых кабин.",
     },
   });
 
-  // Link product 1 to categories
-  await prisma.productCategory.upsert({
-    where: { productId_categoryId: { productId: product1.id, categoryId: catBathtubs.id } },
-    update: {},
-    create: { productId: product1.id, categoryId: catBathtubs.id },
-  });
-  await prisma.productCategory.upsert({
-    where: { productId_categoryId: { productId: product1.id, categoryId: catAcrylicBathtubs.id } },
-    update: {},
-    create: { productId: product1.id, categoryId: catAcrylicBathtubs.id },
-  });
-
-  console.log(`✅ Product 1: ${product1.name}`);
-
-  // ─── Demo product 2: Grohe shower system ──────────────────────────────────
-  const product2 = await prisma.product.upsert({
-    where: { sku: "GROHE-RAINSHOWER-310" },
+  const brandAlcaplast = await prisma.brand.upsert({
+    where: { slug: "alcaplast" },
     update: {},
     create: {
-      slug: "grohe-rainshower-system-310",
-      name: "Душевая система Grohe Rainshower System 310",
-      sku: "GROHE-RAINSHOWER-310",
-      brandId: brandGrohe.id,
-      shortDescription: "Верхний душ Grohe Rainshower System 310, хром",
-      description:
-        "Душевая система Grohe Rainshower System 310 — верхний душ диаметром 310 мм, " +
-        "три режима струи (дождь, каскад, массаж), термостатический смеситель. " +
-        "Хромированное покрытие StarLight® устойчиво к царапинам и загрязнениям.",
-      // 145 000 KZT × 100
-      priceCents: 14_500_000,
-      status: "active",
-      seoTitle: "Душевая система Grohe Rainshower System 310 — купить в Казахстане",
-      seoDescription:
-        "Купить душевую систему Grohe Rainshower System 310 в Казахстане. Доставка по всей стране.",
-      seoKeywords: "grohe rainshower, душевая система, верхний душ grohe",
+      slug: "alcaplast",
+      name: "Alcaplast",
+      description: "Чешский производитель инсталляций, сифонов и сантехнической фурнитуры.",
     },
   });
 
-  // Variant for product 2
-  const variant2 = await prisma.productVariant.upsert({
-    where: { sku: "GROHE-RAINSHOWER-310-CHR" },
+  const brandAniPlast = await prisma.brand.upsert({
+    where: { slug: "ani-plast" },
     update: {},
     create: {
-      productId: product2.id,
-      sku: "GROHE-RAINSHOWER-310-CHR",
-      priceCents: 14_500_000,
-      attributes: { color: "Хром", finish: "StarLight" },
-      quantity: 3,
-      reserved: 0,
+      slug: "ani-plast",
+      name: "Ани-Пласт",
+      description: "Российский бренд сифонов, гибкой подводки и сантехнических аксессуаров.",
     },
   });
 
-  // Update defaultVariantId
-  await prisma.product.update({
-    where: { id: product2.id },
-    data: { defaultVariantId: variant2.id },
-  });
-
-  // Images for product 2
-  await prisma.productImage.upsert({
-    where: { id: `img-${product2.id}-1` },
+  const brandBelz = await prisma.brand.upsert({
+    where: { slug: "belz" },
     update: {},
     create: {
-      id: `img-${product2.id}-1`,
-      productId: product2.id,
-      url: "https://placehold.co/800x600/e2e8f0/64748b?text=Grohe+Rainshower+310",
-      alt: "Душевая система Grohe Rainshower System 310",
-      position: 0,
-      isPrimary: true,
+      slug: "belz",
+      name: "Belz",
+      description: "Производитель сантехники и аксессуаров для ванных комнат.",
     },
   });
 
-  // Link product 2 to shower-cabins category
-  await prisma.productCategory.upsert({
-    where: { productId_categoryId: { productId: product2.id, categoryId: catShowerCabins.id } },
+  const brandDvin = await prisma.brand.upsert({
+    where: { slug: "dvin" },
     update: {},
-    create: { productId: product2.id, categoryId: catShowerCabins.id },
+    create: {
+      slug: "dvin",
+      name: "Двин",
+      description: "Российский бренд полотенцесушителей и радиаторов отопления.",
+    },
   });
 
-  console.log(`✅ Product 2: ${product2.name}`);
+  const brandBeste = await prisma.brand.upsert({
+    where: { slug: "beste" },
+    update: {},
+    create: {
+      slug: "beste",
+      name: "Beste",
+      description: "Производитель сантехники и оборудования для ванных комнат.",
+    },
+  });
+
+  const brandPoint = await prisma.brand.upsert({
+    where: { slug: "point" },
+    update: {},
+    create: {
+      slug: "point",
+      name: "Point",
+      description: "Бренд полотенцесушителей и водяных нагревательных приборов.",
+    },
+  });
+
+  const brandTerminus = await prisma.brand.upsert({
+    where: { slug: "terminus" },
+    update: {},
+    create: {
+      slug: "terminus",
+      name: "Terminus",
+      description: "Украинский производитель полотенцесушителей и радиаторов.",
+    },
+  });
+
+  const brandSantek = await prisma.brand.upsert({
+    where: { slug: "santek" },
+    update: {},
+    create: {
+      slug: "santek",
+      name: "Santek",
+      description: "Российский производитель акриловых ванн и душевых поддонов.",
+    },
+  });
+
+  const brandSanteri = await prisma.brand.upsert({
+    where: { slug: "santeri" },
+    update: {},
+    create: {
+      slug: "santeri",
+      name: "Santeri",
+      description: "Российский бренд полотенцесушителей и сантехнического оборудования.",
+    },
+  });
+
+  const brandSanita = await prisma.brand.upsert({
+    where: { slug: "sanita" },
+    update: {},
+    create: {
+      slug: "sanita",
+      name: "Sanita",
+      description: "Российский производитель керамической сантехники — унитазов, раковин, биде.",
+    },
+  });
+
+  const brandAppolo = await prisma.brand.upsert({
+    where: { slug: "appolo" },
+    update: {},
+    create: {
+      slug: "appolo",
+      name: "Appolo",
+      description: "Производитель смесителей и сантехнических изделий.",
+    },
+  });
+
+  const brandOrbita = await prisma.brand.upsert({
+    where: { slug: "orbita" },
+    update: {},
+    create: {
+      slug: "orbita",
+      name: "Orbita",
+      description: "Производитель смесителей и аксессуаров для ванной.",
+    },
+  });
+
+  const brandBravat = await prisma.brand.upsert({
+    where: { slug: "bravat" },
+    update: {},
+    create: {
+      slug: "bravat",
+      name: "Bravat",
+      description: "Датский бренд премиальных смесителей и сантехники.",
+    },
+  });
+
+  const brandCersanit = await prisma.brand.upsert({
+    where: { slug: "cersanit" },
+    update: {},
+    create: {
+      slug: "cersanit",
+      name: "Cersanit",
+      description: "Польский производитель керамической плитки и сантехники.",
+    },
+  });
+
+  const brandOlimp = await prisma.brand.upsert({
+    where: { slug: "olimp" },
+    update: {},
+    create: {
+      slug: "olimp",
+      name: "Олимп",
+      description: "Российский производитель полотенцесушителей и радиаторов.",
+    },
+  });
+
+  const brandDecoroomBrand = await prisma.brand.upsert({
+    where: { slug: "decoroom" },
+    update: {},
+    create: {
+      slug: "decoroom",
+      name: "Decoroom",
+      description: "Производитель мебели и аксессуаров для ванных комнат.",
+    },
+  });
+
+  const brandSaniteco = await prisma.brand.upsert({
+    where: { slug: "saniteco" },
+    update: {},
+    create: {
+      slug: "saniteco",
+      name: "Saniteco",
+      description: "Производитель сантехники и оборудования для ванных комнат.",
+    },
+  });
+
+  const brandGrossman = await prisma.brand.upsert({
+    where: { slug: "grossman" },
+    update: {},
+    create: {
+      slug: "grossman",
+      name: "Grossman",
+      description: "Российский производитель смесителей и сантехнических аксессуаров.",
+    },
+  });
+
+  const allBrands = [
+    brandGrohe, brandLemark, brandHaiba, brandTriton, brandAlcaplast,
+    brandAniPlast, brandBelz, brandDvin, brandBeste, brandPoint, brandTerminus,
+    brandSantek, brandSanteri, brandSanita, brandAppolo, brandOrbita, brandBravat,
+    brandCersanit, brandOlimp, brandDecoroomBrand, brandSaniteco, brandGrossman,
+  ];
+  console.log(`✅ Brands (${allBrands.length}): ${allBrands.map((b) => b.name).join(", ")}`);
 
   // ─── Default settings ──────────────────────────────────────────────────────
   const defaultSettings = [

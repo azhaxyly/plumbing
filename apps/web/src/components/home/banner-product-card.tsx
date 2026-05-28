@@ -44,7 +44,7 @@ export function BannerProductCard({
      */
     <Link
       href={`/product/${slug}` as Route}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-stone-100 bg-white shadow-sm transition-shadow hover:shadow-md"
+      className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-stone-100 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
       {/* Discount badge */}
       {hasDiscount && discountPercent > 0 && (
@@ -57,7 +57,7 @@ export function BannerProductCard({
        * Image area — aspect-square sets the height regardless of grid row,
        * giving the flex-1 content section room to expand for name alignment.
        */}
-      <div className="relative aspect-square w-full bg-stone-50">
+      <div className="relative min-h-0 flex-1 w-full bg-stone-50">
         {primaryImageUrl ? (
           <Image
             src={primaryImageUrl}

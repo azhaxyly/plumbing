@@ -35,8 +35,8 @@ export function FeaturesStrip() {
                 key={idx}
                 className="flex items-start gap-4 rounded-xl border border-stone-200 bg-white p-6 shadow-sm"
               >
-                <div className="rounded-xl bg-emerald-50 p-3">
-                  <Icon className="h-10 w-10 text-emerald-700" />
+                <div className="rounded-xl bg-accent/10 p-3">
+                  <Icon className="h-10 w-10 text-accent" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-base font-semibold text-stone-800">

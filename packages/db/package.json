@@ -19,6 +19,8 @@
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "seed": "tsx prisma/seed.ts",
+    "import-xml": "tsx prisma/import-xml.ts",
+    "reindex": "tsx prisma/reindex.ts",
     "seed:phase4": "tsx prisma/seed-phase4.ts",
     "seed:banner": "tsx prisma/seed-banner.ts",
     "db:generate": "prisma generate",

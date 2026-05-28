@@ -1,4 +1,4 @@
-﻿import { prisma } from "@timsan/db";
+import { prisma } from "@timsan/db";
 import { searchProducts } from "@timsan/search";
 import type { SearchResult } from "@timsan/search";
 import type { Metadata, Route } from "next";
@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import { FacetPanel } from "@/components/catalog/facet-panel";
 import { ProductCard } from "@/components/catalog/product-card";
 import type { ProductCardData } from "@/components/catalog/product-card";
+import { SortSelect } from "@/components/catalog/sort-select";
 import { parseFacetFilters } from "@/lib/facet-utils";
 
 // Force dynamic rendering — search results must never be cached/ISR
@@ -36,12 +37,21 @@ interface SearchPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+// ─── Sort mapping ─────────────────────────────────────────────────────────────
+
+const SORT_MAP: Record<string, string[]> = {
+  price_asc: ["priceCents:asc"],
+  price_desc: ["priceCents:desc"],
+  newest: ["createdAt:desc"],
+};
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const rawParams = await searchParams;
 
   const q = typeof rawParams["q"] === "string" ? rawParams["q"].trim() : "";
+  const sortParam = typeof rawParams["sort"] === "string" ? rawParams["sort"] : "";
 
   // Parse facet filters from URL
   const urlSearchParams = new URLSearchParams();
@@ -77,6 +87,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   filterParts.push(`status = "active"`);
 
   const filterString = filterParts.join(" AND ");
+  const sortArray = SORT_MAP[sortParam] ?? [];
 
   // Perform search (empty query returns empty results)
   let searchResult: SearchResult = { hits: [], totalHits: 0, query: q, processingTimeMs: 0 };
@@ -86,6 +97,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       limit: 48,
       offset: 0,
       filter: filterString,
+      sort: sortArray,
     }, prisma);
   }
 
@@ -102,8 +114,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     inStock: hit.inStock,
   }));
 
-  // Build facet data from search results for the FacetPanel
-  // Derive unique brands from hits
+  // Derive unique brands from search hits for the FacetPanel
   const brandMap = new Map<string, { id: string; slug: string; name: string }>();
   for (const hit of searchResult.hits) {
     if (hit.brandSlug && hit.brandName && !brandMap.has(hit.brandSlug)) {
@@ -162,26 +173,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {/* Search heading */}
         <div className="mb-6">
           {q ? (
-            <>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Поиск:{" "}
-                <span className="text-amber-600">&laquo;{q}&raquo;</span>
-              </h1>
-              {searchResult.totalHits > 0 ? (
-                <p className="mt-1 text-sm text-gray-500">
-                  Найдено{" "}
-                  <span className="font-medium text-gray-700">
-                    {searchResult.totalHits}
-                  </span>{" "}
-                  {pluralizeProducts(searchResult.totalHits)} по запросу{" "}
-                  &laquo;{q}&raquo;
-                </p>
-              ) : (
-                <p className="mt-1 text-sm text-gray-500">
-                  По запросу &laquo;{q}&raquo; ничего не найдено
-                </p>
-              )}
-            </>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Поиск:{" "}
+              <span className="text-amber-600">&laquo;{q}&raquo;</span>
+            </h1>
           ) : (
             <h1 className="text-2xl font-bold text-gray-900">Поиск</h1>
           )}
@@ -190,9 +185,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {/* Empty query state */}
         {!q && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <p className="text-lg text-gray-500">
-              Введите поисковый запрос
-            </p>
+            <p className="text-lg text-gray-500">Введите поисковый запрос</p>
             <p className="mt-2 text-sm text-gray-400">
               Используйте строку поиска в шапке сайта
             </p>
@@ -202,9 +195,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {/* No results state */}
         {q && searchResult.totalHits === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <p className="text-lg font-medium text-gray-700">
-              Ничего не найдено
-            </p>
+            <p className="text-lg font-medium text-gray-700">Ничего не найдено</p>
             <p className="mt-2 text-sm text-gray-500">
               Попробуйте изменить запрос или воспользуйтесь каталогом
             </p>
@@ -217,53 +208,56 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </div>
         )}
 
-        {/* Results with optional facet sidebar */}
+        {/* Results */}
         {q && products.length > 0 && (
-          <>
-            {hasFacets ? (
-              <div className="flex gap-8">
-                {/* Facet sidebar */}
-                <div className="hidden w-64 shrink-0 lg:block">
-                  <Suspense fallback={null}>
-                    <FacetPanel
-                      brands={facetBrands}
-                      attributes={[]}
-                      priceRange={{ min: priceMin, max: priceMax }}
-                      currentFilters={currentFilters}
-                      basePath={basePath}
-                    />
-                  </Suspense>
-                </div>
-
-                {/* Product grid */}
-                <div className="min-w-0 flex-1">
-                  <SearchResultGrid products={products} />
-                </div>
+          <div className="flex gap-8">
+            {/* Facet sidebar */}
+            {hasFacets && (
+              <div className="hidden w-64 shrink-0 lg:block">
+                <Suspense fallback={null}>
+                  <FacetPanel
+                    brands={facetBrands}
+                    attributes={[]}
+                    priceRange={{ min: priceMin, max: priceMax }}
+                    currentFilters={currentFilters}
+                    basePath={basePath}
+                  />
+                </Suspense>
               </div>
-            ) : (
-              <SearchResultGrid products={products} />
             )}
-          </>
+
+            {/* Right column: top bar + grid */}
+            <div className="min-w-0 flex-1">
+              {/* Top bar: count + sort */}
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <p className="text-sm text-gray-500">
+                  Найдено{" "}
+                  <span className="font-medium text-gray-700">
+                    {searchResult.totalHits}
+                  </span>{" "}
+                  {pluralizeProducts(searchResult.totalHits)}
+                </p>
+                <Suspense fallback={null}>
+                  <SortSelect basePath={basePath} />
+                </Suspense>
+              </div>
+
+              {/* Product grid */}
+              <ul
+                className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+                aria-label="Результаты поиска"
+              >
+                {products.map((product) => (
+                  <li key={product.id}>
+                    <ProductCard product={product} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         )}
       </div>
     </>
-  );
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function SearchResultGrid({ products }: { products: ProductCardData[] }) {
-  return (
-    <ul
-      className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
-      aria-label="Результаты поиска"
-    >
-      {products.map((product) => (
-        <li key={product.id}>
-          <ProductCard product={product} />
-        </li>
-      ))}
-    </ul>
   );
 }
 

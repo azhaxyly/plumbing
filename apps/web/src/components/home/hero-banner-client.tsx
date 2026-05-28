@@ -115,7 +115,7 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
           })();
 
           const productsEl = products.length > 0 ? (
-            <div className={`flex-1 grid gap-2 md:gap-3 ${gridClass}`}>
+            <div className={`flex-1 grid h-full gap-2 md:gap-3 ${gridClass}`}>
               {products.map((product) => (
                 <BannerProductCard
                   key={product.id}
@@ -133,7 +133,7 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
           return (
             <div key={banner.id} className="min-w-0 flex-[0_0_100%]">
               <div
-                className="flex min-h-[280px] items-stretch gap-2 p-2 md:min-h-[340px] md:gap-3 md:p-3"
+                className="flex h-[280px] items-stretch gap-2 p-2 md:h-[340px] md:gap-3 md:p-3"
                 style={{ backgroundColor: banner.backgroundColor ?? "#f5f5f4" }}
               >
                 {posterPosition === "right" ? (

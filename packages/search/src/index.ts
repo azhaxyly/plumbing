@@ -165,6 +165,9 @@ export async function searchProducts(
     const searchParams: SearchParams = {
       limit: options?.limit ?? 24,
       offset: options?.offset ?? 0,
+      // Require ALL query words to be present — prevents partial matches like
+      // "Смеситель Roca" returning all "Смеситель" products when Roca docs are few.
+      matchingStrategy: "all",
     };
 
     if (options?.filter) {
@@ -311,15 +314,18 @@ export async function getProductFallbackSearch(
     LEFT JOIN "ProductVariant" pv ON pv."productId" = p.id
     WHERE
       p.status = 'active'
-      AND (
-        to_tsvector('russian', p.name || ' ' || COALESCE(p."shortDescription", '') || ' ' || COALESCE(p.description, ''))
-        || to_tsvector('simple', COALESCE(b.name, '') || ' ' || COALESCE(p.sku, ''))
-      ) @@ (plainto_tsquery('russian', ${query}) || plainto_tsquery('simple', ${query}))
+      AND to_tsvector('simple',
+        p.name || ' ' ||
+        COALESCE(p."shortDescription", '') || ' ' ||
+        COALESCE(p.description, '') || ' ' ||
+        COALESCE(b.name, '') || ' ' ||
+        COALESCE(p.sku, '')
+      ) @@ plainto_tsquery('simple', ${query})
     GROUP BY p.id, b.name, b.slug
     ORDER BY
       ts_rank(
-        to_tsvector('russian', p.name || ' ' || COALESCE(p."shortDescription", '') || ' ' || COALESCE(p.description, ''))
-        || to_tsvector('simple', COALESCE(b.name, '') || ' ' || COALESCE(p.sku, '')),
+        to_tsvector('russian', p.name || ' ' || COALESCE(p."shortDescription", '') || ' ' || COALESCE(p.description, '') || ' ' || COALESCE(b.name, ''))
+        || to_tsvector('simple', p.name || ' ' || COALESCE(b.name, '') || ' ' || COALESCE(p.sku, '')),
         plainto_tsquery('russian', ${query}) || plainto_tsquery('simple', ${query})
       ) DESC
     LIMIT ${limit}
@@ -333,10 +339,13 @@ export async function getProductFallbackSearch(
     LEFT JOIN "Brand" b ON b.id = p."brandId"
     WHERE
       p.status = 'active'
-      AND (
-        to_tsvector('russian', p.name || ' ' || COALESCE(p."shortDescription", '') || ' ' || COALESCE(p.description, ''))
-        || to_tsvector('simple', COALESCE(b.name, '') || ' ' || COALESCE(p.sku, ''))
-      ) @@ (plainto_tsquery('russian', ${query}) || plainto_tsquery('simple', ${query}))
+      AND to_tsvector('simple',
+        p.name || ' ' ||
+        COALESCE(p."shortDescription", '') || ' ' ||
+        COALESCE(p.description, '') || ' ' ||
+        COALESCE(b.name, '') || ' ' ||
+        COALESCE(p.sku, '')
+      ) @@ plainto_tsquery('simple', ${query})
   `;
   const totalHits = Number(countRows[0]?.count ?? 0);
 
