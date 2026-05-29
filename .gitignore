@@ -54,3 +54,5 @@ prisma/migrations/*.sql.bak
 asd.json
 
 ACTIVE.xml
+
+scripts/

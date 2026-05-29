@@ -281,6 +281,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </section>
         )}
+
+        {/* Characteristics from Kaspi */}
+        {product.productAttributes.length > 0 && (
+          <section className="mt-8" aria-label="Характеристики товара">
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">
+              Характеристики
+            </h2>
+            <AttributesTable
+              title={null}
+              attributes={Object.fromEntries(
+                product.productAttributes.map(({ attribute, attributeValue }) => [
+                  attribute.name,
+                  attributeValue.value,
+                ])
+              )}
+            />
+          </section>
+        )}
       </div>
     </>
   );
@@ -339,22 +357,28 @@ function VariantsSelector({ variants }: VariantsSelectorProps) {
 
 interface AttributesTableProps {
   attributes: Record<string, string>;
+  title?: string | null;
 }
 
-function AttributesTable({ attributes }: AttributesTableProps) {
+function AttributesTable({ attributes, title = "Характеристики" }: AttributesTableProps) {
   const entries = Object.entries(attributes);
   if (entries.length === 0) return null;
 
   return (
-    <div className="rounded-xl border bg-gray-50 p-4">
-      <h3 className="mb-3 text-sm font-semibold text-gray-700">
-        Характеристики
-      </h3>
-      <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {entries.map(([key, value]) => (
-          <div key={key} className="flex flex-col">
-            <dt className="text-xs text-gray-400 capitalize">{key}</dt>
-            <dd className="text-sm font-medium text-gray-800">{value}</dd>
+    <div className="rounded-xl border border-gray-200 overflow-hidden">
+      {title && (
+        <h3 className="px-5 py-3 text-sm font-semibold text-gray-700 bg-gray-50 border-b border-gray-200">{title}</h3>
+      )}
+      <dl>
+        {entries.map(([key, value], index) => (
+          <div
+            key={key}
+            className={`flex items-center justify-between px-5 py-3 border-b border-gray-100 last:border-0 ${
+              index % 2 === 0 ? "bg-white" : "bg-[#f5f5f5]"
+            }`}
+          >
+            <dt className="text-sm font-semibold text-gray-800">{key}</dt>
+            <dd className="text-sm text-gray-500 text-right ml-4">{value}</dd>
           </div>
         ))}
       </dl>

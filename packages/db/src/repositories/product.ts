@@ -48,6 +48,10 @@ export interface ProductFull {
       parentId: string | null;
     };
   }[];
+  productAttributes: {
+    attribute: { name: string };
+    attributeValue: { value: string };
+  }[];
 }
 
 /**
@@ -114,6 +118,13 @@ export async function getProductBySlug(
             },
           },
         },
+      },
+      productAttributes: {
+        select: {
+          attribute: { select: { name: true } },
+          attributeValue: { select: { value: true } },
+        },
+        orderBy: { attribute: { name: "asc" } },
       },
     },
   });
