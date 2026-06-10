@@ -11,25 +11,25 @@ export const checkoutSchema = z.object({
     .min(2, "Имя должно содержать не менее 2 символов")
     .max(100, "Имя слишком длинное"),
 
-  /** Phone in format +7XXXXXXXXXX (required) */
+  /** Phone (required, any format) */
   phone: z
     .string()
-    .regex(
-      /^\+7\d{10}$/,
-      "Введите номер в формате +7XXXXXXXXXX"
-    ),
+    .min(5, "Укажите номер телефона")
+    .max(30, "Слишком длинное значение"),
 
-  /** Street (required) */
+  /** City (optional) */
+  city: z
+    .string()
+    .max(100, "Слишком длинное значение")
+    .optional()
+    .or(z.literal("")),
+
+  /** Street (optional) */
   street: z
     .string()
-    .min(2, "Укажите улицу")
-    .max(200, "Слишком длинное значение"),
-
-  /** Building / house number (required) */
-  building: z
-    .string()
-    .min(1, "Укажите номер дома")
-    .max(20, "Слишком длинное значение"),
+    .max(200, "Слишком длинное значение")
+    .optional()
+    .or(z.literal("")),
 
   /** Apartment (optional) */
   apartment: z

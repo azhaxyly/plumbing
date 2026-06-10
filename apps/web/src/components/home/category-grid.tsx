@@ -7,15 +7,16 @@ import type { CategoryItem } from "@/lib/homepage-data";
 
 interface CategoryGridProps {
   categories: CategoryItem[];
+  getHref?: (slug: string) => string;
 }
 
-function CategoryCard({ category }: { category: CategoryItem }) {
+function CategoryCard({ category, href }: { category: CategoryItem; href: string }) {
   const hasChildren = category.children && category.children.length > 0;
 
   return (
     <Link
-      href={`/category/${category.slug}` as Route}
-      className="group overflow-hidden rounded-xl bg-[#f5f4f2] flex flex-col p-3"
+      href={href as Route}
+      className="group overflow-hidden rounded-xl bg-[#DCDCDC] flex flex-col p-3"
     >
       {/* Title — top-left */}
       <span className="font-semibold text-base text-gray-900 group-hover:text-[#2B7BC8] transition-colors leading-tight mb-2 shrink-0">
@@ -74,15 +75,21 @@ function CategoryCard({ category }: { category: CategoryItem }) {
   );
 }
 
-export function CategoryGrid({ categories }: CategoryGridProps) {
+export function CategoryGrid({ categories, getHref }: CategoryGridProps) {
   if (!categories || categories.length === 0) return null;
 
   return (
     <section className="mt-3">
-      <div className="grid grid-cols-2 gap-3 auto-rows-[200px] md:grid-cols-4">
-        {categories.map((category) => (
-          <CategoryCard key={category.id} category={category} />
-        ))}
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-2 gap-3 auto-rows-[200px] md:grid-cols-4">
+          {categories.map((category) => (
+            <CategoryCard
+              key={category.id}
+              category={category}
+              href={getHref ? getHref(category.slug) : `/category/${category.slug}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

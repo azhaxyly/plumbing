@@ -20,7 +20,7 @@ function requireAdminOrManager(role: string | null): void {
   }
 }
 
-const posterPositionSchema = z.enum(["left", "right", "none"]);
+const posterPositionSchema = z.enum(["left", "right", "none", "poster-only"]);
 
 export const adminBannersRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {

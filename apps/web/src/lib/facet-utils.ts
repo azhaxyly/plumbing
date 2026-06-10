@@ -39,7 +39,7 @@ export function parseFacetFilters(searchParams: URLSearchParams): FacetFilters {
   }
 
   // Attribute slugs (all other params)
-  const reservedKeys = new Set(["brand", "price_min", "price_max"]);
+  const reservedKeys = new Set(["brand", "price_min", "price_max", "page", "sort"]);
   for (const [key, _value] of searchParams.entries()) {
     if (reservedKeys.has(key)) continue;
     const values = searchParams.getAll(key);

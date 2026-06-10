@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { formatPrice } from "@/lib/format-price";
+import { BRAND_COUNTRY } from "@/lib/brand-country";
 
 import { WishlistButton } from "./wishlist-button";
 
@@ -20,6 +21,7 @@ export interface ProductCardData {
   primaryImageUrl: string | null;
   primaryImageAlt: string;
   brandName: string | null;
+  brandSlug: string | null;
   inStock: boolean;
   imageUrls?: string[];
 }
@@ -130,9 +132,19 @@ export function ProductCard({ product, badge }: ProductCardProps) {
 
       {/* Card body */}
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-gray-400 min-h-[1rem]">
-          {product.brandName ?? ' '}
-        </p>
+        {(() => {
+          const bc = product.brandSlug ? BRAND_COUNTRY[product.brandSlug] : undefined;
+          return bc ? (
+            <div className="flex items-center gap-1.5 min-h-[1rem]">
+              <span className={`fi fi-${bc.countryCode}`} style={{ width: 20, height: 15, display: "inline-block", borderRadius: 2 }} />
+              <span className="text-xs font-semibold text-gray-600">{bc.country}</span>
+            </div>
+          ) : (
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-400 min-h-[1rem]">
+              {product.brandName ?? " "}
+            </p>
+          );
+        })()}
 
         <Link
           href={`/product/${product.slug}` as Route}

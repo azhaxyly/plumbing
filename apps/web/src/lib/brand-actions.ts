@@ -37,6 +37,7 @@ export async function createBrandAction(input: {
   slug: string;
   description?: string;
   logoUrl?: string;
+  coverImageUrl?: string;
 }): Promise<ActionResult> {
   try {
     const trpc = await createServerTrpc();
@@ -53,6 +54,7 @@ export async function updateBrandAction(input: {
   slug?: string;
   description?: string | null;
   logoUrl?: string | null;
+  coverImageUrl?: string | null;
 }): Promise<ActionResult> {
   try {
     const trpc = await createServerTrpc();
@@ -69,6 +71,18 @@ export async function deleteBrandAction(input: {
   try {
     const trpc = await createServerTrpc();
     await trpc.adminBrands.delete(input);
+    return {};
+  } catch (err) {
+    return { error: extractErrorMessage(err) };
+  }
+}
+
+export async function updateBrandGridAction(
+  items: { id: string; showInGrid: boolean; gridOrder: number }[],
+): Promise<ActionResult> {
+  try {
+    const trpc = await createServerTrpc();
+    await trpc.adminBrands.updateGrid(items);
     return {};
   } catch (err) {
     return { error: extractErrorMessage(err) };

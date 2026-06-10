@@ -65,7 +65,7 @@ export const favoritesRouter = createTRPCRouter({
           name: true,
           priceCents: true,
           compareAtPriceCents: true,
-          brand: { select: { name: true } },
+          brand: { select: { name: true, slug: true } },
           images: {
             select: { url: true, alt: true, isPrimary: true },
             orderBy: [{ isPrimary: "desc" }, { position: "asc" }],
@@ -83,6 +83,7 @@ export const favoritesRouter = createTRPCRouter({
         priceCents: p.priceCents,
         compareAtPriceCents: p.compareAtPriceCents,
         brandName: p.brand?.name ?? null,
+        brandSlug: p.brand?.slug ?? null,
         primaryImageUrl: p.images[0]?.url ?? null,
         primaryImageAlt: p.images[0]?.alt ?? p.name,
         inStock: p.variants.some((v) => v.quantity - v.reserved > 0),

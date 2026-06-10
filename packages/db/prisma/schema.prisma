@@ -78,8 +78,11 @@ model Brand {
   id          String    @id @default(cuid())
   slug        String    @unique
   name        String
-  logoUrl     String?
-  description String?
+  logoUrl       String?
+  coverImageUrl String?
+  description   String?
+  showInGrid  Boolean   @default(false)
+  gridOrder   Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

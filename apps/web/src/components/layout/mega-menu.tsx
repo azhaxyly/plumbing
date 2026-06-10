@@ -34,7 +34,7 @@ function CategoryCard({ category, index, onClick }: CategoryCardProps) {
     <button
       type="button"
       onClick={onClick}
-      className="group flex h-[170px] w-full flex-col items-center justify-center gap-2.5 rounded-xl border border-stone-100 bg-[#f5f4f2] p-3 text-center transition-[border-color,background-color,box-shadow] duration-150 hover:border-accent/30 hover:bg-accent/5 hover:shadow-md"
+      className="group flex h-[170px] w-full flex-col items-center justify-center gap-2.5 rounded-xl border border-stone-100 bg-[#DCDCDC] p-3 text-center transition-[border-color,background-color,box-shadow] duration-150 hover:border-accent/30 hover:bg-accent/5 hover:shadow-md"
     >
       <div className="relative h-28 w-28 shrink-0">
         {category.imageUrl ? (

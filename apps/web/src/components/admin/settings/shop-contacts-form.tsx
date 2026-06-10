@@ -74,7 +74,7 @@ export function ShopContactsForm({ initialValues }: ShopContactsFormProps) {
           value={values.shop_phone}
           onChange={(e) => handleChange("shop_phone", e.target.value)}
           disabled={isPending}
-          placeholder="+7 (727) 000-00-00"
+          placeholder="+7 (776) 201-64-66"
           className={cn(
             "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm",
             "ring-offset-background placeholder:text-muted-foreground",

@@ -44,12 +44,12 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
 
   if (!banners || banners.length === 0) return null;
 
-  const activePosterPosition = (banners[selectedIndex]?.posterPosition as "left" | "right" | "none") ?? "left";
+  const activePosterPosition = (banners[selectedIndex]?.posterPosition as "left" | "right" | "none" | "poster-only") ?? "left";
 
   const dotsPositionClass =
     activePosterPosition === "right"
       ? "absolute bottom-3 right-[19%] z-20 flex gap-1.5"
-      : activePosterPosition === "none"
+      : activePosterPosition === "none" || activePosterPosition === "poster-only"
       ? "absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1.5"
       : "absolute bottom-3 left-[19%] z-20 flex -translate-x-1/2 gap-1.5";
 
@@ -57,9 +57,10 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
     <div className="relative overflow-hidden rounded-2xl" ref={emblaRef}>
       <div className="flex touch-pan-y">
         {banners.map((banner, slideIndex) => {
-          const posterPosition = (banner.posterPosition as "left" | "right" | "none") ?? "left";
+          const posterPosition = (banner.posterPosition as "left" | "right" | "none" | "poster-only") ?? "left";
           const maxProducts = banner.maxProducts ?? 4;
           const hasPoster = posterPosition !== "none";
+          const isPosterOnly = posterPosition === "poster-only";
 
           const products = banner.products
             .slice()
@@ -67,11 +68,16 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
             .slice(0, maxProducts)
             .map((bp) => bp.product);
 
+          const posterSizeClass = isPosterOnly ? "flex-1" : "flex-[0_0_38%]";
+          const posterSizes = isPosterOnly ? "100vw" : "(max-width: 768px) 40vw, 38vw";
+
+          const cornerClass = isPosterOnly ? "" : "rounded-xl";
+
           const posterEl = hasPoster ? (
             banner.linkUrl ? (
               <Link
                 href={banner.linkUrl as Route}
-                className="relative flex-[0_0_38%] overflow-hidden rounded-xl"
+                className={`relative ${posterSizeClass} overflow-hidden ${cornerClass}`}
               >
                 <Image
                   src={banner.imageUrl}
@@ -79,18 +85,18 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
                   fill
                   priority={slideIndex === 0}
                   className="object-cover transition-transform duration-300 hover:scale-[1.02]"
-                  sizes="(max-width: 768px) 40vw, 38vw"
+                  sizes={posterSizes}
                 />
               </Link>
             ) : (
-              <div className="relative flex-[0_0_38%] overflow-hidden rounded-xl">
+              <div className={`relative ${posterSizeClass} overflow-hidden ${cornerClass}`}>
                 <Image
                   src={banner.imageUrl}
                   alt={banner.title}
                   fill
                   priority={slideIndex === 0}
                   className="object-cover"
-                  sizes="(max-width: 768px) 40vw, 38vw"
+                  sizes={posterSizes}
                 />
               </div>
             )
@@ -114,7 +120,7 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
             return "grid-cols-3 md:grid-cols-6";
           })();
 
-          const productsEl = products.length > 0 ? (
+          const productsEl = products.length > 0 && !isPosterOnly ? (
             <div className={`flex-1 grid h-full gap-2 md:gap-3 ${gridClass}`}>
               {products.map((product) => (
                 <BannerProductCard
@@ -125,6 +131,7 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
                   priceCents={product.priceCents}
                   compareAtPriceCents={product.compareAtPriceCents}
                   primaryImageUrl={product.images?.[0]?.url ?? null}
+                  brandSlug={product.brand?.slug ?? null}
                 />
               ))}
             </div>
@@ -133,7 +140,7 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
           return (
             <div key={banner.id} className="min-w-0 flex-[0_0_100%]">
               <div
-                className="flex h-[280px] items-stretch gap-2 p-2 md:h-[340px] md:gap-3 md:p-3"
+                className={`flex h-[280px] items-stretch md:h-[340px] ${isPosterOnly ? "" : "gap-2 p-2 md:gap-3 md:p-3"}`}
                 style={{ backgroundColor: banner.backgroundColor ?? "#f5f5f4" }}
               >
                 {posterPosition === "right" ? (

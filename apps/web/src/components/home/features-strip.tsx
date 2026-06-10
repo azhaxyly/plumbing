@@ -3,7 +3,7 @@ import { Truck, PackageCheck, PhoneCall, CreditCard } from "lucide-react";
 const features = [
   {
     icon: Truck,
-    title: "Доставка по Алматы",
+    title: "Доставка по Казахстану",
     description: "Быстрая и бережная доставка ваших заказов в удобное время.",
   },
   {

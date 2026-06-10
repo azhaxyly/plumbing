@@ -4,6 +4,7 @@
 
 import { prisma } from "@timsan/db";
 
+
 import {
   getCachedFacets,
   setCachedFacets,
@@ -32,6 +33,64 @@ export async function getFacetData(categoryId: string): Promise<FacetData> {
   void setCachedFacets(categoryId, data);
 
   return data;
+}
+
+/**
+ * Returns facet data (attributes + price range, no brands) for a brand.
+ * Not cached — brand pages are typically less frequent than category pages.
+ */
+export async function getFacetDataForBrand(brandId: string): Promise<FacetData> {
+  const products = await prisma.product.findMany({
+    where: { status: "active", brandId },
+    select: {
+      priceCents: true,
+      productAttributes: {
+        select: {
+          attribute: { select: { id: true, name: true, slug: true } },
+          attributeValue: { select: { id: true, value: true, slug: true } },
+        },
+      },
+    },
+  });
+
+  if (products.length === 0) {
+    return { brands: [], attributes: [], priceRange: { min: 0, max: 0 } };
+  }
+
+  const attrMap = new Map<
+    string,
+    { id: string; name: string; slug: string; values: Map<string, { id: string; value: string; slug: string }> }
+  >();
+  for (const p of products) {
+    for (const pa of p.productAttributes) {
+      const { attribute, attributeValue } = pa;
+      if (!attrMap.has(attribute.id)) {
+        attrMap.set(attribute.id, { ...attribute, values: new Map() });
+      }
+      const entry = attrMap.get(attribute.id);
+      if (entry && !entry.values.has(attributeValue.id)) {
+        entry.values.set(attributeValue.id, attributeValue);
+      }
+    }
+  }
+
+  const attributes = Array.from(attrMap.values())
+    .map((attr) => ({
+      id: attr.id,
+      name: attr.name,
+      slug: attr.slug,
+      values: Array.from(attr.values.values()).sort((a, b) => a.value.localeCompare(b.value, "ru")),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, "ru"));
+
+  let minPrice = products[0]!.priceCents;
+  let maxPrice = products[0]!.priceCents;
+  for (const p of products) {
+    if (p.priceCents < minPrice) minPrice = p.priceCents;
+    if (p.priceCents > maxPrice) maxPrice = p.priceCents;
+  }
+
+  return { brands: [], attributes, priceRange: { min: minPrice, max: maxPrice } };
 }
 
 async function fetchFacetDataFromDb(categoryId: string): Promise<FacetData> {

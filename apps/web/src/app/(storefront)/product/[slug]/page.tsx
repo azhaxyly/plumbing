@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { AddToCartButton } from "@/components/catalog/add-to-cart-button";
 import { WishlistButton } from "@/components/catalog/wishlist-button";
 import { ProductGallery } from "@/components/catalog/product-gallery";
+import { BRAND_COUNTRY } from "@/lib/brand-country";
 
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
@@ -282,21 +283,41 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </section>
         )}
 
-        {/* Characteristics from Kaspi */}
-        {product.productAttributes.length > 0 && (
+        {/* Characteristics */}
+        {(product.productAttributes.length > 0 || (product.brand && BRAND_COUNTRY[product.brand.slug])) && (
           <section className="mt-8" aria-label="Характеристики товара">
             <h2 className="mb-4 text-xl font-semibold text-gray-900">
               Характеристики
             </h2>
-            <AttributesTable
-              title={null}
-              attributes={Object.fromEntries(
-                product.productAttributes.map(({ attribute, attributeValue }) => [
-                  attribute.name,
-                  attributeValue.value,
-                ])
-              )}
-            />
+            <div className="rounded-xl border border-gray-200 overflow-hidden">
+              {product.brand && BRAND_COUNTRY[product.brand.slug] && (() => {
+                const bc = BRAND_COUNTRY[product.brand!.slug]!;
+                return (
+                  <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100">
+                    <span className="text-sm font-semibold text-gray-800">Страна производителя</span>
+                    <div className="flex items-center gap-2 ml-4">
+                      <span className={`fi fi-${bc.countryCode}`} style={{ width: 20, height: 15, display: "inline-block", borderRadius: 2 }} />
+                      <span className="text-sm font-semibold text-gray-800">{bc.country}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+              <dl>
+                {product.productAttributes.filter(({ attribute }) =>
+                  !["страна производитель", "страна производителя", "страна-производитель"].includes(attribute.name.toLowerCase())
+                ).map(({ attribute, attributeValue }, index) => (
+                  <div
+                    key={attribute.name}
+                    className={`flex items-center justify-between px-5 py-3 border-b border-gray-100 last:border-0 ${
+                      index % 2 === 0 ? "bg-[#f5f5f5]" : "bg-white"
+                    }`}
+                  >
+                    <dt className="text-sm font-semibold text-gray-800">{attribute.name}</dt>
+                    <dd className="text-sm text-gray-500 text-right ml-4">{attributeValue.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </section>
         )}
       </div>

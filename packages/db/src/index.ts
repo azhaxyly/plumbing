@@ -39,5 +39,7 @@ export type {
   BrandSummary,
   BrandProductItem,
   BrandWithProducts,
+  BrandCategoryItem,
+  BrandProductsOptions,
 } from "./repositories/brand";
-export { getAllBrands, getBrandBySlug } from "./repositories/brand";
+export { getAllBrands, getBrandBySlug, getBrandCategories, getBrandProductsPage } from "./repositories/brand";

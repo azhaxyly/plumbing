@@ -571,8 +571,6 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
                     value={slug}
                     onChange={(e) => handleSlugChange(e.target.value)}
                     placeholder="product-slug"
-                    pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$"
-                    title="Только строчные буквы, цифры и дефисы"
                     required
                     disabled={isPending}
                   />

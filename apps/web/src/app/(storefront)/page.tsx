@@ -16,6 +16,7 @@ import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
 import { SaleSection } from "@/components/home/sale-section";
 import { BrandsSection } from "@/components/home/brands-section";
 import { FeaturesStrip } from "@/components/home/features-strip";
+import { StoreInfoSection } from "@/components/home/store-info-section";
 
 const SITE_URL =
   process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
@@ -25,7 +26,7 @@ const SITE_NAME =
 export const metadata: Metadata = buildMetadata({
   title: "Timsan — Сантехника и мебель для ванной",
   description:
-    "Интернет-магазин сантехники и мебели для ванной комнаты. Широкий выбор брендов, доставка по Алматы.",
+    "Интернет-магазин сантехники и мебели для ванной комнаты. Широкий выбор брендов, доставка по Казахстану.",
   canonical: "/",
 });
 
@@ -92,6 +93,7 @@ export default async function HomePage() {
       <NewArrivalsSection products={newArrivals} />
       <SaleSection products={saleProducts} />
       <BrandsSection brands={brands} />
+      <StoreInfoSection />
       <FeaturesStrip />
     </>
   );

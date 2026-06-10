@@ -19,15 +19,17 @@ export function SaleSection({ products }: SaleSectionProps) {
   );
 
   return (
-    <section className="bg-red-700 py-14">
+    <section className="py-8 md:py-12">
       <div className="container mx-auto px-4">
-        <SectionHeader
-          title="Распродажа"
-          subtitle={`Скидки до ${maxDiscount}%`}
-          href="/catalog?sale=true"
-          light
-        />
-        <ProductSliderClient products={products} />
+        <div className="rounded-2xl bg-[#F75E25] px-6 py-8 md:px-8 md:py-10">
+          <SectionHeader
+            title="Распродажа"
+            subtitle={`Скидки до ${maxDiscount}%`}
+            href="/catalog?sale=true"
+            light
+          />
+          <ProductSliderClient products={products} />
+        </div>
       </div>
     </section>
   );

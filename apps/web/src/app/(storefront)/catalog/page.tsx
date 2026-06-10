@@ -64,7 +64,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       name: true,
       priceCents: true,
       compareAtPriceCents: true,
-      brand: { select: { name: true } },
+      brand: { select: { name: true, slug: true } },
       images: {
         where: { isPrimary: true },
         select: { url: true, alt: true },
@@ -91,6 +91,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       primaryImageUrl: img?.url ?? null,
       primaryImageAlt: img?.alt ?? p.name,
       brandName: p.brand?.name ?? null,
+      brandSlug: p.brand?.slug ?? null,
       inStock: available > 0,
     };
   });

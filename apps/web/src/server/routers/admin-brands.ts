@@ -10,7 +10,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { audit } from "@/lib/audit";
-import { revalidateBrand } from "@/lib/revalidate";
+import { revalidateBrand, revalidateHomepage } from "@/lib/revalidate";
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -44,6 +44,7 @@ const createBrandInput = z.object({
     ),
   description: z.string().optional(),
   logoUrl: z.string().url().optional(),
+  coverImageUrl: z.string().url().optional(),
 });
 
 const updateBrandInput = z.object({
@@ -57,6 +58,7 @@ const updateBrandInput = z.object({
     .optional(),
   description: z.string().nullable().optional(),
   logoUrl: z.string().url().nullable().optional(),
+  coverImageUrl: z.string().url().nullable().optional(),
 });
 
 // ─── Router ───────────────────────────────────────────────────────────────────
@@ -76,7 +78,10 @@ export const adminBrandsRouter = createTRPCRouter({
         slug: true,
         name: true,
         logoUrl: true,
+        coverImageUrl: true,
         description: true,
+        showInGrid: true,
+        gridOrder: true,
         createdAt: true,
         updatedAt: true,
         _count: {
@@ -115,6 +120,7 @@ export const adminBrandsRouter = createTRPCRouter({
           slug: input.slug,
           description: input.description ?? null,
           logoUrl: input.logoUrl ?? null,
+          coverImageUrl: input.coverImageUrl ?? null,
         },
       });
 
@@ -173,6 +179,7 @@ export const adminBrandsRouter = createTRPCRouter({
             ? { description: input.description }
             : {}),
           ...(input.logoUrl !== undefined ? { logoUrl: input.logoUrl } : {}),
+          ...(input.coverImageUrl !== undefined ? { coverImageUrl: input.coverImageUrl } : {}),
         },
       });
 
@@ -192,6 +199,38 @@ export const adminBrandsRouter = createTRPCRouter({
       }
 
       return after;
+    }),
+
+  /**
+   * Batch-update which brands appear in the homepage grid and their order.
+   */
+  updateGrid: protectedProcedure
+    .input(
+      z.array(
+        z.object({
+          id: z.string().min(1),
+          showInGrid: z.boolean(),
+          gridOrder: z.number().int().min(0),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      requireAdminOrManager(ctx.userRole);
+
+      const prisma = await getPrisma();
+
+      await Promise.all(
+        input.map(({ id, showInGrid, gridOrder }) =>
+          prisma.brand.update({
+            where: { id },
+            data: { showInGrid, gridOrder },
+          }),
+        ),
+      );
+
+      await revalidateHomepage();
+
+      return { success: true };
     }),
 
   /**

@@ -7,6 +7,7 @@ import {
   Image,
   Layers,
   LayoutDashboard,
+  RefreshCw,
   Settings,
   ShoppingCart,
   SlidersHorizontal,
@@ -46,6 +47,7 @@ const navGroups: NavGroup[] = [
     section: "Каталог",
     items: [
       { label: "Товары", href: "/admin/catalog/products", icon: Boxes },
+      { label: "Синхр. остатков", href: "/admin/catalog/stock-sync", icon: RefreshCw },
       { label: "Категории", href: "/admin/catalog/categories", icon: Layers },
       { label: "Бренды", href: "/admin/catalog/brands", icon: Tag },
       { label: "Атрибуты", href: "/admin/catalog/attributes", icon: SlidersHorizontal },

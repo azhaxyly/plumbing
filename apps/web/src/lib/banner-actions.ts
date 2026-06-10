@@ -19,7 +19,7 @@ export async function createBannerAction(input: {
   imageUrl: string;
   linkUrl?: string;
   backgroundColor?: string;
-  posterPosition?: "left" | "right" | "none";
+  posterPosition?: "left" | "right" | "none" | "poster-only";
   maxProducts?: number;
   position: number;
   isActive: boolean;
@@ -44,7 +44,7 @@ export async function updateBannerAction(input: {
   imageUrl?: string;
   linkUrl?: string | null;
   backgroundColor?: string;
-  posterPosition?: "left" | "right" | "none";
+  posterPosition?: "left" | "right" | "none" | "poster-only";
   maxProducts?: number;
   position?: number;
   isActive?: boolean;

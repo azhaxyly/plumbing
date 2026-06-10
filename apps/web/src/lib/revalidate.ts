@@ -32,3 +32,11 @@ export async function revalidateBrand(slug: string): Promise<void> {
   revalidatePath(`/brand/${slug}`, "page");
   revalidatePath("/brand", "page");
 }
+
+/**
+ * Revalidates the homepage ISR cache.
+ * Call this after updating the brand grid settings.
+ */
+export async function revalidateHomepage(): Promise<void> {
+  revalidatePath("/", "page");
+}

@@ -5389,8 +5389,18 @@ export namespace Prisma {
 
   export type AggregateBrand = {
     _count: BrandCountAggregateOutputType | null
+    _avg: BrandAvgAggregateOutputType | null
+    _sum: BrandSumAggregateOutputType | null
     _min: BrandMinAggregateOutputType | null
     _max: BrandMaxAggregateOutputType | null
+  }
+
+  export type BrandAvgAggregateOutputType = {
+    gridOrder: number | null
+  }
+
+  export type BrandSumAggregateOutputType = {
+    gridOrder: number | null
   }
 
   export type BrandMinAggregateOutputType = {
@@ -5398,7 +5408,10 @@ export namespace Prisma {
     slug: string | null
     name: string | null
     logoUrl: string | null
+    coverImageUrl: string | null
     description: string | null
+    showInGrid: boolean | null
+    gridOrder: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5408,7 +5421,10 @@ export namespace Prisma {
     slug: string | null
     name: string | null
     logoUrl: string | null
+    coverImageUrl: string | null
     description: string | null
+    showInGrid: boolean | null
+    gridOrder: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5418,19 +5434,33 @@ export namespace Prisma {
     slug: number
     name: number
     logoUrl: number
+    coverImageUrl: number
     description: number
+    showInGrid: number
+    gridOrder: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
+  export type BrandAvgAggregateInputType = {
+    gridOrder?: true
+  }
+
+  export type BrandSumAggregateInputType = {
+    gridOrder?: true
+  }
+
   export type BrandMinAggregateInputType = {
     id?: true
     slug?: true
     name?: true
     logoUrl?: true
+    coverImageUrl?: true
     description?: true
+    showInGrid?: true
+    gridOrder?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5440,7 +5470,10 @@ export namespace Prisma {
     slug?: true
     name?: true
     logoUrl?: true
+    coverImageUrl?: true
     description?: true
+    showInGrid?: true
+    gridOrder?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5450,7 +5483,10 @@ export namespace Prisma {
     slug?: true
     name?: true
     logoUrl?: true
+    coverImageUrl?: true
     description?: true
+    showInGrid?: true
+    gridOrder?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5494,6 +5530,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: BrandAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BrandSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: BrandMinAggregateInputType
@@ -5524,6 +5572,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: BrandCountAggregateInputType | true
+    _avg?: BrandAvgAggregateInputType
+    _sum?: BrandSumAggregateInputType
     _min?: BrandMinAggregateInputType
     _max?: BrandMaxAggregateInputType
   }
@@ -5533,10 +5583,15 @@ export namespace Prisma {
     slug: string
     name: string
     logoUrl: string | null
+    coverImageUrl: string | null
     description: string | null
+    showInGrid: boolean
+    gridOrder: number
     createdAt: Date
     updatedAt: Date
     _count: BrandCountAggregateOutputType | null
+    _avg: BrandAvgAggregateOutputType | null
+    _sum: BrandSumAggregateOutputType | null
     _min: BrandMinAggregateOutputType | null
     _max: BrandMaxAggregateOutputType | null
   }
@@ -5560,7 +5615,10 @@ export namespace Prisma {
     slug?: boolean
     name?: boolean
     logoUrl?: boolean
+    coverImageUrl?: boolean
     description?: boolean
+    showInGrid?: boolean
+    gridOrder?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     products?: boolean | Brand$productsArgs<ExtArgs>
@@ -5572,7 +5630,10 @@ export namespace Prisma {
     slug?: boolean
     name?: boolean
     logoUrl?: boolean
+    coverImageUrl?: boolean
     description?: boolean
+    showInGrid?: boolean
+    gridOrder?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["brand"]>
@@ -5582,7 +5643,10 @@ export namespace Prisma {
     slug?: boolean
     name?: boolean
     logoUrl?: boolean
+    coverImageUrl?: boolean
     description?: boolean
+    showInGrid?: boolean
+    gridOrder?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -5603,7 +5667,10 @@ export namespace Prisma {
       slug: string
       name: string
       logoUrl: string | null
+      coverImageUrl: string | null
       description: string | null
+      showInGrid: boolean
+      gridOrder: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["brand"]>
@@ -6004,7 +6071,10 @@ export namespace Prisma {
     readonly slug: FieldRef<"Brand", 'String'>
     readonly name: FieldRef<"Brand", 'String'>
     readonly logoUrl: FieldRef<"Brand", 'String'>
+    readonly coverImageUrl: FieldRef<"Brand", 'String'>
     readonly description: FieldRef<"Brand", 'String'>
+    readonly showInGrid: FieldRef<"Brand", 'Boolean'>
+    readonly gridOrder: FieldRef<"Brand", 'Int'>
     readonly createdAt: FieldRef<"Brand", 'DateTime'>
     readonly updatedAt: FieldRef<"Brand", 'DateTime'>
   }
@@ -25497,7 +25567,10 @@ export namespace Prisma {
     slug: 'slug',
     name: 'name',
     logoUrl: 'logoUrl',
+    coverImageUrl: 'coverImageUrl',
     description: 'description',
+    showInGrid: 'showInGrid',
+    gridOrder: 'gridOrder',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -25879,6 +25952,13 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+  /**
    * Reference to a field of type 'ProductStatus'
    */
   export type EnumProductStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductStatus'>
@@ -25889,13 +25969,6 @@ export namespace Prisma {
    * Reference to a field of type 'ProductStatus[]'
    */
   export type ListEnumProductStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -26164,7 +26237,10 @@ export namespace Prisma {
     slug?: StringFilter<"Brand"> | string
     name?: StringFilter<"Brand"> | string
     logoUrl?: StringNullableFilter<"Brand"> | string | null
+    coverImageUrl?: StringNullableFilter<"Brand"> | string | null
     description?: StringNullableFilter<"Brand"> | string | null
+    showInGrid?: BoolFilter<"Brand"> | boolean
+    gridOrder?: IntFilter<"Brand"> | number
     createdAt?: DateTimeFilter<"Brand"> | Date | string
     updatedAt?: DateTimeFilter<"Brand"> | Date | string
     products?: ProductListRelationFilter
@@ -26175,7 +26251,10 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     logoUrl?: SortOrderInput | SortOrder
+    coverImageUrl?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    showInGrid?: SortOrder
+    gridOrder?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     products?: ProductOrderByRelationAggregateInput
@@ -26189,7 +26268,10 @@ export namespace Prisma {
     NOT?: BrandWhereInput | BrandWhereInput[]
     name?: StringFilter<"Brand"> | string
     logoUrl?: StringNullableFilter<"Brand"> | string | null
+    coverImageUrl?: StringNullableFilter<"Brand"> | string | null
     description?: StringNullableFilter<"Brand"> | string | null
+    showInGrid?: BoolFilter<"Brand"> | boolean
+    gridOrder?: IntFilter<"Brand"> | number
     createdAt?: DateTimeFilter<"Brand"> | Date | string
     updatedAt?: DateTimeFilter<"Brand"> | Date | string
     products?: ProductListRelationFilter
@@ -26200,12 +26282,17 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     logoUrl?: SortOrderInput | SortOrder
+    coverImageUrl?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
+    showInGrid?: SortOrder
+    gridOrder?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BrandCountOrderByAggregateInput
+    _avg?: BrandAvgOrderByAggregateInput
     _max?: BrandMaxOrderByAggregateInput
     _min?: BrandMinOrderByAggregateInput
+    _sum?: BrandSumOrderByAggregateInput
   }
 
   export type BrandScalarWhereWithAggregatesInput = {
@@ -26216,7 +26303,10 @@ export namespace Prisma {
     slug?: StringWithAggregatesFilter<"Brand"> | string
     name?: StringWithAggregatesFilter<"Brand"> | string
     logoUrl?: StringNullableWithAggregatesFilter<"Brand"> | string | null
+    coverImageUrl?: StringNullableWithAggregatesFilter<"Brand"> | string | null
     description?: StringNullableWithAggregatesFilter<"Brand"> | string | null
+    showInGrid?: BoolWithAggregatesFilter<"Brand"> | boolean
+    gridOrder?: IntWithAggregatesFilter<"Brand"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Brand"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Brand"> | Date | string
   }
@@ -27869,7 +27959,10 @@ export namespace Prisma {
     slug: string
     name: string
     logoUrl?: string | null
+    coverImageUrl?: string | null
     description?: string | null
+    showInGrid?: boolean
+    gridOrder?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     products?: ProductCreateNestedManyWithoutBrandInput
@@ -27880,7 +27973,10 @@ export namespace Prisma {
     slug: string
     name: string
     logoUrl?: string | null
+    coverImageUrl?: string | null
     description?: string | null
+    showInGrid?: boolean
+    gridOrder?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     products?: ProductUncheckedCreateNestedManyWithoutBrandInput
@@ -27891,7 +27987,10 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    showInGrid?: BoolFieldUpdateOperationsInput | boolean
+    gridOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     products?: ProductUpdateManyWithoutBrandNestedInput
@@ -27902,7 +28001,10 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    showInGrid?: BoolFieldUpdateOperationsInput | boolean
+    gridOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     products?: ProductUncheckedUpdateManyWithoutBrandNestedInput
@@ -27913,7 +28015,10 @@ export namespace Prisma {
     slug: string
     name: string
     logoUrl?: string | null
+    coverImageUrl?: string | null
     description?: string | null
+    showInGrid?: boolean
+    gridOrder?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27923,7 +28028,10 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    showInGrid?: BoolFieldUpdateOperationsInput | boolean
+    gridOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27933,7 +28041,10 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    showInGrid?: BoolFieldUpdateOperationsInput | boolean
+    gridOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -29769,6 +29880,11 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
   export type ProductListRelationFilter = {
     every?: ProductWhereInput
     some?: ProductWhereInput
@@ -29784,9 +29900,16 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     logoUrl?: SortOrder
+    coverImageUrl?: SortOrder
     description?: SortOrder
+    showInGrid?: SortOrder
+    gridOrder?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type BrandAvgOrderByAggregateInput = {
+    gridOrder?: SortOrder
   }
 
   export type BrandMaxOrderByAggregateInput = {
@@ -29794,7 +29917,10 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     logoUrl?: SortOrder
+    coverImageUrl?: SortOrder
     description?: SortOrder
+    showInGrid?: SortOrder
+    gridOrder?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29804,9 +29930,24 @@ export namespace Prisma {
     slug?: SortOrder
     name?: SortOrder
     logoUrl?: SortOrder
+    coverImageUrl?: SortOrder
     description?: SortOrder
+    showInGrid?: SortOrder
+    gridOrder?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type BrandSumOrderByAggregateInput = {
+    gridOrder?: SortOrder
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type IntNullableFilter<$PrismaModel = never> = {
@@ -29825,11 +29966,6 @@ export namespace Prisma {
     in?: $Enums.ProductStatus[] | ListEnumProductStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.ProductStatus[] | ListEnumProductStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumProductStatusFilter<$PrismaModel> | $Enums.ProductStatus
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type BrandRelationFilter = {
@@ -29986,14 +30122,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumProductStatusFilter<$PrismaModel>
     _max?: NestedEnumProductStatusFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type AttributeValueListRelationFilter = {
@@ -31212,6 +31340,10 @@ export namespace Prisma {
     connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
   }
 
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
   export type ProductUpdateManyWithoutBrandNestedInput = {
     create?: XOR<ProductCreateWithoutBrandInput, ProductUncheckedCreateWithoutBrandInput> | ProductCreateWithoutBrandInput[] | ProductUncheckedCreateWithoutBrandInput[]
     connectOrCreate?: ProductCreateOrConnectWithoutBrandInput | ProductCreateOrConnectWithoutBrandInput[]
@@ -31366,10 +31498,6 @@ export namespace Prisma {
 
   export type EnumProductStatusFieldUpdateOperationsInput = {
     set?: $Enums.ProductStatus
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
   }
 
   export type BrandUpdateOneRequiredWithoutProductsNestedInput = {
@@ -32378,16 +32506,24 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
   export type NestedEnumProductStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ProductStatus | EnumProductStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ProductStatus[] | ListEnumProductStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.ProductStatus[] | ListEnumProductStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumProductStatusFilter<$PrismaModel> | $Enums.ProductStatus
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -32425,14 +32561,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumProductStatusFilter<$PrismaModel>
     _max?: NestedEnumProductStatusFilter<$PrismaModel>
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
   }
   export type NestedJsonFilter<$PrismaModel = never> = 
     | PatchUndefined<
@@ -33127,7 +33255,10 @@ export namespace Prisma {
     slug: string
     name: string
     logoUrl?: string | null
+    coverImageUrl?: string | null
     description?: string | null
+    showInGrid?: boolean
+    gridOrder?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33137,7 +33268,10 @@ export namespace Prisma {
     slug: string
     name: string
     logoUrl?: string | null
+    coverImageUrl?: string | null
     description?: string | null
+    showInGrid?: boolean
+    gridOrder?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33366,7 +33500,10 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    showInGrid?: BoolFieldUpdateOperationsInput | boolean
+    gridOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -33376,7 +33513,10 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    showInGrid?: BoolFieldUpdateOperationsInput | boolean
+    gridOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

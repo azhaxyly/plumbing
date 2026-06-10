@@ -15,6 +15,7 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
 } from "./auth-schemas";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 // ─── Action result types ──────────────────────────────────────────────────────
 
@@ -49,6 +50,20 @@ export async function loginAction(
   _prevState: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  // Rate limit: 10 login attempts per 15 minutes per IP
+  const ip = await getClientIp();
+  const rl = await checkRateLimit(ip, {
+    keyPrefix: "rl:login",
+    points: 10,
+    duration: 900,
+  });
+  if (!rl.allowed) {
+    return {
+      success: false,
+      error: `Слишком много попыток. Попробуйте через ${rl.retryAfter ?? 60} сек.`,
+    };
+  }
+
   const raw = {
     email: formData.get("email"),
     password: formData.get("password"),
@@ -90,6 +105,20 @@ export async function registerAction(
   _prevState: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  // Rate limit: 5 registrations per hour per IP
+  const ip = await getClientIp();
+  const rl = await checkRateLimit(ip, {
+    keyPrefix: "rl:register",
+    points: 5,
+    duration: 3600,
+  });
+  if (!rl.allowed) {
+    return {
+      success: false,
+      error: `Слишком много попыток. Попробуйте через ${rl.retryAfter ?? 60} сек.`,
+    };
+  }
+
   const raw = {
     email: formData.get("email"),
     password: formData.get("password"),
@@ -175,6 +204,20 @@ export async function forgotPasswordAction(
   _prevState: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  // Rate limit: 3 reset requests per hour per IP
+  const ip = await getClientIp();
+  const rl = await checkRateLimit(ip, {
+    keyPrefix: "rl:forgot",
+    points: 3,
+    duration: 3600,
+  });
+  if (!rl.allowed) {
+    return {
+      success: false,
+      error: `Слишком много запросов. Попробуйте через ${rl.retryAfter ?? 60} сек.`,
+    };
+  }
+
   const raw = { email: formData.get("email") };
 
   const parsed = forgotPasswordSchema.safeParse(raw);

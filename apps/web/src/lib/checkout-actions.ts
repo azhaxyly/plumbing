@@ -15,6 +15,7 @@ import { auth } from "@/auth";
 import { checkoutSchema } from "@/lib/checkout-schemas";
 import { submitOrder } from "@/lib/order-actions";
 import { getGuestCart, CART_GUEST_COOKIE } from "@/lib/cart-redis";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export interface CheckoutActionState {
   success: boolean;
@@ -121,12 +122,32 @@ export async function submitCheckout(
   _prevState: CheckoutActionState,
   formData: FormData,
 ): Promise<CheckoutActionState> {
+  // Honeypot: bots fill hidden fields, real users don't
+  const honeypot = formData.get("website");
+  if (typeof honeypot === "string" && honeypot.length > 0) {
+    redirect("/checkout/success?orderId=submitted");
+  }
+
+  // Rate limit: 5 orders per hour per IP
+  const ip = await getClientIp();
+  const rl = await checkRateLimit(ip, {
+    keyPrefix: "rl:checkout",
+    points: 20,
+    duration: 3600,
+  });
+  if (!rl.allowed) {
+    return {
+      success: false,
+      message: `Слишком много заявок. Попробуйте через ${rl.retryAfter ?? 60} сек.`,
+    };
+  }
+
   // Parse raw form data
   const raw = {
     name: formData.get("name"),
     phone: formData.get("phone"),
-    street: formData.get("street"),
-    building: formData.get("building"),
+    city: formData.get("city") ?? "",
+    street: formData.get("street") ?? "",
     apartment: formData.get("apartment") ?? "",
     comment: formData.get("comment") ?? "",
     // Checkbox: present in FormData only when checked
@@ -175,10 +196,10 @@ export async function submitCheckout(
       cartId,
       { name: data.name, phone: data.phone },
       {
-        street: data.street,
-        building: data.building,
+        street: data.street || "",
+        building: "",
         ...(data.apartment ? { apartment: data.apartment } : {}),
-        city: "Алматы",
+        city: data.city || "",
       },
       data.comment || undefined,
       userId,

@@ -1,5 +1,6 @@
 import { Phone, Mail, Instagram } from "lucide-react";
 import type { Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 const catalogLinks = [
@@ -30,15 +31,21 @@ export function Footer() {
 
   return (
     <footer className="border-t bg-gray-50">
-      <div className="container mx-auto px-4 py-12 md:px-6">
+      <div className="container mx-auto px-4 pt-3 pb-12 md:px-6">
         {/* Prominent phone block */}
-        <div className="mb-8 flex flex-col items-start gap-2 border-b pb-8 md:flex-row md:items-center md:justify-between">
+        <div className="mb-4 flex flex-col items-start gap-2 border-b pb-3 md:flex-row md:items-center md:justify-between">
           <Link
             href="/"
             aria-label="Timsan — на главную"
-            className="text-xl font-extrabold text-gray-900"
+            className="shrink-0 transition-opacity hover:opacity-80"
           >
-            Timsan
+            <Image
+              src="/logo.png"
+              alt="Timsan Сантехника"
+              width={173}
+              height={115}
+              className="h-[115px] w-[173px] object-contain"
+            />
           </Link>
           <a
             href={`tel:${phone.replace(/\s/g, "")}`}

@@ -29,7 +29,7 @@ import {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type PosterPosition = "left" | "right" | "none";
+type PosterPosition = "left" | "right" | "none" | "poster-only";
 
 interface BannerProductItem {
   id: string;
@@ -123,10 +123,19 @@ function LayoutPicker({
         </div>
       ),
     },
+    {
+      value: "poster-only",
+      label: "Только афиша",
+      preview: (
+        <div className="flex gap-0.5 h-8 w-full">
+          <div className="flex-1 rounded bg-blue-200" />
+        </div>
+      ),
+    },
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
       {options.map((opt) => (
         <button
           key={opt.value}
@@ -460,7 +469,7 @@ function BannerDialog({ open, title, initial, onClose, onSubmit, isPending, erro
 
   if (!open) return null;
 
-  const maxProductOptions = posterPosition === "none" ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4];
+  const maxProductOptions = posterPosition === "poster-only" ? [] : posterPosition === "none" ? [1, 2, 3, 4, 5, 6] : [1, 2, 3, 4];
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -594,30 +603,32 @@ function BannerDialog({ open, title, initial, onClose, onSubmit, isPending, erro
             <LayoutPicker value={posterPosition} onChange={setPosterPosition} disabled={busy} />
           </div>
 
-          {/* Max products */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Количество товаров
-            </label>
-            <div className="flex gap-1.5">
-              {maxProductOptions.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => setMaxProducts(n)}
-                  className={cn(
-                    "h-8 w-8 rounded-full text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-                    maxProducts === n
-                      ? "bg-blue-600 text-white"
-                      : "border border-gray-300 text-gray-600 hover:border-blue-400 hover:text-blue-600",
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
+          {/* Max products — hidden for poster-only */}
+          {posterPosition !== "poster-only" && (
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Количество товаров
+              </label>
+              <div className="flex gap-1.5">
+                {maxProductOptions.map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    disabled={busy}
+                    onClick={() => setMaxProducts(n)}
+                    className={cn(
+                      "h-8 w-8 rounded-full text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+                      maxProducts === n
+                        ? "bg-blue-600 text-white"
+                        : "border border-gray-300 text-gray-600 hover:border-blue-400 hover:text-blue-600",
+                    )}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Dates */}
           <div className="grid gap-4 sm:grid-cols-2">
@@ -685,7 +696,7 @@ function BannerDialog({ open, title, initial, onClose, onSubmit, isPending, erro
 // ─── Poster position badge ────────────────────────────────────────────────────
 
 function PosterBadge({ position }: { position: string }) {
-  const map: Record<string, string> = { left: "◧ Слева", right: "◨ Справа", none: "▦ Без афиши" };
+  const map: Record<string, string> = { left: "◧ Слева", right: "◨ Справа", none: "▦ Без афиши", "poster-only": "⬛ Только афиша" };
   return <span className="text-xs text-gray-500">{map[position] ?? position}</span>;
 }
 

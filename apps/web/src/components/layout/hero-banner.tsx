@@ -24,7 +24,7 @@ function StaticHeroBanner() {
             Сантехника<br />и мебель<br />для ванной
           </h2>
           <p className="text-lg text-emerald-100">
-            Широкий выбор от ведущих брендов.<br />Доставка по Алматы.
+            Широкий выбор от ведущих брендов.<br />Доставка по всему Казахстану.
           </p>
           <div className="flex gap-3 pt-2">
             <Link
@@ -66,8 +66,16 @@ function StaticHeroBanner() {
 
 export function HeroBanner({ banners }: HeroBannerProps) {
   if (!banners || banners.length === 0) {
-    return <StaticHeroBanner />;
+    return (
+      <div className="container mx-auto px-4">
+        <StaticHeroBanner />
+      </div>
+    );
   }
 
-  return <HeroBannerClient banners={banners} />;
+  return (
+    <div className="container mx-auto px-4">
+      <HeroBannerClient banners={banners} />
+    </div>
+  );
 }

@@ -111,6 +111,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     primaryImageUrl: hit.primaryImageUrl,
     primaryImageAlt: hit.name,
     brandName: hit.brandName,
+    brandSlug: hit.brandSlug ?? null,
     inStock: hit.inStock,
   }));
 

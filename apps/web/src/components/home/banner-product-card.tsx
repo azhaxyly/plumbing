@@ -4,6 +4,7 @@ import { Package } from "lucide-react";
 import type { Route } from "next";
 
 import { formatPrice } from "@/lib/format-price";
+import { BRAND_COUNTRY } from "@/lib/brand-country";
 
 interface BannerProductCardProps {
   id: string;
@@ -12,6 +13,7 @@ interface BannerProductCardProps {
   priceCents: number;
   compareAtPriceCents: number | null;
   primaryImageUrl: string | null;
+  brandSlug: string | null;
 }
 
 export function BannerProductCard({
@@ -20,6 +22,7 @@ export function BannerProductCard({
   priceCents,
   compareAtPriceCents,
   primaryImageUrl,
+  brandSlug,
 }: BannerProductCardProps) {
   const hasDiscount =
     compareAtPriceCents !== null && compareAtPriceCents > priceCents;
@@ -73,21 +76,25 @@ export function BannerProductCard({
         )}
       </div>
 
-      {/*
-       * Footer — flex-col so name + price stack vertically.
-       * flex-1 on this section makes it expand when the card stretches taller
-       * than the image, keeping the price block truly at the bottom.
-       */}
-      <div className="flex flex-1 flex-col p-3">
-        {/* Name takes available vertical space, pushing price down */}
-        <h3 className="flex-1 text-xs font-medium leading-snug text-stone-800 line-clamp-2 transition-colors group-hover:text-emerald-700">
+      <div className="flex flex-col p-3">
+        {/* Flag icon */}
+        {(() => {
+          const bc = brandSlug ? BRAND_COUNTRY[brandSlug] : undefined;
+          return bc ? (
+            <div className="mb-1 flex items-center gap-1">
+              <span className={`fi fi-${bc.countryCode}`} style={{ width: 16, height: 12, display: "inline-block", borderRadius: 2 }} />
+              <span className="text-xs font-semibold text-stone-500">{bc.country}</span>
+            </div>
+          ) : null;
+        })()}
+
+        <h3 className="text-sm font-medium leading-snug text-stone-800 line-clamp-2 transition-colors group-hover:text-emerald-700">
           {name}
         </h3>
 
-        {/* Price block — always at the bottom of every card in the row */}
         <div className="mt-2 flex flex-col gap-0.5">
           {hasDiscount && compareAtPriceCents && (
-            <span className="text-[10px] leading-none text-stone-400 line-through">
+            <span className="text-xs leading-none text-stone-400 line-through">
               {formatPrice(compareAtPriceCents)}
             </span>
           )}

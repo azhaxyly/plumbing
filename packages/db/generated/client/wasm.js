@@ -158,7 +158,10 @@ exports.Prisma.BrandScalarFieldEnum = {
   slug: 'slug',
   name: 'name',
   logoUrl: 'logoUrl',
+  coverImageUrl: 'coverImageUrl',
   description: 'description',
+  showInGrid: 'showInGrid',
+  gridOrder: 'gridOrder',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

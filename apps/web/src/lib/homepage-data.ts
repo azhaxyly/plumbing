@@ -9,6 +9,7 @@ export type BannerWithProducts = Prisma.BannerGetPayload<{
         product: {
           include: {
             images: { where: { isPrimary: true } };
+            brand: true;
           };
         };
       };
@@ -50,6 +51,7 @@ export async function getActiveBanners(): Promise<BannerWithProducts[]> {
             product: {
               include: {
                 images: { where: { isPrimary: true } },
+                brand: true,
               },
             },
           },
@@ -111,6 +113,7 @@ function mapToProductCardData(
     primaryImageUrl: product.images?.[0]?.url ?? null,
     primaryImageAlt: product.images?.[0]?.alt ?? "",
     brandName: product.brand?.name ?? null,
+    brandSlug: product.brand?.slug ?? null,
     inStock: totalAvailable > 0,
     imageUrls: product.images.map((img) => img.url),
   };
@@ -181,12 +184,17 @@ export async function getSaleProducts(limit = 20): Promise<ProductCardData[]> {
   }
 }
 
+const BRAND_GRID_COLS = 5;
+
 export async function getBrandsWithLogo(): Promise<BrandItem[]> {
   try {
     const brands = await prisma.brand.findMany({
-      orderBy: { name: "asc" },
+      where: { showInGrid: true },
+      orderBy: [{ gridOrder: "asc" }, { name: "asc" }],
     });
-    return brands.map((b) => ({
+    // Trim to complete rows so no empty cells appear in the grid
+    const completeCount = Math.floor(brands.length / BRAND_GRID_COLS) * BRAND_GRID_COLS;
+    return brands.slice(0, completeCount).map((b) => ({
       id: b.id,
       slug: b.slug,
       name: b.name,

@@ -13,6 +13,7 @@ import { z } from "zod";
 
 import { audit } from "@/lib/audit";
 import { revalidateProduct } from "@/lib/revalidate";
+import { parseStockFile } from "@/lib/stock-sync-parser";
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -59,14 +60,7 @@ const productStatusSchema = z.enum(["active", "draft", "archived"]);
 
 const createProductInput = z.object({
   name: z.string().min(1, "Название обязательно").max(500),
-  slug: z
-    .string()
-    .min(1, "Slug обязателен")
-    .max(255)
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug должен содержать только строчные буквы, цифры и дефисы",
-    ),
+  slug: z.string().min(1, "Slug обязателен").max(255),
   sku: z.string().min(1, "SKU обязателен").max(255),
   brandId: z.string().min(1, "Бренд обязателен"),
   status: productStatusSchema.default("draft"),
@@ -82,12 +76,7 @@ const createProductInput = z.object({
 const updateProductInput = z.object({
   id: z.string().min(1),
   name: z.string().min(1).max(500).optional(),
-  slug: z
-    .string()
-    .min(1)
-    .max(255)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
-    .optional(),
+  slug: z.string().min(1).max(255).optional(),
   sku: z.string().min(1).max(255).optional(),
   brandId: z.string().min(1).optional(),
   status: productStatusSchema.optional(),
@@ -848,5 +837,126 @@ export const adminProductsRouter = createTRPCRouter({
       indexProduct(input.productId);
 
       return { success: true };
+    }),
+
+  // ─── Stock sync ──────────────────────────────────────────────────────────────
+
+  previewStockSync: protectedProcedure
+    .input(
+      z.object({
+        fileBase64: z.string(),
+        fileName: z.string(),
+        quantityForMore: z.number().int().min(1).default(20),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      requireAdminOrManager(ctx.userRole);
+      const prisma = await getPrisma();
+
+      const buffer = Buffer.from(input.fileBase64, "base64");
+      const rows = parseStockFile(buffer, input.fileName);
+
+      // Load all products once and match in memory — much faster than N queries
+      const allProducts = await prisma.product.findMany({
+        select: { id: true, name: true, sku: true },
+      });
+
+      const bySkuLower = new Map<string, typeof allProducts[number]>();
+      for (const p of allProducts) {
+        bySkuLower.set(p.sku.toLowerCase(), p);
+      }
+
+      const results = rows.map((row) => {
+        const quantity =
+          row.quantity !== null ? row.quantity : input.quantityForMore;
+        const articleLower = row.article.toLowerCase();
+
+        // Pass 1: exact SKU match
+        const bySkuMatch = bySkuLower.get(articleLower);
+        if (bySkuMatch) {
+          return {
+            article: row.article,
+            brand: row.brand,
+            quantity,
+            matchSource: "sku" as const,
+            products: [bySkuMatch],
+          };
+        }
+
+        // Pass 2: article appears in product name as a whole token
+        // e.g. "A39" matches "Alcaplast A39 1 1/4" but NOT "A392C" or "A390"
+        const escaped = articleLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const tokenRe = new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i");
+        const byNameMatches = allProducts.filter((p) => tokenRe.test(p.name));
+        return {
+          article: row.article,
+          brand: row.brand,
+          quantity,
+          matchSource: byNameMatches.length > 0 ? ("name" as const) : ("not_found" as const),
+          products: byNameMatches,
+        };
+      });
+
+      return results;
+    }),
+
+  applyStockSync: protectedProcedure
+    .input(
+      z.object({
+        // Each entry: article from CSV + resolved quantity (already has quantityForMore applied)
+        rows: z.array(
+          z.object({
+            article: z.string().min(1),
+            quantity: z.number().int().min(0),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      requireAdminOrManager(ctx.userRole);
+      const prisma = await getPrisma();
+
+      // Re-fetch products to get fresh IDs (same logic as previewStockSync)
+      const allProducts = await prisma.product.findMany({
+        select: { id: true, name: true, sku: true },
+      });
+
+      const bySkuLower = new Map<string, string>(); // sku → id
+      for (const p of allProducts) {
+        bySkuLower.set(p.sku.toLowerCase(), p.id);
+      }
+
+      let updated = 0;
+      let skipped = 0;
+
+      for (const row of input.rows) {
+        const articleLower = row.article.toLowerCase();
+
+        // Pass 1: by SKU
+        let productId = bySkuLower.get(articleLower);
+
+        // Pass 2: by name token
+        if (!productId) {
+          const escaped = articleLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const tokenRe = new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i");
+          const match = allProducts.find((p) => tokenRe.test(p.name));
+          productId = match?.id;
+        }
+
+        if (!productId) {
+          skipped++;
+          continue;
+        }
+
+        const result = await prisma.productVariant.updateMany({
+          where: { productId },
+          data: { quantity: row.quantity },
+        });
+
+        if (result.count > 0) updated += result.count;
+        else skipped++;
+      }
+
+      return { updated, skipped };
     }),
 });

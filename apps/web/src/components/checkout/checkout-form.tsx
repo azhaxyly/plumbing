@@ -52,6 +52,15 @@ export function CheckoutForm({ subtotalTiyins, itemCount }: CheckoutFormProps) {
 
   return (
     <form action={formAction} noValidate>
+      {/* Honeypot trap for bots — real users never fill this */}
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0"
+      />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* ── Left: form fields ── */}
         <div className="space-y-6 lg:col-span-2">
@@ -102,7 +111,7 @@ export function CheckoutForm({ subtotalTiyins, itemCount }: CheckoutFormProps) {
                   name="phone"
                   type="tel"
                   autoComplete="tel"
-                  placeholder="+7XXXXXXXXXX"
+                  placeholder="+7 777 123 45 67"
                   required
                   disabled={isPending}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50"
@@ -121,55 +130,46 @@ export function CheckoutForm({ subtotalTiyins, itemCount }: CheckoutFormProps) {
               id="address-heading"
               className="mb-4 text-lg font-semibold text-gray-900"
             >
-              Адрес доставки по Алматы
+              Адрес доставки
             </h2>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-6">
+              {/* City */}
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="city"
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                >
+                  Город
+                </label>
+                <input
+                  id="city"
+                  name="city"
+                  type="text"
+                  autoComplete="address-level2"
+                  placeholder="Алматы"
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50"
+                />
+              </div>
+
               {/* Street */}
-              <div className="sm:col-span-4">
+              <div className="sm:col-span-3">
                 <label
                   htmlFor="street"
                   className="mb-1 block text-sm font-medium text-gray-700"
                 >
-                  Улица{" "}
-                  <span className="text-red-500" aria-hidden="true">*</span>
+                  Улица и дом
                 </label>
                 <input
                   id="street"
                   name="street"
                   type="text"
                   autoComplete="address-line1"
-                  required
+                  placeholder="ул. Абая, 10"
                   disabled={isPending}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50"
-                  aria-describedby={
-                    state.errors?.street ? "street-error" : undefined
-                  }
                 />
-                <FieldError errors={state.errors?.street} />
-              </div>
-
-              {/* Building */}
-              <div className="sm:col-span-1">
-                <label
-                  htmlFor="building"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Дом{" "}
-                  <span className="text-red-500" aria-hidden="true">*</span>
-                </label>
-                <input
-                  id="building"
-                  name="building"
-                  type="text"
-                  required
-                  disabled={isPending}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-50"
-                  aria-describedby={
-                    state.errors?.building ? "building-error" : undefined
-                  }
-                />
-                <FieldError errors={state.errors?.building} />
               </div>
 
               {/* Apartment */}
@@ -178,7 +178,7 @@ export function CheckoutForm({ subtotalTiyins, itemCount }: CheckoutFormProps) {
                   htmlFor="apartment"
                   className="mb-1 block text-sm font-medium text-gray-700"
                 >
-                  Квартира
+                  Кв.
                 </label>
                 <input
                   id="apartment"
@@ -218,23 +218,6 @@ export function CheckoutForm({ subtotalTiyins, itemCount }: CheckoutFormProps) {
             </div>
           </section>
 
-          {/* Payment method (cash on delivery — only option) */}
-          <section aria-labelledby="payment-heading">
-            <h2
-              id="payment-heading"
-              className="mb-4 text-lg font-semibold text-gray-900"
-            >
-              Способ оплаты
-            </h2>
-            <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
-              <p className="text-sm font-medium text-amber-800">
-                Оплата при получении
-              </p>
-              <p className="mt-0.5 text-xs text-amber-700">
-                Курьер доставит заказ и примет оплату наличными
-              </p>
-            </div>
-          </section>
 
           {/* Consent */}
           <div className="flex items-start gap-3">
@@ -312,9 +295,11 @@ export function CheckoutForm({ subtotalTiyins, itemCount }: CheckoutFormProps) {
             {isPending ? "Оформляем..." : "Оформить заявку"}
           </Button>
 
-          <p className="mt-3 text-center text-xs text-gray-400">
-            Оплата при получении курьером
-          </p>
+          <div className="mt-4 rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 text-center">
+            <p className="text-sm font-medium text-blue-800">
+              Менеджер свяжется с вами для подтверждения заказа
+            </p>
+          </div>
         </aside>
       </div>
     </form>

@@ -1,6 +1,8 @@
 import type { Route } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
+import { SortSelector } from "./sort-selector";
 import { ProductCard, type ProductCardData } from "./product-card";
 
 interface SubCategory {
@@ -10,13 +12,26 @@ interface SubCategory {
   productsCount: number;
 }
 
+interface PaginationInfo {
+  page: number;
+  totalPages: number;
+  totalCount: number;
+  prevPageUrl: string | null;
+  nextPageUrl: string | null;
+}
+
 interface CategoryListingProps {
   categoryName: string;
   categoryDescription: string | null;
   subCategories: SubCategory[];
   products: ProductCardData[];
-  /** Full slug path for building sub-category links, e.g. ["bathtubs"] */
   slugPath: string[];
+  pagination: PaginationInfo;
+  currentSort: string;
+  /** Override the computed /category/{slugPath} base path */
+  basePath?: string;
+  /** Hide the h1 heading (useful when the page already has a header) */
+  showHeader?: boolean;
 }
 
 export function CategoryListing({
@@ -25,20 +40,26 @@ export function CategoryListing({
   subCategories,
   products,
   slugPath,
+  pagination,
+  currentSort,
+  basePath: basePathProp,
+  showHeader = true,
 }: CategoryListingProps) {
-  const basePath = `/category/${slugPath.join("/")}`;
+  const basePath = basePathProp ?? `/category/${slugPath.join("/")}`;
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6">
       {/* Category header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-          {categoryName}
-        </h1>
-        {categoryDescription && (
-          <p className="mt-2 text-gray-500">{categoryDescription}</p>
-        )}
-      </div>
+      {showHeader && (
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
+            {categoryName}
+          </h1>
+          {categoryDescription && (
+            <p className="mt-2 text-gray-500">{categoryDescription}</p>
+          )}
+        </div>
+      )}
 
       {/* Sub-categories */}
       {subCategories.length > 0 && (
@@ -70,13 +91,62 @@ export function CategoryListing({
 
       {/* Products grid */}
       {products.length > 0 ? (
-        <section aria-label={`Товары в категории ${categoryName}`}>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+        <>
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-gray-500">
+              {pagination.totalCount} {pluralizeProducts(pagination.totalCount)}
+            </p>
+            <Suspense fallback={null}>
+              <SortSelector currentSort={currentSort} basePath={basePath} />
+            </Suspense>
           </div>
-        </section>
+
+          <section aria-label={`Товары в категории ${categoryName}`}>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <nav
+              aria-label="Пагинация"
+              className="mt-10 flex items-center justify-center gap-3"
+            >
+              {pagination.prevPageUrl ? (
+                <Link
+                  href={pagination.prevPageUrl as Route}
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-amber-400 hover:bg-amber-50 hover:text-amber-700"
+                >
+                  ← Назад
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+                  ← Назад
+                </span>
+              )}
+
+              <span className="text-sm text-gray-500">
+                Страница {pagination.page} из {pagination.totalPages}
+              </span>
+
+              {pagination.nextPageUrl ? (
+                <Link
+                  href={pagination.nextPageUrl as Route}
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-amber-400 hover:bg-amber-50 hover:text-amber-700"
+                >
+                  Вперёд →
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+                  Вперёд →
+                </span>
+              )}
+            </nav>
+          )}
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className="text-lg font-medium text-gray-500">
