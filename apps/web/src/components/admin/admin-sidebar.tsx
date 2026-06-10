@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@timsan/ui";
 import {
   Boxes,
   ClipboardList,
@@ -21,7 +22,6 @@ import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { cn } from "@timsan/ui";
 
 interface NavItem {
   label: string;

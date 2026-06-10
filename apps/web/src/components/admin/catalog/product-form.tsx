@@ -8,11 +8,11 @@
  * See task 25.3.
  */
 
+import { Button, Input, cn } from "@timsan/ui";
 import { Loader2, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useRef, useState, useTransition } from "react";
 
-import { Button, Input, cn } from "@timsan/ui";
 
 import {
   createProductAction,

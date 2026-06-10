@@ -1,6 +1,8 @@
 import Link from "next/link";
-import type { BannerWithProducts } from "@/lib/homepage-data";
+
 import { HeroBannerClient } from "../home/hero-banner-client";
+
+import type { BannerWithProducts } from "@/lib/homepage-data";
 
 interface HeroBannerProps {
   banners: BannerWithProducts[];

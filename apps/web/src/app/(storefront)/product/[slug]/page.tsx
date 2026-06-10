@@ -4,10 +4,10 @@ import type { Metadata , Route } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { AddToCartButton } from "@/components/catalog/add-to-cart-button";
-import { WishlistButton } from "@/components/catalog/wishlist-button";
 import { ProductGallery } from "@/components/catalog/product-gallery";
+import { WishlistButton } from "@/components/catalog/wishlist-button";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { BRAND_COUNTRY } from "@/lib/brand-country";
 
 

@@ -7,14 +7,14 @@
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 
-import { signIn, signOut } from "@/auth";
-
 import {
   loginSchema,
   registerSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
 } from "./auth-schemas";
+
+import { signIn, signOut } from "@/auth";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 // ─── Action result types ──────────────────────────────────────────────────────

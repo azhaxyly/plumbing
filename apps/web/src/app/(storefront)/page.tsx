@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 
-import { buildMetadata } from "@/lib/metadata";
+import { BestsellerSection } from "@/components/home/bestseller-section";
+import { BrandsSection } from "@/components/home/brands-section";
+import { CategoryGrid } from "@/components/home/category-grid";
+import { FeaturesStrip } from "@/components/home/features-strip";
+import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
+import { SaleSection } from "@/components/home/sale-section";
+import { StoreInfoSection } from "@/components/home/store-info-section";
+import { HeroBanner } from "@/components/layout/hero-banner";
 import {
   getActiveBanners,
   getRootCategories,
@@ -9,14 +16,7 @@ import {
   getSaleProducts,
   getBrandsWithLogo,
 } from "@/lib/homepage-data";
-import { HeroBanner } from "@/components/layout/hero-banner";
-import { CategoryGrid } from "@/components/home/category-grid";
-import { BestsellerSection } from "@/components/home/bestseller-section";
-import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
-import { SaleSection } from "@/components/home/sale-section";
-import { BrandsSection } from "@/components/home/brands-section";
-import { FeaturesStrip } from "@/components/home/features-strip";
-import { StoreInfoSection } from "@/components/home/store-info-section";
+import { buildMetadata } from "@/lib/metadata";
 
 const SITE_URL =
   process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";

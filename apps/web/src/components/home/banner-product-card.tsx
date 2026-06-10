@@ -1,10 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
 import { Package } from "lucide-react";
 import type { Route } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
-import { formatPrice } from "@/lib/format-price";
 import { BRAND_COUNTRY } from "@/lib/brand-country";
+import { formatPrice } from "@/lib/format-price";
 
 interface BannerProductCardProps {
   id: string;

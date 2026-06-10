@@ -1,6 +1,5 @@
 import { prisma } from "@timsan/db";
-import type { Metadata } from "next";
-import type { Route } from "next";
+import type { Metadata , Route } from "next";
 import Link from "next/link";
 
 import { ProductCard } from "@/components/catalog/product-card";

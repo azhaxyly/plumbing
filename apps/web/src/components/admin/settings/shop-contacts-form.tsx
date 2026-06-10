@@ -10,10 +10,10 @@
  * See task 28.1.
  */
 
-import { useState, useTransition } from "react";
-import { Loader2 } from "lucide-react";
-
 import { cn } from "@timsan/ui";
+import { Loader2 } from "lucide-react";
+import { useState, useTransition } from "react";
+
 
 import { saveShopContacts } from "@/app/(admin)/admin/settings/actions";
 

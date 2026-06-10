@@ -5,10 +5,11 @@
  * Uses React's useActionState (React 19) to handle Server Action state.
  */
 
-import { useActionState } from "react";
-import Link from "next/link";
-import type { Route } from "next";
 import { Button } from "@timsan/ui";
+import type { Route } from "next";
+import Link from "next/link";
+import { useActionState } from "react";
+
 import type { CheckoutActionState } from "@/lib/checkout-actions";
 import { submitCheckout } from "@/lib/checkout-actions";
 

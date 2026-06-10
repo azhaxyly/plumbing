@@ -4,9 +4,9 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { CategoryGrid } from "@/components/home/category-grid";
 import { CategoryListing } from "@/components/catalog/category-listing";
 import { FacetPanel } from "@/components/catalog/facet-panel";
+import { CategoryGrid } from "@/components/home/category-grid";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { FilterTransitionProvider, ProductsTransitionArea } from "@/contexts/filter-transition-context";
 import { getFacetDataForBrand } from "@/lib/facet-data";

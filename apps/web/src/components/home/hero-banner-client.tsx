@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
+import useEmblaCarousel from "embla-carousel-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import type { Route } from "next";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+
+import { BannerProductCard } from "./banner-product-card";
 
 import type { BannerWithProducts } from "@/lib/homepage-data";
-import { BannerProductCard } from "./banner-product-card";
 
 interface HeroBannerClientProps {
   banners: BannerWithProducts[];

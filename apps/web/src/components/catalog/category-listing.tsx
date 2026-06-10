@@ -2,8 +2,8 @@ import type { Route } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { SortSelector } from "./sort-selector";
 import { ProductCard, type ProductCardData } from "./product-card";
+import { SortSelector } from "./sort-selector";
 
 interface SubCategory {
   id: string;

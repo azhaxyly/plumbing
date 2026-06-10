@@ -1,7 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { Folder } from "lucide-react";
 import type { Route } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
 import type { CategoryItem } from "@/lib/homepage-data";
 
