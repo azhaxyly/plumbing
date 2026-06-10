@@ -9,12 +9,13 @@
  * See design.md → «Алгоритм submitOrder», task 21.1.
  */
 
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 import { auth } from "@/auth";
+import { getGuestCart, CART_GUEST_COOKIE } from "@/lib/cart-redis";
 import { checkoutSchema } from "@/lib/checkout-schemas";
 import { submitOrder } from "@/lib/order-actions";
-import { getGuestCart, CART_GUEST_COOKIE } from "@/lib/cart-redis";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export interface CheckoutActionState {

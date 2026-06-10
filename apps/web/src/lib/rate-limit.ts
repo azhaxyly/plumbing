@@ -1,5 +1,5 @@
-import { headers } from "next/headers";
 import Redis from "ioredis";
+import { headers } from "next/headers";
 
 // Lua sliding-window rate limiter.
 // Atomically removes expired entries, checks count, and conditionally adds new entry.

@@ -1,5 +1,6 @@
 import { prisma } from "@timsan/db";
 import type { Prisma, Product, Brand, ProductImage, ProductVariant } from "@timsan/db";
+
 import type { ProductCardData } from "@/components/catalog/product-card";
 
 export type BannerWithProducts = Prisma.BannerGetPayload<{
