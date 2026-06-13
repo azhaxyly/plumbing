@@ -74,7 +74,7 @@ export function OrderNotificationEmail({ payload }: OrderNotificationEmailProps)
           <Hr style={{ borderColor: "#e0e0e0", margin: "20px 0" }} />
 
           <Heading as="h2" style={{ fontSize: "18px", color: "#333" }}>
-            Состав заказа
+            Заказ
           </Heading>
 
           {payload.items.map((item, i) => (

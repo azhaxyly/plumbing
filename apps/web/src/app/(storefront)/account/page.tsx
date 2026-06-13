@@ -10,6 +10,7 @@ import { ChangePasswordForm } from "./change-password-form";
 
 export const metadata: Metadata = {
   title: "Личный кабинет — Timsan",
+  robots: { index: false, follow: true },
 };
 
 const ORDER_STATUS_LABELS: Record<string, string> = {
@@ -121,7 +122,7 @@ export default async function AccountPage() {
           <section className="rounded-xl border border-stone-200 bg-white p-6">
             <h2 className="mb-4 text-lg font-semibold text-stone-900">Выход из аккаунта</h2>
             <form action={logoutAction}>
-              <Button type="submit" variant="outline" className="w-full">
+              <Button type="submit" variant="destructive" className="w-full">
                 Выйти
               </Button>
             </form>
@@ -149,7 +150,7 @@ export default async function AccountPage() {
                     <tr className="border-b border-stone-100 text-left text-stone-500">
                       <th className="pb-3 pr-4 font-medium">Заказ</th>
                       <th className="pb-3 pr-4 font-medium">Дата</th>
-                      <th className="pb-3 pr-4 font-medium">Товаров</th>
+                      <th className="pb-3 pr-4 font-medium hidden sm:table-cell">Товаров</th>
                       <th className="pb-3 pr-4 font-medium">Сумма</th>
                       <th className="pb-3 font-medium">Статус</th>
                     </tr>
@@ -181,7 +182,7 @@ export default async function AccountPage() {
                           <td className="py-3 pr-4 text-stone-600">
                             {formatDate(order.createdAt)}
                           </td>
-                          <td className="py-3 pr-4 text-stone-600">{itemCount}</td>
+                          <td className="py-3 pr-4 text-stone-600 hidden sm:table-cell">{itemCount}</td>
                           <td className="py-3 pr-4 font-medium text-stone-900">
                             {formatPrice(order.subtotalCents)}
                           </td>

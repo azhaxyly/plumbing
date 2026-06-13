@@ -12,6 +12,7 @@ import { CartClient } from "@/components/cart/cart-client";
 export const metadata: Metadata = {
   title: "Корзина — Timsan",
   description: "Ваша корзина покупок",
+  robots: { index: false, follow: true },
 };
 
 export default async function CartPage() {

@@ -21,18 +21,29 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [mounted, setMounted] = useState(false);
 
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const thumbnailStripRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Scroll active thumbnail into view when selectedIndex changes (main gallery)
+  // Center the active thumbnail inside its own scroll container only —
+  // never scroll the whole page (which would jump the viewport up/down).
   useEffect(() => {
-    thumbnailRefs.current[selectedIndex]?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    });
+    const strip = thumbnailStripRef.current;
+    const thumb = thumbnailRefs.current[selectedIndex];
+    if (!strip || !thumb) return;
+
+    const isVertical = strip.scrollHeight > strip.clientHeight;
+    if (isVertical) {
+      const target =
+        thumb.offsetTop - strip.clientHeight / 2 + thumb.clientHeight / 2;
+      strip.scrollTo({ top: target, behavior: "smooth" });
+    } else {
+      const target =
+        thumb.offsetLeft - strip.clientWidth / 2 + thumb.clientWidth / 2;
+      strip.scrollTo({ left: target, behavior: "smooth" });
+    }
   }, [selectedIndex]);
 
   // Lock body scroll when lightbox is open
@@ -73,30 +84,14 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   return (
     <>
-      <div className="flex flex-col gap-3">
-        {/* Main image */}
-        <button
-          type="button"
-          onClick={() => setLightboxOpen(true)}
-          className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gray-50 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
-          aria-label="Открыть просмотр фото"
-        >
-          {selectedImage && (
-            <Image
-              src={selectedImage.url}
-              alt={selectedImage.alt || productName}
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-contain p-6 transition-opacity duration-200"
-              priority
-            />
-          )}
-        </button>
-
+      {/* Thumbnails column on the left (vertical), main image on the right.
+          On mobile the thumbnails fall below as a horizontal strip. */}
+      <div className="flex flex-col-reverse gap-3 sm:flex-row">
         {/* Thumbnails */}
         {images.length > 1 && (
           <div
-            className="flex gap-2 overflow-x-auto pb-1"
+            ref={thumbnailStripRef}
+            className="flex gap-2 overflow-x-auto pb-1 sm:max-h-[560px] sm:w-24 sm:flex-shrink-0 sm:flex-col sm:overflow-x-hidden sm:overflow-y-auto sm:px-1 sm:py-1 sm:pb-1"
             role="list"
             aria-label="Фотографии товара"
           >
@@ -111,7 +106,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 aria-label={`Фото ${idx + 1}`}
                 aria-pressed={idx === selectedIndex}
                 onClick={() => setSelectedIndex(idx)}
-                className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 bg-gray-50 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 bg-gray-50 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 sm:h-20 sm:w-20 ${
                   idx === selectedIndex
                     ? "border-amber-400"
                     : "border-transparent hover:border-gray-300 opacity-70 hover:opacity-100"
@@ -121,13 +116,32 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                   src={img.url}
                   alt={img.alt || productName}
                   fill
-                  sizes="64px"
+                  sizes="80px"
                   className="object-contain p-1"
                 />
               </button>
             ))}
           </div>
         )}
+
+        {/* Main image */}
+        <button
+          type="button"
+          onClick={() => setLightboxOpen(true)}
+          className="relative aspect-square w-full min-w-0 flex-1 overflow-hidden rounded-2xl bg-gray-50 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+          aria-label="Открыть просмотр фото"
+        >
+          {selectedImage && (
+            <Image
+              src={selectedImage.url}
+              alt={selectedImage.alt || productName}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-contain p-6 transition-opacity duration-200"
+              priority
+            />
+          )}
+        </button>
       </div>
 
       {/* Lightbox portal */}

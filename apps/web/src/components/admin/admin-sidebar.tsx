@@ -8,6 +8,7 @@ import {
   Image,
   Layers,
   LayoutDashboard,
+  MessageSquareQuote,
   RefreshCw,
   Settings,
   ShoppingCart,
@@ -62,7 +63,9 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Страницы", href: "/admin/content/pages", icon: FileText },
       { label: "Баннеры", href: "/admin/content/banners", icon: Image },
+      { label: "Афиши", href: "/admin/content/promo-slides", icon: Layers },
       { label: "Хиты продаж", href: "/admin/content/bestsellers", icon: TrendingUp },
+      { label: "Отзывы", href: "/admin/content/reviews", icon: MessageSquareQuote },
     ],
   },
   {

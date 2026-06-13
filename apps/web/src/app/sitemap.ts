@@ -1,4 +1,4 @@
-﻿import { prisma } from "@timsan/db";
+﻿import { getAllCategoryPaths, prisma } from "@timsan/db";
 import type { MetadataRoute } from "next";
 
 const SITE_URL =
@@ -9,29 +9,30 @@ function url(path: string): string {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
-
-  // Static pages
+  // Static pages. No `lastModified` for `/` and `/brand`: a perpetually-"now"
+  // timestamp is a junk signal — omitting it is more honest than faking freshness.
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: url("/"), lastModified: now, changeFrequency: "daily", priority: 1 },
-    { url: url("/brand"), lastModified: now, changeFrequency: "weekly", priority: 0.7 },
-    { url: url("/search"), lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: url("/about-us"), lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: url("/delivery-info"), lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: url("/contacts"), lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: url("/privacy-policy"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: url("/payment-info"), lastModified: now, changeFrequency: "monthly", priority: 0.3 },
-    { url: url("/returns"), lastModified: now, changeFrequency: "monthly", priority: 0.3 },
-    { url: url("/public-offer"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: url("/"), changeFrequency: "daily", priority: 1 },
+    { url: url("/brand"), changeFrequency: "weekly", priority: 0.7 },
   ];
 
-  // Categories
-  const categories = await prisma.category.findMany({
+  // CMS pages (about-us, delivery-info, contacts, …) — real updatedAt from DB.
+  const cmsPages = await prisma.cmsPage.findMany({
+    where: { isPublished: true },
     select: { slug: true, updatedAt: true },
     orderBy: { updatedAt: "desc" },
   });
-  const categoryRoutes: MetadataRoute.Sitemap = categories.map((cat) => ({
-    url: url(`/category/${cat.slug}`),
+  const cmsRoutes: MetadataRoute.Sitemap = cmsPages.map((p) => ({
+    url: url(`/${p.slug}`),
+    lastModified: p.updatedAt,
+    changeFrequency: "monthly",
+    priority: 0.4,
+  }));
+
+  // Categories — single entry each at its canonical full path.
+  const categoryPaths = await getAllCategoryPaths();
+  const categoryRoutes: MetadataRoute.Sitemap = categoryPaths.map((cat) => ({
+    url: url(`/category/${cat.path}`),
     lastModified: cat.updatedAt,
     changeFrequency: "weekly",
     priority: 0.8,
@@ -62,5 +63,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...brandRoutes, ...productRoutes];
+  return [...staticRoutes, ...cmsRoutes, ...categoryRoutes, ...brandRoutes, ...productRoutes];
 }

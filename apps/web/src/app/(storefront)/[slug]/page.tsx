@@ -2,6 +2,8 @@
 import type { Metadata } from "next";
 import { prisma } from "@timsan/db";
 
+import { buildMetadata, excerpt } from "@/lib/metadata";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -12,10 +14,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const page = await prisma.cmsPage.findUnique({
     where: { slug, isPublished: true },
-    select: { title: true },
+    select: { title: true, seoTitle: true, seoDescription: true, content: true },
   });
   if (!page) return {};
-  return { title: page.title };
+  return buildMetadata({
+    title: page.seoTitle ?? page.title,
+    description: page.seoDescription ?? excerpt(page.content, 160),
+    canonical: `/${slug}`,
+  });
 }
 
 // Minimal Markdown → safe HTML (no external deps required)

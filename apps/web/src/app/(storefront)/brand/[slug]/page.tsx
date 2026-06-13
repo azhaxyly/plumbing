@@ -1,4 +1,4 @@
-import { getBrandBySlug, getBrandCategories, getBrandProductsPage } from "@timsan/db";
+import { getAllCategoryPaths, getBrandBySlug, getBrandCategories, getBrandProductsPage } from "@timsan/db";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -22,7 +22,7 @@ interface BrandPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export async function generateMetadata({ params }: BrandPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: BrandPageProps): Promise<Metadata> {
   const { slug } = await params;
   const brand = await getBrandBySlug(slug);
 
@@ -31,14 +31,18 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
   const title = brand.name;
   const description = brand.description ?? `Товары бренда ${brand.name}`;
 
+  // Self-canonical pagination (page param only; facets/sort excluded).
+  const page = Math.max(1, parseInt((await searchParams).page as string) || 1);
+  const canonical = `/brand/${slug}` + (page > 1 ? `?page=${page}` : "");
+
   return {
     title,
     description,
-    alternates: { canonical: `/brand/${slug}` },
+    alternates: { canonical },
     openGraph: {
       title,
       description,
-      url: `/brand/${slug}`,
+      url: canonical,
       type: "website",
       ...(brand.logoUrl ? { images: [{ url: brand.logoUrl }] } : {}),
     },
@@ -88,8 +92,8 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
     }
   }
 
-  // Fetch in parallel: categories, products, facets
-  const [brandCategories, { products, totalCount }, facetData] = await Promise.all([
+  // Fetch in parallel: categories, products, facets, canonical category paths
+  const [brandCategories, { products, totalCount }, facetData, categoryPaths] = await Promise.all([
     getBrandCategories(brand.id),
     getBrandProductsPage({
       brandId: brand.id,
@@ -102,7 +106,14 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
       attributeFilters,
     }),
     getFacetDataForBrand(brand.id),
+    getAllCategoryPaths(),
   ]);
+
+  // slug → canonical full path (slugs are globally unique), so brand→category
+  // links point straight at the canonical URL instead of bouncing through a 308.
+  const slugToPath = new Map(
+    categoryPaths.map((c) => [c.path.split("/").pop() as string, c.path]),
+  );
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -195,12 +206,15 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
         {/* Below-banner section: spacer for logo + description */}
         {showHero && (brand.logoUrl || brand.description) && (
           <div className="border-b bg-white">
-            <div className="container mx-auto flex items-start gap-8 px-4 pb-8 pt-16 md:px-6">
+            <div className="container mx-auto flex items-start gap-8 px-4 pb-10 pt-16 md:px-6">
               {brand.logoUrl && <div className="w-44 shrink-0" />}
               {brand.description && (
-                <p className="max-w-2xl text-sm leading-relaxed text-gray-700 md:text-base">
-                  {brand.description}
-                </p>
+                <div className="min-w-0 flex-1">
+                  <h2 className="mb-3 text-lg font-semibold text-gray-900">О бренде</h2>
+                  <p className="whitespace-pre-line text-sm leading-7 text-gray-600 md:text-base md:leading-8">
+                    {brand.description}
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -212,7 +226,9 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
             <h2 className="mb-4 text-xl font-bold text-gray-900">Категории</h2>
             <CategoryGrid
               categories={categoryItems}
-              getHref={(categorySlug) => `/category/${categorySlug}?brand=${brand.slug}`}
+              getHref={(categorySlug) =>
+                `/category/${slugToPath.get(categorySlug) ?? categorySlug}?brand=${brand.slug}`
+              }
             />
           </div>
         )}

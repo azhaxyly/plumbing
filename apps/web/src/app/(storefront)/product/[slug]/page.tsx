@@ -1,6 +1,7 @@
 import { getProductBySlug } from "@timsan/db";
 import type { ProductFull } from "@timsan/db";
 import type { Metadata , Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -12,6 +13,14 @@ import { BRAND_COUNTRY } from "@/lib/brand-country";
 
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
+
+const SITE_URL =
+  process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
+
+/** Turns a possibly-relative path into an absolute URL (schema.org requires absolute). */
+function absoluteUrl(path: string): string {
+  return /^https?:\/\//.test(path) ? path : `${SITE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+}
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -148,15 +157,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
           name: product.brand.name,
         }
       : undefined,
-    image: product.images.map((img) => img.url),
+    image: product.images.map((img) => absoluteUrl(img.url)),
     offers: {
       "@type": "Offer",
       priceCurrency: "KZT",
       price: (product.priceCents / 100).toFixed(0),
+      // ISR (revalidate=300) keeps this rolling ~30 days ahead; satisfies Google's
+      // requirement for a priceValidUntil on offers.
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10),
+      itemCondition: "https://schema.org/NewCondition",
       availability: inStock
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
-      url: `/product/${product.slug}`,
+      url: absoluteUrl(`/product/${product.slug}`),
     },
   };
 
@@ -182,9 +197,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {product.brand && (
               <Link
                 href={`/brand/${product.brand.slug}` as Route}
-                className="text-sm font-medium uppercase tracking-wide text-gray-400 hover:text-amber-600 transition-colors w-fit"
+                className="group w-fit transition-opacity hover:opacity-80"
+                aria-label={product.brand.name}
               >
-                {product.brand.name}
+                {product.brand.logoUrl ? (
+                  <Image
+                    src={product.brand.logoUrl}
+                    alt={product.brand.name}
+                    width={120}
+                    height={40}
+                    className="h-10 w-auto max-w-[220px] object-contain object-left"
+                  />
+                ) : (
+                  <span className="text-sm font-medium uppercase tracking-wide text-gray-400 transition-colors group-hover:text-amber-600">
+                    {product.brand.name}
+                  </span>
+                )}
               </Link>
             )}
 

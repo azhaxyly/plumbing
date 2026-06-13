@@ -14,6 +14,7 @@ import { CheckoutForm } from "@/components/checkout/checkout-form";
 export const metadata: Metadata = {
   title: "Оформление заявки — Timsan",
   description: "Оформите заявку на доставку товаров",
+  robots: { index: false, follow: true },
 };
 
 export default async function CheckoutPage() {

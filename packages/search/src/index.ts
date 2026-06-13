@@ -22,6 +22,7 @@ export interface ProductSearchDocument {
   brandSlug: string | null;
   categoryIds: string[];
   categoryNames: string[];
+  attributeValues: string[];
   primaryImageUrl: string | null;
   inStock: boolean;
   createdAt: string; // ISO string
@@ -103,11 +104,12 @@ export async function configureProductIndex(): Promise<void> {
   await index.updateSettings({
     searchableAttributes: [
       "name",
-      "description",
-      "shortDescription",
       "sku",
       "brandName",
       "categoryNames",
+      "attributeValues",
+      "shortDescription",
+      "description",
     ],
     filterableAttributes: [
       "status",

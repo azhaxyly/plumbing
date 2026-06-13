@@ -91,6 +91,11 @@ const searchIndexingWorker = new Worker<IndexProductJobData>(
         variants: {
           select: { quantity: true, reserved: true },
         },
+        productAttributes: {
+          include: {
+            attributeValue: { select: { value: true } },
+          },
+        },
       },
     });
 
@@ -119,6 +124,7 @@ const searchIndexingWorker = new Worker<IndexProductJobData>(
       brandSlug: product.brand?.slug ?? null,
       categoryIds: product.categories.map((pc) => pc.category.id),
       categoryNames: product.categories.map((pc) => pc.category.name),
+      attributeValues: product.productAttributes.map((pa) => pa.attributeValue.value),
       primaryImageUrl: primaryImage?.url ?? null,
       inStock: totalAvailable > 0,
       createdAt: product.createdAt.toISOString(),

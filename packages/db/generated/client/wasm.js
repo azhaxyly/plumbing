@@ -307,6 +307,8 @@ exports.Prisma.CmsPageScalarFieldEnum = {
   slug: 'slug',
   title: 'title',
   content: 'content',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
   isPublished: 'isPublished',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -333,6 +335,30 @@ exports.Prisma.BannerProductScalarFieldEnum = {
   bannerId: 'bannerId',
   productId: 'productId',
   position: 'position'
+};
+
+exports.Prisma.PromoSlideScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  imageUrl: 'imageUrl',
+  linkUrl: 'linkUrl',
+  position: 'position',
+  isActive: 'isActive',
+  startsAt: 'startsAt',
+  endsAt: 'endsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReviewScalarFieldEnum = {
+  id: 'id',
+  authorName: 'authorName',
+  rating: 'rating',
+  text: 'text',
+  position: 'position',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.BestsellerItemScalarFieldEnum = {
@@ -445,6 +471,8 @@ exports.Prisma.ModelName = {
   CmsPage: 'CmsPage',
   Banner: 'Banner',
   BannerProduct: 'BannerProduct',
+  PromoSlide: 'PromoSlide',
+  Review: 'Review',
   BestsellerItem: 'BestsellerItem',
   Coupon: 'Coupon',
   AuditLog: 'AuditLog',

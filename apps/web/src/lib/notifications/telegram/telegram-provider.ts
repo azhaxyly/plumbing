@@ -137,7 +137,7 @@ export class HttpTelegramProvider implements TelegramProvider {
       `💳 <b>Оплата:</b> ${escapeHtml(payload.paymentMethod)}`,
       payload.notes ? `💬 <b>Комментарий:</b> ${escapeHtml(payload.notes)}` : null,
       ``,
-      `<b>Состав заказа:</b>`,
+      `<b>Заказ:</b>`,
       itemsText,
       ``,
       `<b>Итого: ${totalKzt} ₸</b>`,

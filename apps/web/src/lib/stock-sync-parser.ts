@@ -4,6 +4,7 @@ export interface StockRow {
   article: string;
   brand: string;
   quantity: number | null; // null = "20 и более"
+  retailPriceCents: number | null; // "Цена розницы" in tiyn; null when cell is empty
 }
 
 function parseQuantity(raw: string): number | null {
@@ -13,6 +14,15 @@ function parseQuantity(raw: string): number | null {
   const left = trimmed.split(",")[0]!.replace(/\s/g, "");
   const n = parseInt(left, 10);
   return isNaN(n) ? null : Math.max(0, n);
+}
+
+// "6 175" → 617500; "523 683,3" → 52368330 (spaces/NBSP = thousands, comma = decimal)
+export function parsePriceCents(raw: string): number | null {
+  const cleaned = raw.replace(/[\s ]/g, "").replace(",", ".");
+  if (!cleaned) return null;
+  const n = parseFloat(cleaned);
+  if (isNaN(n) || n <= 0) return null;
+  return Math.round(n * 100);
 }
 
 function rowsFromSheet(sheet: XLSX.WorkSheet): StockRow[] {
@@ -35,11 +45,17 @@ function rowsFromSheet(sheet: XLSX.WorkSheet): StockRow[] {
     const article = String(row[1] ?? "").trim();
     const brand = String(row[5] ?? "").trim();
     const qtyRaw = String(row[6] ?? "").trim();
+    const retailRaw = String(row[8] ?? "").trim();
     // Skip category/group rows: must have both article and brand,
     // and article must contain at least one Latin letter or digit (real vendor code)
     if (!article || !brand) continue;
     if (!/[A-Za-z0-9]/.test(article)) continue;
-    results.push({ article, brand, quantity: parseQuantity(qtyRaw) });
+    results.push({
+      article,
+      brand,
+      quantity: parseQuantity(qtyRaw),
+      retailPriceCents: parsePriceCents(retailRaw),
+    });
   }
   return results;
 }

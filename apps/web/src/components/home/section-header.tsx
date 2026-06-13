@@ -20,10 +20,10 @@ export function SectionHeader({
   const textColor = light ? "text-white" : "text-stone-900";
   const subtitleColor = light ? "text-stone-300" : "text-stone-500";
   const linkColor = light
-    ? "text-white/90 hover:text-white"
+    ? "bg-white text-[#D8410F] hover:bg-white/90"
     : "text-stone-700 hover:text-stone-900";
   const borderStyle = light
-    ? "rounded-lg border border-white/40 px-3 py-1.5"
+    ? "rounded-lg px-3 py-1.5"
     : "rounded-lg border border-stone-300 px-3 py-1.5";
 
   return (

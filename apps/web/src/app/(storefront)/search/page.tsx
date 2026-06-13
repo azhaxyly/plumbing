@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { FacetPanel } from "@/components/catalog/facet-panel";
+import { MobileFilterDrawer } from "@/components/catalog/mobile-filter-drawer";
 import { ProductCard } from "@/components/catalog/product-card";
 import type { ProductCardData } from "@/components/catalog/product-card";
 import { SortSelect } from "@/components/catalog/sort-select";
@@ -106,6 +107,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     id: hit.id,
     slug: hit.slug,
     name: hit.name,
+    sku: hit.sku,
     priceCents: hit.priceCents,
     compareAtPriceCents: hit.compareAtPriceCents,
     primaryImageUrl: hit.primaryImageUrl,
@@ -211,49 +213,68 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {/* Results */}
         {q && products.length > 0 && (
-          <div className="flex gap-8">
-            {/* Facet sidebar */}
+          <div>
+            {/* Кнопка фильтров для мобильных и планшетов */}
             {hasFacets && (
-              <div className="hidden w-64 shrink-0 lg:block">
-                <Suspense fallback={null}>
-                  <FacetPanel
-                    brands={facetBrands}
-                    attributes={[]}
-                    priceRange={{ min: priceMin, max: priceMax }}
-                    currentFilters={currentFilters}
-                    basePath={basePath}
-                  />
-                </Suspense>
+              <div className="mb-4 lg:hidden">
+                <MobileFilterDrawer
+                  brands={facetBrands}
+                  attributes={[]}
+                  priceRange={{ min: priceMin, max: priceMax }}
+                  currentFilters={currentFilters}
+                  basePath={basePath}
+                  activeFilterCount={
+                    (currentFilters.brands?.length ?? 0) +
+                    (currentFilters.price !== undefined ? 1 : 0)
+                  }
+                />
               </div>
             )}
 
-            {/* Right column: top bar + grid */}
-            <div className="min-w-0 flex-1">
-              {/* Top bar: count + sort */}
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <p className="text-sm text-gray-500">
-                  Найдено{" "}
-                  <span className="font-medium text-gray-700">
-                    {searchResult.totalHits}
-                  </span>{" "}
-                  {pluralizeProducts(searchResult.totalHits)}
-                </p>
-                <Suspense fallback={null}>
-                  <SortSelect basePath={basePath} />
-                </Suspense>
-              </div>
+            <div className="flex gap-8">
+              {/* Facet sidebar */}
+              {hasFacets && (
+                <div className="hidden w-64 shrink-0 lg:block">
+                  <Suspense fallback={null}>
+                    <FacetPanel
+                      brands={facetBrands}
+                      attributes={[]}
+                      priceRange={{ min: priceMin, max: priceMax }}
+                      currentFilters={currentFilters}
+                      basePath={basePath}
+                    />
+                  </Suspense>
+                </div>
+              )}
 
-              {/* Product grid */}
-              <ul
-                className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
-                aria-label="Результаты поиска"
-              >
-                {products.map((product) => (
-                  <li key={product.id}>
-                    <ProductCard product={product} />
-                  </li>
-                ))}
-              </ul>
+              {/* Right column: top bar + grid */}
+              <div className="min-w-0 flex-1">
+                {/* Top bar: count + sort */}
+                <div className="mb-4 flex items-center justify-between gap-4">
+                  <p className="text-sm text-gray-500">
+                    Найдено{" "}
+                    <span className="font-medium text-gray-700">
+                      {searchResult.totalHits}
+                    </span>{" "}
+                    {pluralizeProducts(searchResult.totalHits)}
+                  </p>
+                  <Suspense fallback={null}>
+                    <SortSelect basePath={basePath} />
+                  </Suspense>
+                </div>
+
+                {/* Product grid */}
+                <ul
+                  className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+                  aria-label="Результаты поиска"
+                >
+                  {products.map((product) => (
+                    <li key={product.id}>
+                      <ProductCard product={product} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         )}

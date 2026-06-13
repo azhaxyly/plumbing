@@ -2,6 +2,7 @@
 
 import { TRPCError } from "@trpc/server";
 import { createServerTrpc } from "@/lib/trpc-server";
+import { revalidateHomepage } from "@/lib/revalidate";
 
 interface ActionResult<T = undefined> {
   data?: T;
@@ -20,6 +21,7 @@ export async function addBestsellerProductAction(
   try {
     const trpc = await createServerTrpc();
     await trpc.adminBestsellers.addProduct({ productId });
+    await revalidateHomepage();
     return {};
   } catch (err) {
     return { error: extractError(err) };
@@ -32,6 +34,7 @@ export async function removeBestsellerProductAction(
   try {
     const trpc = await createServerTrpc();
     await trpc.adminBestsellers.removeProduct({ productId });
+    await revalidateHomepage();
     return {};
   } catch (err) {
     return { error: extractError(err) };
@@ -44,6 +47,7 @@ export async function reorderBestsellerProductsAction(
   try {
     const trpc = await createServerTrpc();
     await trpc.adminBestsellers.reorderProducts({ productIds });
+    await revalidateHomepage();
     return {};
   } catch (err) {
     return { error: extractError(err) };

@@ -40,6 +40,7 @@ interface FacetPanelProps {
   priceRange: PriceRange;
   currentFilters: FacetFilters;
   basePath: string;
+  onApply?: () => void;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -118,6 +119,7 @@ export function FacetPanel({
   priceRange,
   currentFilters,
   basePath,
+  onApply,
 }: FacetPanelProps) {
   const router = useRouter();
   const { isPending, startFilterTransition: startTransition } = useFilterTransition();
@@ -194,11 +196,12 @@ export function FacetPanel({
 
   // ── Apply ───────────────────────────────────────────────────────────────────
   const handleApply = useCallback(() => {
+    onApply?.();
     const qs = buildFacetUrl(pendingFilters);
     startTransition(() => {
       router.push(`${basePath}${qs}` as Route);
     });
-  }, [router, basePath, pendingFilters]);
+  }, [router, basePath, pendingFilters, onApply]);
 
   // ── Reset all ───────────────────────────────────────────────────────────────
   const handleReset = () => {

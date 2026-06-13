@@ -5,7 +5,7 @@ export interface BrandCountry {
 
 export const BRAND_COUNTRY: Record<string, BrandCountry> = {
   "alcaplast":  { country: "Чехия",    countryCode: "cz" },
-  "appolo":     { country: "Германия", countryCode: "de" },
+  "appolo":     { country: "Китай",    countryCode: "cn" },
   "belz":       { country: "Китай",    countryCode: "cn" },
   "beste":      { country: "Россия",   countryCode: "ru" },
   "bravat":     { country: "Германия", countryCode: "de" },
@@ -15,7 +15,7 @@ export const BRAND_COUNTRY: Record<string, BrandCountry> = {
   "grossman":   { country: "Германия", countryCode: "de" },
   "haiba":      { country: "Китай",    countryCode: "cn" },
   "lemark":     { country: "Чехия",    countryCode: "cz" },
-  "orbita":     { country: "Китай",    countryCode: "cn" },
+  "orbita":     { country: "Казахстан", countryCode: "kz" },
   "point":      { country: "Россия",   countryCode: "ru" },
   "sanita":     { country: "Россия",   countryCode: "ru" },
   "saniteco":   { country: "Китай",    countryCode: "cn" },
@@ -26,4 +26,7 @@ export const BRAND_COUNTRY: Record<string, BrandCountry> = {
   "dvin":       { country: "Россия",   countryCode: "ru" },
   "olimp":      { country: "Россия",   countryCode: "ru" },
   "triton":     { country: "Россия",   countryCode: "ru" },
+  "ariston":    { country: "Италия",   countryCode: "it" },
+  "white-wave": { country: "Казахстан", countryCode: "kz" },
+  "rein":       { country: "Китай",    countryCode: "cn" },
 };

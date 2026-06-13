@@ -9,6 +9,7 @@ import { ForgotPasswordForm } from "./forgot-password-form";
 export const metadata: Metadata = {
   title: "Восстановление пароля",
   description: "Получите ссылку для сброса пароля",
+  robots: { index: false, follow: true },
 };
 
 export default function ForgotPasswordPage() {

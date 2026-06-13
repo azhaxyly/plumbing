@@ -63,7 +63,7 @@ export class NodemailerEmailProvider implements EmailProvider {
       `Оплата: ${payload.paymentMethod}`,
       payload.notes ? `Комментарий: ${payload.notes}` : null,
       ``,
-      `Состав заказа:`,
+      `Заказ:`,
       itemsText,
       ``,
       `Итого: ${totalKzt} ₸`,

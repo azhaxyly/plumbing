@@ -69,7 +69,9 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
             .slice(0, maxProducts)
             .map((bp) => bp.product);
 
-          const posterSizeClass = isPosterOnly ? "flex-1" : "flex-[0_0_38%]";
+          const posterSizeClass = isPosterOnly
+            ? "flex-1"
+            : "h-[160px] w-full md:h-auto md:w-auto md:flex-[0_0_38%]";
           const posterSizes = isPosterOnly ? "100vw" : "(max-width: 768px) 40vw, 38vw";
 
           const cornerClass = isPosterOnly ? "" : "rounded-xl";
@@ -122,7 +124,7 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
           })();
 
           const productsEl = products.length > 0 && !isPosterOnly ? (
-            <div className={`flex-1 grid h-full gap-2 md:gap-3 ${gridClass}`}>
+            <div className={`grid w-full h-[280px] gap-2 md:h-full md:flex-1 md:gap-3 ${gridClass}`}>
               {products.map((product) => (
                 <BannerProductCard
                   key={product.id}
@@ -141,7 +143,11 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
           return (
             <div key={banner.id} className="min-w-0 flex-[0_0_100%]">
               <div
-                className={`flex h-[280px] items-stretch md:h-[340px] ${isPosterOnly ? "" : "gap-2 p-2 md:gap-3 md:p-3"}`}
+                className={
+                  isPosterOnly
+                    ? "flex h-[280px] items-stretch md:h-[340px]"
+                    : "flex flex-col gap-2 p-2 md:h-[340px] md:flex-row md:items-stretch md:gap-3 md:p-3"
+                }
                 style={{ backgroundColor: banner.backgroundColor ?? "#f5f5f4" }}
               >
                 {posterPosition === "right" ? (

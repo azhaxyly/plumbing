@@ -14,6 +14,7 @@ import { Button } from "@timsan/ui";
 export const metadata: Metadata = {
   title: "Заявка оформлена — Timsan",
   description: "Ваша заявка успешно оформлена",
+  robots: { index: false, follow: true },
 };
 
 interface CheckoutSuccessPageProps {
@@ -51,11 +52,16 @@ export default async function CheckoutSuccessPage({
       </p>
 
       <div className="flex flex-wrap justify-center gap-4">
-        <Button asChild>
-          <Link href={"/" as Route}>На главную</Link>
+        {orderId && (
+          <Button asChild>
+            <Link href={`/orders/${orderId}` as Route}>Посмотреть заказ</Link>
+          </Button>
+        )}
+        <Button asChild variant="outline">
+          <Link href={"/orders" as Route}>Все мои заказы</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href={"/category" as Route}>Продолжить покупки</Link>
+          <Link href={"/" as Route}>На главную</Link>
         </Button>
       </div>
     </div>

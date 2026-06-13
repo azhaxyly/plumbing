@@ -15,7 +15,7 @@ export function FavoritesLink() {
       aria-label={`Избранное${count > 0 ? `, ${count} товаров` : ""}`}
     >
       <Heart className="h-7 w-7" />
-      <span className="text-[12px] font-medium">Избранное</span>
+      <span className="hidden lg:block text-[12px] font-medium">Избранное</span>
       {count > 0 && (
         <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
           {count > 99 ? "99+" : count}

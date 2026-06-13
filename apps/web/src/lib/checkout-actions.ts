@@ -13,7 +13,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
-import { getGuestCart, CART_GUEST_COOKIE } from "@/lib/cart-redis";
+import { getGuestCart, deleteGuestCart, CART_GUEST_COOKIE } from "@/lib/cart-redis";
 import { checkoutSchema } from "@/lib/checkout-schemas";
 import { submitOrder } from "@/lib/order-actions";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
@@ -213,6 +213,11 @@ export async function submitCheckout(
       success: false,
       message: "Не удалось оформить заявку. Попробуйте ещё раз.",
     };
+  }
+
+  // Clear Redis cart for guests after successful order
+  if (guestId) {
+    await deleteGuestCart(guestId);
   }
 
   // Redirect to success page with real orderId

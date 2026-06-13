@@ -1,144 +1,211 @@
-import { Phone, CheckCircle2, ShieldCheck, CreditCard, Truck } from "lucide-react";
+import type { Route } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Phone,
+  Check,
+  Truck,
+  ShieldCheck,
+  Clock,
+  Sparkles,
+  Search,
+  ClipboardCheck,
+  PackageOpen,
+} from "lucide-react";
 
-export function StoreInfoSection() {
+import type { CategoryItem } from "@/lib/homepage-data";
+
+const advantages = [
+  "Оригинальная сантехника и мебель от мировых брендов",
+  "Широкий выбор для ванной, санузла и кухни",
+  "Доставка по всему Казахстану",
+  "Подбор под любую задачу и бюджет",
+  "Проверка качества перед каждой отправкой",
+  "Профессиональные консультации по выбору",
+  "Выгодные цены, акции и спецпредложения",
+];
+
+const steps = [
+  {
+    icon: Search,
+    title: "Выберите товар",
+    description: "Найдите подходящую модель в каталоге или с помощью менеджера.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Оформите заказ",
+    description: "Онлайн за пару минут или по телефону — как вам удобнее.",
+  },
+  {
+    icon: PackageOpen,
+    title: "Получите покупку",
+    description: "Доставим по всему Казахстану удобным для вас способом.",
+  },
+];
+
+const badges = [
+  { icon: Truck, label: "Доставка по РК" },
+  { icon: ShieldCheck, label: "Гарантия качества" },
+  { icon: Clock, label: "Ежедневно 09:00–22:00" },
+];
+
+export function StoreInfoSection({
+  categories,
+}: {
+  categories: CategoryItem[];
+}) {
   return (
-    <section className="mt-10 container mx-auto px-4 space-y-8 text-base text-gray-700">
-      {/* Intro */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">
-          Интернет-магазин сантехники Timsan
-        </h2>
-        <p className="text-gray-600 leading-relaxed">
-          Timsan — популярный интернет-магазин сантехники, плитки и мебели для
-          ванной в Алматы с широким ассортиментом товаров ведущих мировых и
-          отечественных брендов.
-        </p>
-      </div>
+    <section className="container mx-auto mt-12 px-4">
+      <div className="overflow-hidden rounded-3xl border border-stone-200 bg-gradient-to-b from-stone-50 to-white">
+        {/* Intro */}
+        <div className="relative px-6 py-10 sm:px-10 sm:py-14">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/10 blur-3xl"
+          />
+          <div className="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
+            {/* Text */}
+            <div className="max-w-xl">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent">
+                <Sparkles className="h-3.5 w-3.5" />
+                Интернет-магазин Timsan
+              </span>
+              <h2 className="mt-4 text-2xl font-bold leading-tight text-stone-900 sm:text-3xl">
+                Сантехника, плитка и мебель для ванной в&nbsp;Алматы
+              </h2>
+              <p className="mt-3 text-base leading-relaxed text-stone-600">
+                Широкий ассортимент товаров ведущих мировых и отечественных
+                брендов — от смесителей до готовых решений для ванной комнаты.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {badges.map(({ icon: Icon, label }) => (
+                  <span
+                    key={label}
+                    className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3.5 py-1.5 text-sm font-medium text-stone-700 shadow-sm"
+                  >
+                    <Icon className="h-4 w-4 text-accent" />
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-      {/* Why us + What to buy — two columns on desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-3">
-            Почему клиенты выбирают Timsan?
+            {/* Photo */}
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-stone-200 shadow-lg shadow-stone-200/50 lg:aspect-[5/4]">
+              <Image
+                src="/bathroom-interior.jpg"
+                alt="Современный интерьер ванной комнаты"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/10 to-transparent"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Advantages + Categories */}
+        <div className="grid grid-cols-1 gap-px bg-stone-200 lg:grid-cols-5">
+          {/* Why us */}
+          <div className="bg-white px-6 py-10 sm:px-10 lg:col-span-3">
+            <h3 className="text-lg font-bold text-stone-900">
+              Почему клиенты выбирают Timsan
+            </h3>
+            <ul className="mt-5 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+              {advantages.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent/10">
+                    <Check className="h-3 w-3 text-accent" strokeWidth={3} />
+                  </span>
+                  <span className="text-sm leading-relaxed text-stone-700">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* What to buy */}
+          <div className="bg-white px-6 py-10 sm:px-10 lg:col-span-2">
+            <h3 className="text-lg font-bold text-stone-900">
+              Что можно купить
+            </h3>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/category/${cat.slug}` as Route}
+                  className="rounded-full border border-stone-200 bg-stone-50 px-3.5 py-2 text-sm font-medium text-stone-700 transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* How to buy */}
+        <div className="border-t border-stone-200 px-6 py-10 sm:px-10 sm:py-14">
+          <h3 className="text-lg font-bold text-stone-900">
+            Как проходит покупка
           </h3>
-          <ul className="space-y-2">
-            {[
-              "Оригинальная сантехника и мебель от популярных мировых брендов",
-              "Широкий выбор товаров для ванной комнаты, санузла и кухни",
-              "Доставка по всему Казахстану",
-              "Подбор товаров под разные задачи и бюджет",
-              "Гарантия качества и проверка продукции перед отправкой",
-              "Профессиональные консультации по выбору товаров",
-              "Выгодные цены, акции, скидки и специальные предложения",
-            ].map((item) => (
-              <li key={item} className="flex gap-2 items-start">
-                <CheckCircle2 className="h-4 w-4 text-[#2B7BC8] mt-0.5 shrink-0" />
-                <span>{item}</span>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
+            Путь от выбора товара до его получения — всего три простых шага.
+          </p>
+          <ol className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            {steps.map(({ icon: Icon, title, description }, idx) => (
+              <li key={title} className="relative">
+                {idx < steps.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="absolute left-12 top-6 hidden h-px w-[calc(100%-2rem)] bg-gradient-to-r from-accent/40 to-transparent sm:block"
+                  />
+                )}
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-accent text-white shadow-lg shadow-accent/30">
+                  <Icon className="h-5 w-5" />
+                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-accent shadow ring-1 ring-stone-200">
+                    {idx + 1}
+                  </span>
+                </div>
+                <h4 className="mt-4 font-semibold text-stone-900">{title}</h4>
+                <p className="mt-1 text-sm leading-relaxed text-stone-600">
+                  {description}
+                </p>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
 
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-3">
-            Что можно купить в Timsan?
-          </h3>
-          <ul className="space-y-2">
-            {[
-              "Смесители и душевые системы",
-              "Ванны и раковины",
-              "Душевые кабины",
-              "Унитазы, биде и инсталляции",
-              "Мебель для ванных комнат",
-              "Мойки, кухонные смесители и фильтры",
-              "Аксессуары и комплектующие",
-            ].map((item) => (
-              <li key={item} className="flex gap-2 items-start">
-                <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#2B7BC8] shrink-0" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* How to buy */}
-      <div>
-        <h3 className="font-semibold text-gray-900 mb-3">Как проходит покупка?</h3>
-        <p className="text-gray-600 mb-3 leading-relaxed">
-          Процесс заказа в Timsan построен так, чтобы покупателю было легко пройти
-          путь от выбора товара до его получения.
-        </p>
-        <ol className="space-y-2 list-decimal list-inside marker:text-[#2B7BC8] marker:font-semibold">
-          <li>Выберите подходящий товар в каталоге.</li>
-          <li>Оформите заказ онлайн или по телефону.</li>
-          <li>Получите товар удобным способом.</li>
-        </ol>
-      </div>
-
-      {/* Info cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-xl bg-[#DCDCDC] p-6 flex gap-4">
-          <ShieldCheck className="h-6 w-6 text-[#2B7BC8] shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-1">Гарантийное обслуживание</h4>
-            <p className="text-gray-600 leading-relaxed text-sm">
-              Мы предоставляем гарантию на все товары. Если с покупкой что-то
-              случится в течение гарантийного срока, обратитесь за ремонтом в
-              авторизованный сервисный центр — контакты указаны в гарантийном талоне.
-            </p>
+        {/* CTA */}
+        <div className="px-6 pb-10 sm:px-10">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-accent to-accent/80 p-6 sm:p-8">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl"
+            />
+            <div className="relative flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-bold text-white">
+                  Нужна консультация или помощь с выбором?
+                </p>
+                <p className="mt-1 text-sm text-white/80">
+                  Ответим на вопросы и примем заказ по телефону — каждый день
+                  с 09:00 до 22:00.
+                </p>
+              </div>
+              <a
+                href="tel:+77762016466"
+                className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl bg-white px-6 py-3 text-base font-bold text-accent shadow-md transition-transform hover:scale-[1.02]"
+              >
+                <Phone className="h-5 w-5" />
+                Позвонить нам
+              </a>
+            </div>
           </div>
         </div>
-
-        <div className="rounded-xl bg-[#DCDCDC] p-6 flex gap-4">
-          <CreditCard className="h-6 w-6 text-[#2B7BC8] shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-1">Сантехника в рассрочку</h4>
-            <p className="text-gray-600 leading-relaxed text-sm">
-              Любой товар можно приобрести в рассрочку. При оформлении заказа
-              выберите подходящий способ оплаты и заполните онлайн-заявку.
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-xl bg-[#DCDCDC] p-6 flex gap-4">
-          <Truck className="h-6 w-6 text-[#2B7BC8] shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-1">Доставка по Казахстану</h4>
-            <p className="text-gray-600 leading-relaxed text-sm">
-              Доставляем заказы по всему Казахстану. Менеджер свяжется с вами для уточнения деталей доставки.
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-xl bg-[#DCDCDC] p-6 flex gap-4">
-          <Phone className="h-6 w-6 text-[#2B7BC8] shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-1">Консультация специалиста</h4>
-            <p className="text-gray-600 leading-relaxed text-sm">
-              Если не хватает информации по конкретной модели — обратитесь к
-              менеджерам. Колл-центр работает каждый день с 09:00 до 22:00.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="rounded-xl bg-[#2B7BC8] text-white p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <p className="font-semibold text-base">
-            Возникли вопросы или необходима консультация?
-          </p>
-          <p className="text-blue-100 text-xs mt-1">
-            Ответим на вопросы и примем заказ по телефону
-          </p>
-        </div>
-        <a
-          href="tel:+77273000000"
-          className="whitespace-nowrap font-bold text-lg bg-white text-[#2B7BC8] rounded-lg px-5 py-2.5 hover:bg-blue-50 transition-colors"
-        >
-          +7 (776) 201-64-66
-        </a>
       </div>
     </section>
   );

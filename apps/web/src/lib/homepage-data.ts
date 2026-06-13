@@ -1,5 +1,7 @@
 import { prisma } from "@timsan/db";
-import type { Prisma, Product, Brand, ProductImage, ProductVariant } from "@timsan/db";
+import type { Prisma, Product, Brand, ProductImage, ProductVariant, PromoSlide } from "@timsan/db";
+
+export type { PromoSlide };
 
 import type { ProductCardData } from "@/components/catalog/product-card";
 
@@ -31,6 +33,13 @@ export interface BrandItem {
   slug: string;
   name: string;
   logoUrl: string | null;
+}
+
+export interface ReviewItem {
+  id: string;
+  authorName: string;
+  rating: number;
+  text: string;
 }
 
 export async function getActiveBanners(): Promise<BannerWithProducts[]> {
@@ -109,6 +118,7 @@ function mapToProductCardData(
     id: product.id,
     slug: product.slug,
     name: product.name,
+    sku: product.sku,
     priceCents: product.priceCents,
     compareAtPriceCents: product.compareAtPriceCents,
     primaryImageUrl: product.images?.[0]?.url ?? null,
@@ -187,6 +197,46 @@ export async function getSaleProducts(limit = 20): Promise<ProductCardData[]> {
 
 const BRAND_GRID_COLS = 5;
 
+export async function getActivePromoSlides(): Promise<PromoSlide[]> {
+  try {
+    const now = new Date();
+    return prisma.promoSlide.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { startsAt: null, endsAt: null },
+          { startsAt: { lte: now }, endsAt: null },
+          { startsAt: null, endsAt: { gte: now } },
+          { startsAt: { lte: now }, endsAt: { gte: now } },
+        ],
+      },
+      orderBy: { position: "asc" },
+    });
+  } catch (error) {
+    console.error("Failed to fetch promo slides:", error);
+    return [];
+  }
+}
+
+export async function getActiveReviews(limit = 20): Promise<ReviewItem[]> {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: { isActive: true },
+      orderBy: [{ position: "asc" }, { createdAt: "desc" }],
+      take: limit,
+    });
+    return reviews.map((r) => ({
+      id: r.id,
+      authorName: r.authorName,
+      rating: r.rating,
+      text: r.text,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch reviews:", error);
+    return [];
+  }
+}
+
 export async function getBrandsWithLogo(): Promise<BrandItem[]> {
   try {
     const brands = await prisma.brand.findMany({
@@ -206,3 +256,4 @@ export async function getBrandsWithLogo(): Promise<BrandItem[]> {
     return [];
   }
 }
+

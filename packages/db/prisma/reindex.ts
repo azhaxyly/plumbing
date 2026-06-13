@@ -64,6 +64,9 @@ async function main() {
           include: { category: { select: { id: true, name: true } } },
         },
         variants: { select: { quantity: true, reserved: true } },
+        productAttributes: {
+          include: { attributeValue: { select: { value: true } } },
+        },
       },
     });
 
@@ -86,6 +89,7 @@ async function main() {
         brandSlug: p.brand?.slug ?? null,
         categoryIds: p.categories.map((pc) => pc.category.id),
         categoryNames: p.categories.map((pc) => pc.category.name),
+        attributeValues: p.productAttributes.map((pa) => pa.attributeValue.value),
         primaryImageUrl: p.images[0]?.url ?? null,
         inStock: totalAvailable > 0,
         createdAt: p.createdAt.toISOString(),

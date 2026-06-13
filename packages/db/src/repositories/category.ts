@@ -194,12 +194,20 @@ export async function getCategoryBySlug(slug: string): Promise<{
 
 /**
  * Fetches a category by its slug path array (e.g. ["bathtubs", "acrylic-bathtubs"]).
- * Validates that each slug in the path is a child of the previous one.
+ *
+ * Only the leaf slug is used to locate the category; the canonical path is then
+ * derived from the category's real ancestors (root→leaf). The caller is expected
+ * to compare the requested path against `canonicalPath` and 308-redirect when they
+ * differ, instead of 404-ing — this collapses duplicate URLs (`/category/child`
+ * and any wrong-ancestor path) onto the single canonical full path.
+ *
+ * Returns `null` only when the leaf slug does not exist at all.
  */
 export async function getCategoryBySlugPath(slugPath: string[]): Promise<{
   category: CategoryCteRow;
   ancestors: CategoryCteRow[];
   children: CategoryCteRow[];
+  canonicalPath: string[];
 } | null> {
   if (slugPath.length === 0) return null;
 
@@ -210,20 +218,40 @@ export async function getCategoryBySlugPath(slugPath: string[]): Promise<{
   const result = await getCategoryBySlug(leafSlug);
   if (!result) return null;
 
-  // Validate the path: ancestors slugs must match the provided path (excluding leaf)
-  if (slugPath.length > 1) {
-    const expectedAncestorSlugs = slugPath.slice(0, -1).reverse();
-    const actualAncestorSlugs = result.ancestors.map((a) => a.slug);
+  // Canonical full path: ancestors are returned root→leaf, leaf last.
+  const canonicalPath = [
+    ...result.ancestors.map((a) => a.slug),
+    result.category.slug,
+  ];
 
-    for (let i = 0; i < expectedAncestorSlugs.length; i++) {
-      if (actualAncestorSlugs[i] !== expectedAncestorSlugs[i]) {
-        // Path mismatch — the slug exists but not at this path
-        return null;
-      }
-    }
+  return { ...result, canonicalPath };
+}
+
+/**
+ * Returns every category as a canonical full slug path (root→leaf) with its
+ * `updatedAt`, in a single query. Used by the sitemap so each category is listed
+ * once, at its canonical URL.
+ */
+export async function getAllCategoryPaths(): Promise<
+  { path: string; updatedAt: Date }[]
+> {
+  const rows = await prisma.category.findMany({
+    select: { id: true, slug: true, parentId: true, updatedAt: true },
+  });
+
+  const byId = new Map(rows.map((r) => [r.id, r]));
+
+  function buildPath(id: string): string[] {
+    const node = byId.get(id);
+    if (!node) return [];
+    if (!node.parentId) return [node.slug];
+    return [...buildPath(node.parentId), node.slug];
   }
 
-  return result;
+  return rows.map((r) => ({
+    path: buildPath(r.id).join("/"),
+    updatedAt: r.updatedAt,
+  }));
 }
 
 /** Recursively builds a nested tree from a flat list of CTE rows */

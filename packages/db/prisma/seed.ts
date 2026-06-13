@@ -260,11 +260,22 @@ async function main() {
     },
   });
 
+  const brandAriston = await prisma.brand.upsert({
+    where: { slug: "ariston" },
+    update: {},
+    create: {
+      slug: "ariston",
+      name: "Ariston",
+      description: "Итальянский бренд электрических водонагревателей и климатического оборудования.",
+    },
+  });
+
   const allBrands = [
     brandGrohe, brandLemark, brandHaiba, brandTriton, brandAlcaplast,
     brandAniPlast, brandBelz, brandDvin, brandBeste, brandPoint, brandTerminus,
     brandSantek, brandSanteri, brandSanita, brandAppolo, brandOrbita, brandBravat,
     brandCersanit, brandOlimp, brandDecoroomBrand, brandSaniteco, brandGrossman,
+    brandAriston,
   ];
   console.log(`✅ Brands (${allBrands.length}): ${allBrands.map((b) => b.name).join(", ")}`);
 

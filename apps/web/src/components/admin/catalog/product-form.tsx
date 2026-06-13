@@ -268,6 +268,8 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     product?.categories.map((c) => c.categoryId) ?? [],
   );
+  const [catSearch, setCatSearch] = useState("");
+  const [catOnlyAssigned, setCatOnlyAssigned] = useState(false);
 
   // ── Variants ─────────────────────────────────────────────────────────────────
   const [variants, setVariants] = useState<Variant[]>(product?.variants ?? []);
@@ -289,6 +291,8 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
       attributeValueId: a.attributeValueId,
     })) ?? [],
   );
+  const [attrSearch, setAttrSearch] = useState("");
+  const [attrOnlyAssigned, setAttrOnlyAssigned] = useState(false);
 
   // ── SEO ───────────────────────────────────────────────────────────────────────
   const [seoTitle, setSeoTitle] = useState(product?.seoTitle ?? "");
@@ -431,6 +435,7 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
     setUploadError(null);
     setUploading(true);
 
+    const added: ProductImage[] = [];
     try {
       for (const file of files) {
         if (!file.type.startsWith("image/")) continue;
@@ -439,19 +444,24 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
           continue;
         }
         const { publicUrl } = await uploadImage(file);
-        const isFirst = images.length === 0;
+        const position = images.length + added.length;
+        const isFirst = position === 0;
+        const alt = file.name.replace(/\.[^.]+$/, "");
         const result = await upsertImageAction({
           productId: product.id,
           url: publicUrl,
-          alt: file.name.replace(/\.[^.]+$/, ""),
-          position: images.length,
+          alt,
+          position,
           isPrimary: isFirst,
         });
-        if (result.error) {
-          setUploadError(result.error);
+        if (result.error || !result.data) {
+          setUploadError(result.error ?? "Ошибка загрузки");
           break;
         }
+        added.push({ id: result.data.id, url: publicUrl, alt, position, isPrimary: isFirst });
       }
+      // Optimistic update so new images appear without a page reload
+      if (added.length) setImages((prev) => [...prev, ...added]);
       startTransition(() => router.refresh());
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Ошибка загрузки");
@@ -684,31 +694,124 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
           </div>
 
           {/* Categories */}
-          <div className="rounded-lg border bg-white p-6 shadow-sm">
-            <h2 className="mb-3 text-sm font-semibold text-gray-700">Категории</h2>
-            <div className="max-h-48 overflow-y-auto space-y-1">
-              {flatCategories.map((c) => (
-                <label key={c.id} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 hover:bg-gray-50">
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(c.id)}
-                    onChange={() => toggleCategory(c.id)}
-                    disabled={isPending}
-                    className="rounded"
-                  />
-                  <span
-                    className="text-sm text-gray-700"
-                    style={{ paddingLeft: `${c.depth * 16}px` }}
-                  >
-                    {c.name}
-                  </span>
-                </label>
-              ))}
-              {flatCategories.length === 0 && (
-                <p className="text-sm text-gray-400">Категории не найдены</p>
-              )}
-            </div>
-          </div>
+          {(() => {
+            const query = catSearch.trim().toLowerCase();
+            const visibleCategories = flatCategories.filter((c) => {
+              if (catOnlyAssigned && !selectedCategories.includes(c.id)) return false;
+              if (query && !c.name.toLowerCase().includes(query)) return false;
+              return true;
+            });
+            const selectedNames = flatCategories.filter((c) =>
+              selectedCategories.includes(c.id),
+            );
+            return (
+              <div className="rounded-lg border bg-white shadow-sm">
+                {/* Toolbar */}
+                <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="font-semibold text-gray-800">Категории</span>
+                    <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                      выбрано {selectedCategories.length}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1 sm:w-64">
+                      <Input
+                        value={catSearch}
+                        onChange={(e) => setCatSearch(e.target.value)}
+                        placeholder="Поиск категории…"
+                        className="pr-7"
+                        disabled={isPending}
+                      />
+                      {catSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setCatSearch("")}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          title="Очистить"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setCatOnlyAssigned((v) => !v)}
+                      className={cn(
+                        "whitespace-nowrap rounded-md border px-3 py-2 text-sm transition-colors",
+                        catOnlyAssigned
+                          ? "border-blue-600 bg-blue-50 text-blue-700"
+                          : "border-input bg-background text-gray-600 hover:bg-gray-50",
+                      )}
+                    >
+                      Только выбранные
+                    </button>
+                  </div>
+                </div>
+
+                {/* Selected chips */}
+                {selectedNames.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 border-b p-3">
+                    {selectedNames.map((c) => (
+                      <span
+                        key={c.id}
+                        className="inline-flex items-center gap-1 rounded-full bg-blue-50 py-1 pl-2.5 pr-1 text-xs font-medium text-blue-700"
+                      >
+                        {c.name}
+                        <button
+                          type="button"
+                          onClick={() => toggleCategory(c.id)}
+                          disabled={isPending}
+                          className="rounded-full p-0.5 hover:bg-blue-100"
+                          title="Убрать"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* List */}
+                <div className="max-h-80 overflow-y-auto p-2">
+                  {visibleCategories.length === 0 ? (
+                    <p className="px-2 py-8 text-center text-sm text-gray-400">
+                      {flatCategories.length === 0
+                        ? "Категории не найдены"
+                        : catOnlyAssigned
+                          ? "Нет выбранных категорий"
+                          : "Ничего не найдено"}
+                    </p>
+                  ) : (
+                    visibleCategories.map((c) => {
+                      const checked = selectedCategories.includes(c.id);
+                      return (
+                        <label
+                          key={c.id}
+                          className={cn(
+                            "flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm",
+                            checked ? "bg-blue-50/60" : "hover:bg-gray-50",
+                          )}
+                          style={{ paddingLeft: `${8 + (query ? 0 : c.depth * 16)}px` }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleCategory(c.id)}
+                            disabled={isPending}
+                            className="rounded"
+                          />
+                          <span className={cn("text-gray-700", checked && "font-medium text-blue-700")}>
+                            {c.name}
+                          </span>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           <div className="flex justify-end">
             <Button type="submit" disabled={isPending || !name || !slug || !sku || !priceCents}>
@@ -901,9 +1004,8 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
 
           {product && (
             <>
-              <div className="rounded-lg border bg-white p-6 shadow-sm">
-                <h2 className="mb-4 text-sm font-semibold text-gray-700">Атрибуты товара</h2>
-                {attributes.length === 0 ? (
+              {attributes.length === 0 ? (
+                <div className="rounded-lg border bg-white p-6 shadow-sm">
                   <p className="text-sm text-gray-500">
                     Атрибуты не найдены.{" "}
                     <a href="/admin/catalog/attributes" className="text-blue-600 hover:underline">
@@ -911,31 +1013,127 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
                     </a>{" "}
                     в разделе каталога.
                   </p>
-                ) : (
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {attributes.map((attr) => {
-                      const current = productAttrs.find((a) => a.attributeId === attr.id);
-                      return (
-                        <div key={attr.id}>
-                          <label className="mb-1 block text-sm font-medium text-gray-700">
-                            {attr.name}
-                          </label>
-                          <select
-                            value={current?.attributeValueId ?? ""}
-                            onChange={(e) => setAttrValue(attr.id, e.target.value)}
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                          >
-                            <option value="">— не выбрано —</option>
-                            {attr.values.map((v) => (
-                              <option key={v.id} value={v.id}>{v.value}</option>
-                            ))}
-                          </select>
+                </div>
+              ) : (
+                (() => {
+                  const assignedCount = productAttrs.filter((a) => a.attributeValueId).length;
+                  const query = attrSearch.trim().toLowerCase();
+                  const visible = attributes.filter((attr) => {
+                    const isAssigned = productAttrs.some(
+                      (a) => a.attributeId === attr.id && a.attributeValueId,
+                    );
+                    if (attrOnlyAssigned && !isAssigned) return false;
+                    if (query && !attr.name.toLowerCase().includes(query)) return false;
+                    return true;
+                  });
+                  return (
+                    <div className="rounded-lg border bg-white shadow-sm">
+                      {/* Toolbar */}
+                      <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <span className="font-semibold text-gray-800">Атрибуты товара</span>
+                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                            заполнено {assignedCount} из {attributes.length}
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                        <div className="flex items-center gap-2">
+                          <div className="relative flex-1 sm:w-64">
+                            <Input
+                              value={attrSearch}
+                              onChange={(e) => setAttrSearch(e.target.value)}
+                              placeholder="Поиск атрибута…"
+                              className="pr-7"
+                            />
+                            {attrSearch && (
+                              <button
+                                type="button"
+                                onClick={() => setAttrSearch("")}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                title="Очистить"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setAttrOnlyAssigned((v) => !v)}
+                            className={cn(
+                              "whitespace-nowrap rounded-md border px-3 py-2 text-sm transition-colors",
+                              attrOnlyAssigned
+                                ? "border-blue-600 bg-blue-50 text-blue-700"
+                                : "border-input bg-background text-gray-600 hover:bg-gray-50",
+                            )}
+                          >
+                            Только заполненные
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* List */}
+                      <div className="max-h-[28rem] divide-y overflow-y-auto">
+                        {visible.length === 0 ? (
+                          <p className="px-4 py-8 text-center text-sm text-gray-400">
+                            {attrOnlyAssigned
+                              ? "Нет заполненных атрибутов."
+                              : "Ничего не найдено."}
+                          </p>
+                        ) : (
+                          visible.map((attr) => {
+                            const current = productAttrs.find((a) => a.attributeId === attr.id);
+                            const isAssigned = !!current?.attributeValueId;
+                            return (
+                              <div
+                                key={attr.id}
+                                className={cn(
+                                  "flex items-center gap-3 px-4 py-2.5",
+                                  isAssigned ? "bg-blue-50/40" : "hover:bg-gray-50",
+                                )}
+                              >
+                                <span
+                                  className={cn(
+                                    "h-1.5 w-1.5 shrink-0 rounded-full",
+                                    isAssigned ? "bg-blue-500" : "bg-gray-200",
+                                  )}
+                                />
+                                <label
+                                  className="min-w-0 flex-1 truncate text-sm font-medium text-gray-700"
+                                  title={attr.name}
+                                >
+                                  {attr.name}
+                                </label>
+                                <select
+                                  value={current?.attributeValueId ?? ""}
+                                  onChange={(e) => setAttrValue(attr.id, e.target.value)}
+                                  className={cn(
+                                    "w-44 shrink-0 rounded-md border bg-background px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring sm:w-56",
+                                    isAssigned ? "border-blue-300" : "border-input text-gray-500",
+                                  )}
+                                >
+                                  <option value="">— не выбрано —</option>
+                                  {attr.values.map((v) => (
+                                    <option key={v.id} value={v.id}>{v.value}</option>
+                                  ))}
+                                </select>
+                                {isAssigned && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setAttrValue(attr.id, "")}
+                                    className="shrink-0 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-red-600"
+                                    title="Очистить значение"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
 
               <div className="flex justify-end">
                 <Button size="sm" onClick={handleSaveAttributes} disabled={isPending}>

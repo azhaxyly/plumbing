@@ -166,7 +166,7 @@ function generatePresignedPutUrl(params: {
 
 // ─── Route handler ────────────────────────────────────────────────────────────
 
-const ALLOWED_FOLDERS = ["brands", "products", "banners", "categories"] as const;
+const ALLOWED_FOLDERS = ["brands", "products", "banners", "categories", "promo-slides"] as const;
 type Folder = (typeof ALLOWED_FOLDERS)[number];
 
 export async function POST(req: NextRequest): Promise<NextResponse> {

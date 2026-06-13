@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@timsan/ui";
 import { ShoppingCart } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+import { AddToCartButton } from "./add-to-cart-button";
 import { WishlistButton } from "./wishlist-button";
 
 import { BRAND_COUNTRY } from "@/lib/brand-country";
@@ -16,6 +16,7 @@ export interface ProductCardData {
   id: string;
   slug: string;
   name: string;
+  sku: string;
   priceCents: number;
   compareAtPriceCents: number | null;
   primaryImageUrl: string | null;
@@ -33,6 +34,8 @@ interface ProductCardProps {
 
 
 export function ProductCard({ product, badge }: ProductCardProps) {
+  const noPriceSet = !product.priceCents || product.priceCents <= 0;
+
   const images = product.imageUrls && product.imageUrls.length > 0
     ? product.imageUrls
     : product.primaryImageUrl
@@ -141,7 +144,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
             </div>
           ) : (
             <p className="text-xs font-medium uppercase tracking-wide text-gray-400 min-h-[1rem]">
-              {product.brandName ?? " "}
+              {product.brandName ?? " "}
             </p>
           );
         })()}
@@ -154,12 +157,18 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         </Link>
 
         <div className="mt-auto flex items-end gap-2">
-          <span className="text-lg font-bold text-gray-900">
-            {formatPrice(product.priceCents)}
-          </span>
-          <span className={`text-sm line-through text-red-400 ${(!hasDiscount || !product.compareAtPriceCents) ? "invisible" : ""}`}>
-            {product.compareAtPriceCents ? formatPrice(product.compareAtPriceCents) : " "}
-          </span>
+          {noPriceSet ? (
+            <span className="text-sm font-medium text-gray-400">Цена по запросу</span>
+          ) : (
+            <>
+              <span className="text-lg font-bold text-gray-900">
+                {formatPrice(product.priceCents)}
+              </span>
+              <span className={`text-sm line-through text-red-400 ${(!hasDiscount || !product.compareAtPriceCents) ? "invisible" : ""}`}>
+                {product.compareAtPriceCents ? formatPrice(product.compareAtPriceCents) : " "}
+              </span>
+            </>
+          )}
         </div>
 
         <span
@@ -177,15 +186,17 @@ export function ProductCard({ product, badge }: ProductCardProps) {
           {product.inStock ? "В наличии" : "Нет в наличии"}
         </span>
 
-        <Button
+        <AddToCartButton
+          variantId={product.id}
+          productId={product.id}
+          unitPrice={product.priceCents}
+          productName={product.name}
+          productSku={product.sku}
+          productImageUrl={product.primaryImageUrl ?? undefined}
           size="sm"
-          className="mt-1 w-full"
+          className="mt-1 w-full bg-[#2B7BC8] text-white hover:bg-[#2568a8]"
           disabled={!product.inStock}
-          aria-label={`Добавить ${product.name} в корзину`}
-        >
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          В корзину
-        </Button>
+        />
       </div>
     </article>
   );

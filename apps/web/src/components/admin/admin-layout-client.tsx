@@ -46,7 +46,7 @@ export function AdminLayoutClient({
       />
 
       {/* Main content area — offset by sidebar width on desktop */}
-      <div className="flex flex-1 flex-col lg:pl-64">
+      <div className="flex min-w-0 flex-1 flex-col lg:pl-64">
         <AdminHeader
           userName={userName}
           userRole={userRole}

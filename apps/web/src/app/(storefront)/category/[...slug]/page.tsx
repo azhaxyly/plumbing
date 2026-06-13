@@ -1,10 +1,11 @@
 import { getCategoryBySlugPath , prisma } from "@timsan/db";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { CategoryListing } from "@/components/catalog/category-listing";
 import { FacetPanel } from "@/components/catalog/facet-panel";
+import { MobileFilterDrawer } from "@/components/catalog/mobile-filter-drawer";
 import type { ProductCardData } from "@/components/catalog/product-card";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { FilterTransitionProvider, ProductsTransitionArea } from "@/contexts/filter-transition-context";
@@ -93,6 +94,7 @@ async function getCategoryProducts(
       id: true,
       slug: true,
       name: true,
+      sku: true,
       priceCents: true,
       compareAtPriceCents: true,
       brand: { select: { name: true, slug: true } },
@@ -118,6 +120,7 @@ async function getCategoryProducts(
       id: p.id,
       slug: p.slug,
       name: p.name,
+      sku: p.sku,
       priceCents: p.priceCents,
       compareAtPriceCents: p.compareAtPriceCents,
       primaryImageUrl: primaryImage?.url ?? null,
@@ -154,6 +157,7 @@ function buildPaginationUrl(
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
   const result = await getCategoryBySlugPath(slug);
@@ -162,17 +166,22 @@ export async function generateMetadata({
     return { title: "Категория не найдена" };
   }
 
-  const { category } = result;
+  const { category, canonicalPath } = result;
+  // Self-canonical pagination: pages 2+ canonicalize to themselves (only the
+  // page param, never facets/sort), so Google indexes their distinct products.
+  const page = Math.max(1, parseInt((await searchParams).page as string) || 1);
+  const canonicalUrl =
+    `/category/${canonicalPath.join("/")}` + (page > 1 ? `?page=${page}` : "");
 
   return {
     title: category.seoTitle ?? category.name,
     description: category.seoDescription ?? category.description ?? undefined,
     keywords: category.seoKeywords ?? undefined,
-    alternates: { canonical: `/category/${slug.join("/")}` },
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: category.seoTitle ?? category.name,
       description: category.seoDescription ?? category.description ?? undefined,
-      url: `/category/${slug.join("/")}`,
+      url: canonicalUrl,
       type: "website",
     },
   };
@@ -190,7 +199,22 @@ export default async function CategoryPage({
   const result = await getCategoryBySlugPath(slug);
   if (!result) notFound();
 
-  const { category, ancestors, children } = result;
+  const { category, ancestors, children, canonicalPath } = result;
+
+  // Redirect non-canonical paths (short `/category/child`, wrong ancestors)
+  // to the single canonical full path, preserving any query string.
+  if (slug.join("/") !== canonicalPath.join("/")) {
+    const qs = new URLSearchParams(
+      Object.entries(rawSearchParams).flatMap(([key, value]) =>
+        Array.isArray(value)
+          ? value.map((v) => [key, v] as [string, string])
+          : value !== undefined
+            ? [[key, value] as [string, string]]
+            : [],
+      ),
+    ).toString();
+    permanentRedirect(`/category/${canonicalPath.join("/")}${qs ? `?${qs}` : ""}`);
+  }
 
   // Parse current page
   const page = Math.max(1, parseInt((rawSearchParams.page as string) ?? "1") || 1);
@@ -266,6 +290,14 @@ export default async function CategoryPage({
   const hasFacets =
     facetData.brands.length > 0 || facetData.attributes.length > 0;
 
+  const activeFilterCount =
+    (currentFilters.brands?.length ?? 0) +
+    (currentFilters.price !== undefined ? 1 : 0) +
+    facetData.attributes.reduce((sum, attr) => {
+      const vals = currentFilters[attr.slug] as string[] | undefined;
+      return sum + (vals?.length ?? 0);
+    }, 0);
+
   const listingProps = {
     categoryName: category.name,
     categoryDescription: category.description,
@@ -292,24 +324,37 @@ export default async function CategoryPage({
         <Breadcrumbs items={breadcrumbItems} />
 
         {hasFacets ? (
-          <div className="container mx-auto flex gap-8 px-4 py-8 md:px-6">
-            {/* Facet sidebar */}
-            <div className="hidden w-64 shrink-0 lg:block">
-              <Suspense fallback={null}>
-                <FacetPanel
-                  brands={facetData.brands}
-                  attributes={facetData.attributes}
-                  priceRange={facetData.priceRange}
-                  currentFilters={currentFilters}
-                  basePath={basePath}
-                />
-              </Suspense>
+          <div className="container mx-auto px-4 py-8 md:px-6">
+            {/* Кнопка фильтров для мобильных и планшетов */}
+            <div className="mb-4 lg:hidden">
+              <MobileFilterDrawer
+                brands={facetData.brands}
+                attributes={facetData.attributes}
+                priceRange={facetData.priceRange}
+                currentFilters={currentFilters}
+                basePath={basePath}
+                activeFilterCount={activeFilterCount}
+              />
             </div>
 
-            {/* Product listing */}
-            <ProductsTransitionArea className="min-w-0 flex-1">
-              <CategoryListing {...listingProps} />
-            </ProductsTransitionArea>
+            {/* Десктоп: боковая панель + продукты */}
+            <div className="flex gap-8">
+              <div className="hidden w-64 shrink-0 lg:block">
+                <Suspense fallback={null}>
+                  <FacetPanel
+                    brands={facetData.brands}
+                    attributes={facetData.attributes}
+                    priceRange={facetData.priceRange}
+                    currentFilters={currentFilters}
+                    basePath={basePath}
+                  />
+                </Suspense>
+              </div>
+
+              <ProductsTransitionArea className="min-w-0 flex-1">
+                <CategoryListing {...listingProps} />
+              </ProductsTransitionArea>
+            </div>
           </div>
         ) : (
           <ProductsTransitionArea>

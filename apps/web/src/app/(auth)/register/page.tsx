@@ -9,6 +9,7 @@ import { RegisterForm } from "./register-form";
 export const metadata: Metadata = {
   title: "Регистрация",
   description: "Создайте аккаунт",
+  robots: { index: false, follow: true },
 };
 
 export default function RegisterPage() {

@@ -30,6 +30,7 @@ export {
   getCategoryTree,
   getCategoryBySlug,
   getCategoryBySlugPath,
+  getAllCategoryPaths,
 } from "./repositories/category";
 
 export type { ProductFull } from "./repositories/product";

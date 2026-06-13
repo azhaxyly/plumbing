@@ -46,6 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params;
   return {
     title: `Заказ #${id.slice(-8).toUpperCase()} — Timsan`,
+    robots: { index: false, follow: true },
   };
 }
 
@@ -109,7 +110,7 @@ export default async function AccountOrderDetailPage({ params }: PageProps) {
           <section className="rounded-xl border border-stone-200 bg-white">
             <div className="border-b border-stone-100 px-6 py-4">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-stone-500">
-                Состав заказа
+                Заказ
               </h2>
             </div>
             <div className="overflow-x-auto">

@@ -1,6 +1,6 @@
-﻿import type { CategoryTreeNode } from "@timsan/db";
+import type { CategoryTreeNode } from "@timsan/db";
 import { getCategoryTree } from "@timsan/db";
-import { LayoutDashboard, Mail, Phone, ShoppingCart, User } from "lucide-react";
+import { ClipboardList, LayoutDashboard, Mail, Phone, ShoppingCart, User } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,7 +18,7 @@ const topLinks = [
 ];
 
 const phone = process.env["NEXT_PUBLIC_SHOP_PHONE"] ?? "+7 (776) 201-64-66";
-const email = process.env["NEXT_PUBLIC_SHOP_EMAIL"] ?? "info@timsan.kz";
+const email = process.env["NEXT_PUBLIC_SHOP_EMAIL"] ?? "adilet.timat@gmail.com";
 
 export async function Header() {
   let categories: CategoryTreeNode[] | null = null;
@@ -31,6 +31,7 @@ export async function Header() {
   const session = await auth();
   const role = (session?.user as { role?: string } | undefined)?.role;
   const isAdmin = role === "admin" || role === "manager";
+  const isAuthenticated = !!session?.user;
 
   const cartCount = 0;
 
@@ -38,7 +39,7 @@ export async function Header() {
     <>
       {/* Top bar — не sticky, уходит при скролле */}
       <div className="border-b border-stone-100 bg-white w-full">
-        <div className="container mx-auto flex min-h-[40px] items-center px-6 text-xs text-stone-500">
+        <div className="container mx-auto flex min-h-[52px] items-center px-4 md:px-6 text-sm text-stone-500">
           <nav className="hidden items-center gap-5 md:flex" aria-label="Вспомогательная навигация">
             {topLinks.map((link) => (
               <Link
@@ -69,71 +70,164 @@ export async function Header() {
         </div>
       </div>
 
-      {/* Main header row — sticky, компактный */}
+      {/* Main header row — sticky */}
       <div className="sticky top-0 z-40 border-b border-stone-100 bg-white shadow-sm">
-        <div className="container mx-auto flex min-h-[80px] items-center gap-4 pl-2 pr-6 py-1">
-          {/* Logo — прижат к краю, растянут по ширине */}
-          <Link
-            href="/"
-            className="shrink-0 transition-opacity hover:opacity-80"
-            aria-label="Timsan — на главную"
-          >
-            <Image
-              src="/logo.png"
-              alt="Timsan Сантехника"
-              width={173}
-              height={115}
-              className="h-[115px] w-[173px] object-contain"
-              priority
-            />
-          </Link>
+        <div className="container mx-auto px-3 py-2 md:pl-2 md:pr-6 md:py-3">
 
-          {/* Каталог */}
-          <MegaMenu categories={categories} />
-
-          {/* Search */}
-          <SearchBar />
-
-          {/* Icons */}
-          <div className="flex items-center gap-1">
-            {isAdmin ? (
+          {/* ── Mobile: две строки (< md) ── */}
+          <div className="md:hidden">
+            {/* Строка 1: логотип + корзина + гамбургер */}
+            <div className="flex items-center justify-between">
               <Link
-                href={"/admin" as Route}
-                className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                aria-label="Панель администратора"
+                href="/"
+                className="shrink-0 transition-opacity hover:opacity-80"
+                aria-label="Timsan — на главную"
               >
-                <LayoutDashboard className="h-7 w-7" />
-                <span className="text-[12px] font-medium">Админка</span>
+                <Image
+                  src="/logo.png"
+                  alt="Timsan Сантехника"
+                  width={96}
+                  height={64}
+                  className="h-[64px] w-[96px] object-contain"
+                  priority
+                />
               </Link>
-            ) : (
-              <Link
-                href={"/account" as Route}
-                className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                aria-label="Личный кабинет"
-              >
-                <User className="h-7 w-7" />
-                <span className="text-[12px] font-medium">Кабинет</span>
-              </Link>
-            )}
 
-            <FavoritesLink />
+              <div className="flex items-center gap-1">
+                {isAdmin ? (
+                  <Link
+                    href={"/admin" as Route}
+                    className="flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                    aria-label="Панель администратора"
+                  >
+                    <LayoutDashboard className="h-6 w-6" />
+                  </Link>
+                ) : isAuthenticated ? (
+                  <Link
+                    href={"/account" as Route}
+                    className="flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                    aria-label="Личный кабинет"
+                  >
+                    <User className="h-6 w-6" />
+                  </Link>
+                ) : (
+                  <Link
+                    href={"/login" as Route}
+                    className="flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                    aria-label="Войти"
+                  >
+                    <User className="h-6 w-6" />
+                  </Link>
+                )}
 
+                <Link
+                  href={"/cart" as Route}
+                  className="relative flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                  aria-label={`Корзина${cartCount > 0 ? `, ${cartCount} товаров` : ""}`}
+                >
+                  <ShoppingCart className="h-6 w-6" />
+                  {cartCount > 0 && (
+                    <span className="absolute right-0.5 top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  )}
+                </Link>
+                <MobileMenu categories={categories} />
+              </div>
+            </div>
+
+            {/* Строка 2: поисковая строка */}
+            <div className="mt-2">
+              <SearchBar />
+            </div>
+          </div>
+
+          {/* ── Desktop: одна строка (md+) ── */}
+          <div className="hidden md:flex min-h-[80px] items-center gap-4">
+            {/* Логотип */}
             <Link
-              href={"/cart" as Route}
-              className="relative flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-              aria-label={`Корзина${cartCount > 0 ? `, ${cartCount} товаров` : ""}`}
+              href="/"
+              className="shrink-0 transition-opacity hover:opacity-80"
+              aria-label="Timsan — на главную"
             >
-              <ShoppingCart className="h-7 w-7" />
-              <span className="text-[12px] font-medium">Корзина</span>
-              {cartCount > 0 && (
-                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
+              <Image
+                src="/logo.png"
+                alt="Timsan Сантехника"
+                width={173}
+                height={115}
+                className="h-[115px] w-[173px] object-contain"
+                priority
+              />
             </Link>
 
-            <MobileMenu categories={categories} />
+            {/* Каталог */}
+            <MegaMenu categories={categories} />
+
+            {/* Search */}
+            <SearchBar />
+
+            {/* Icons */}
+            <div className="flex items-center gap-1">
+              {isAdmin ? (
+                <Link
+                  href={"/admin" as Route}
+                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                  aria-label="Панель администратора"
+                >
+                  <LayoutDashboard className="h-7 w-7" />
+                  <span className="hidden lg:block text-[12px] font-medium">Админка</span>
+                </Link>
+              ) : isAuthenticated ? (
+                <Link
+                  href={"/account" as Route}
+                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                  aria-label="Личный кабинет"
+                >
+                  <User className="h-7 w-7" />
+                  <span className="hidden lg:block text-[12px] font-medium">Кабинет</span>
+                </Link>
+              ) : (
+                <Link
+                  href={"/orders" as Route}
+                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                  aria-label="Мои заказы"
+                >
+                  <ClipboardList className="h-7 w-7" />
+                  <span className="hidden lg:block text-[12px] font-medium">Заказы</span>
+                </Link>
+              )}
+
+              <FavoritesLink />
+
+              <Link
+                href={"/cart" as Route}
+                className="relative flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                aria-label={`Корзина${cartCount > 0 ? `, ${cartCount} товаров` : ""}`}
+              >
+                <ShoppingCart className="h-7 w-7" />
+                <span className="hidden lg:block text-[12px] font-medium">Корзина</span>
+                {cartCount > 0 && (
+                  <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {!isAuthenticated && !isAdmin && (
+                <Link
+                  href={"/login" as Route}
+                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                  aria-label="Войти"
+                >
+                  <User className="h-7 w-7" />
+                  <span className="hidden lg:block text-[12px] font-medium">Войти</span>
+                </Link>
+              )}
+
+              <MobileMenu categories={categories} />
+            </div>
           </div>
+
         </div>
       </div>
     </>

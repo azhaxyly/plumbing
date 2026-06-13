@@ -352,7 +352,7 @@ async function main() {
     // Shop contacts
     { key: "shop_phone", value: "+7 776 201 64 66" },
     { key: "shop_email", value: "info@example.com" },
-    { key: "shop_instagram", value: "@Timsan.kz" },
+    { key: "shop_instagram", value: "" },
     { key: "shop_legal_name", value: "ТОО «Timsan»" },
     { key: "shop_bin", value: "123456789012" },
     // Notification stubs

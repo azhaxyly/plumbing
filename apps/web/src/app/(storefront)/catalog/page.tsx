@@ -40,42 +40,31 @@ export async function generateMetadata({
   return { title, robots: { index: false, follow: true } };
 }
 
-export default async function CatalogPage({ searchParams }: CatalogPageProps) {
-  const raw = await searchParams;
-  const { sort, sale } = resolveSortAndSale(raw);
-  const title = pageTitle(sort, sale);
-
-  const orderBy =
-    sort === "popular"
-      ? ({ cartItems: { _count: "desc" } } as const)
-      : ({ createdAt: "desc" } as const);
-
-  const whereExtra = sale ? { compareAtPriceCents: { not: null as null } } : {};
-
-  const rows = await prisma.product.findMany({
-    where: {
-      status: "active",
-      ...whereExtra,
-    },
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      priceCents: true,
-      compareAtPriceCents: true,
-      brand: { select: { name: true, slug: true } },
-      images: {
-        where: { isPrimary: true },
-        select: { url: true, alt: true },
-        take: 1,
+async function getBestsellerProducts(): Promise<ProductCardData[]> {
+  const items = await prisma.bestsellerItem.findMany({
+    orderBy: { position: "asc" },
+    where: { product: { status: "active" } },
+    include: {
+      product: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          sku: true,
+          priceCents: true,
+          compareAtPriceCents: true,
+          brand: { select: { name: true, slug: true } },
+          images: {
+            where: { isPrimary: true },
+            select: { url: true, alt: true },
+            take: 1,
+          },
+          variants: { select: { quantity: true, reserved: true } },
+        },
       },
-      variants: { select: { quantity: true, reserved: true } },
     },
-    orderBy,
-    take: sale ? 200 : 48,
   });
-
-  let products: ProductCardData[] = rows.map((p) => {
+  return items.map(({ product: p }) => {
     const img = p.images[0] ?? null;
     const available = p.variants.reduce(
       (sum, v) => sum + (v.quantity - v.reserved),
@@ -85,6 +74,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       id: p.id,
       slug: p.slug,
       name: p.name,
+      sku: p.sku,
       priceCents: p.priceCents,
       compareAtPriceCents: p.compareAtPriceCents,
       primaryImageUrl: img?.url ?? null,
@@ -94,15 +84,72 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       inStock: available > 0,
     };
   });
+}
 
-  if (sale) {
-    products = products
-      .filter(
-        (p) =>
-          p.compareAtPriceCents !== null &&
-          p.compareAtPriceCents > p.priceCents,
-      )
-      .slice(0, 48);
+export default async function CatalogPage({ searchParams }: CatalogPageProps) {
+  const raw = await searchParams;
+  const { sort, sale } = resolveSortAndSale(raw);
+  const title = pageTitle(sort, sale);
+
+  let products: ProductCardData[];
+
+  if (sort === "popular") {
+    products = await getBestsellerProducts();
+  } else {
+    const orderBy = { createdAt: "desc" } as const;
+    const whereExtra = sale ? { compareAtPriceCents: { not: null as null } } : {};
+
+    const rows = await prisma.product.findMany({
+      where: { status: "active", ...whereExtra },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        sku: true,
+        priceCents: true,
+        compareAtPriceCents: true,
+        brand: { select: { name: true, slug: true } },
+        images: {
+          where: { isPrimary: true },
+          select: { url: true, alt: true },
+          take: 1,
+        },
+        variants: { select: { quantity: true, reserved: true } },
+      },
+      orderBy,
+      take: sale ? 200 : 48,
+    });
+
+    products = rows.map((p) => {
+      const img = p.images[0] ?? null;
+      const available = p.variants.reduce(
+        (sum, v) => sum + (v.quantity - v.reserved),
+        0,
+      );
+      return {
+        id: p.id,
+        slug: p.slug,
+        name: p.name,
+        sku: p.sku,
+        priceCents: p.priceCents,
+        compareAtPriceCents: p.compareAtPriceCents,
+        primaryImageUrl: img?.url ?? null,
+        primaryImageAlt: img?.alt ?? p.name,
+        brandName: p.brand?.name ?? null,
+        brandSlug: p.brand?.slug ?? null,
+        inStock: available > 0,
+      };
+    });
+
+    if (sale) {
+      products = products
+        .filter(
+          (p) =>
+            p.compareAtPriceCents !== null &&
+            p.compareAtPriceCents > p.priceCents,
+        )
+        .slice(0, 48);
+    }
   }
 
   return (

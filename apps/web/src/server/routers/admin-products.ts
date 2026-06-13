@@ -54,6 +54,21 @@ function indexProduct(productId: string, action: "upsert" | "delete" = "upsert")
     );
 }
 
+/**
+ * Brands whose absence from the 1C price report does NOT mean "out of stock":
+ * the report itself excludes GROHE DIY / GROHE Леруа Мерлен / IVA / Hansgrohe
+ * and the VITRA / ЭЛНА / ИНКОПЛАСТ / ORBITA groups. The DB has a single "Grohe"
+ * brand that cannot be split into excluded/included parts, so all of Grohe is
+ * kept out of the "нет в файле" list. Lower-cased brand names.
+ */
+const STOCK_SYNC_EXCLUDED_BRANDS = new Set([
+  "grohe",
+  "hansgrohe",
+  "iva",
+  "vitra",
+  "orbita",
+]);
+
 // ─── Input schemas ────────────────────────────────────────────────────────────
 
 const productStatusSchema = z.enum(["active", "draft", "archived"]);
@@ -854,17 +869,46 @@ export const adminProductsRouter = createTRPCRouter({
       const prisma = await getPrisma();
 
       const buffer = Buffer.from(input.fileBase64, "base64");
-      const rows = parseStockFile(buffer, input.fileName);
+      const parsed = parseStockFile(buffer, input.fileName);
+
+      // Collapse duplicate articles (last row wins); flag rows whose duplicates
+      // disagreed on the retail price so the admin can double-check them.
+      const byArticle = new Map<string, (typeof parsed)[number]>();
+      const priceConflicts = new Set<string>();
+      for (const row of parsed) {
+        const key = row.article.toLowerCase();
+        const prev = byArticle.get(key);
+        if (
+          prev &&
+          prev.retailPriceCents !== null &&
+          row.retailPriceCents !== null &&
+          prev.retailPriceCents !== row.retailPriceCents
+        ) {
+          priceConflicts.add(key);
+        }
+        byArticle.set(key, row);
+      }
+      const rows = [...byArticle.values()];
 
       // Load all products once and match in memory — much faster than N queries
       const allProducts = await prisma.product.findMany({
-        select: { id: true, name: true, sku: true },
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          status: true,
+          priceCents: true,
+          brand: { select: { name: true } },
+          variants: { select: { quantity: true } },
+        },
       });
 
-      const bySkuLower = new Map<string, typeof allProducts[number]>();
+      const bySkuLower = new Map<string, (typeof allProducts)[number]>();
       for (const p of allProducts) {
         bySkuLower.set(p.sku.toLowerCase(), p);
       }
+
+      const matchedProductIds = new Set<string>();
 
       const results = rows.map((row) => {
         const quantity =
@@ -874,30 +918,62 @@ export const adminProductsRouter = createTRPCRouter({
         // Pass 1: exact SKU match
         const bySkuMatch = bySkuLower.get(articleLower);
         if (bySkuMatch) {
+          matchedProductIds.add(bySkuMatch.id);
           return {
             article: row.article,
             brand: row.brand,
             quantity,
+            newPriceCents: row.retailPriceCents,
+            currentPriceCents: bySkuMatch.priceCents,
+            priceConflict: priceConflicts.has(articleLower),
             matchSource: "sku" as const,
-            products: [bySkuMatch],
+            products: [{ id: bySkuMatch.id, name: bySkuMatch.name, sku: bySkuMatch.sku }],
           };
         }
 
         // Pass 2: article appears in product name as a whole token
         // e.g. "A39" matches "Alcaplast A39 1 1/4" but NOT "A392C" or "A390"
         const escaped = articleLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const tokenRe = new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i");
+        const tokenRe = new RegExp(`(?<![A-Za-z0-9-])${escaped}(?![A-Za-z0-9-])`, "i");
         const byNameMatches = allProducts.filter((p) => tokenRe.test(p.name));
+        for (const p of byNameMatches) matchedProductIds.add(p.id);
         return {
           article: row.article,
           brand: row.brand,
           quantity,
+          newPriceCents: row.retailPriceCents,
+          currentPriceCents: byNameMatches[0]?.priceCents ?? null,
+          priceConflict: priceConflicts.has(articleLower),
           matchSource: byNameMatches.length > 0 ? ("name" as const) : ("not_found" as const),
-          products: byNameMatches,
+          products: byNameMatches.map((p) => ({ id: p.id, name: p.name, sku: p.sku })),
         };
       });
 
-      return results;
+      // Active products that the uploaded file does not mention at all.
+      // The 1C report excludes some brands/groups entirely (Grohe DIY, Hansgrohe,
+      // IVA, VITRA, ORBITA, …) — for those, absence from the file does NOT mean
+      // "out of stock", so they are excluded from this list.
+      const notInFile = allProducts
+        .filter(
+          (p) =>
+            p.status === "active" &&
+            !matchedProductIds.has(p.id) &&
+            !STOCK_SYNC_EXCLUDED_BRANDS.has(p.brand.name.toLowerCase()),
+        )
+        .map((p) => ({
+          id: p.id,
+          sku: p.sku,
+          name: p.name,
+          brand: p.brand.name,
+          priceCents: p.priceCents,
+          totalQuantity: p.variants.reduce((sum, v) => sum + v.quantity, 0),
+        }));
+
+      return {
+        rows: results,
+        notInFile,
+        excludedBrands: [...STOCK_SYNC_EXCLUDED_BRANDS],
+      };
     }),
 
   applyStockSync: protectedProcedure
@@ -908,6 +984,7 @@ export const adminProductsRouter = createTRPCRouter({
           z.object({
             article: z.string().min(1),
             quantity: z.number().int().min(0),
+            priceCents: z.number().int().positive().nullable().optional(),
           }),
         ),
       }),
@@ -918,45 +995,97 @@ export const adminProductsRouter = createTRPCRouter({
 
       // Re-fetch products to get fresh IDs (same logic as previewStockSync)
       const allProducts = await prisma.product.findMany({
-        select: { id: true, name: true, sku: true },
+        select: { id: true, name: true, sku: true, slug: true, priceCents: true },
       });
 
-      const bySkuLower = new Map<string, string>(); // sku → id
+      const bySkuLower = new Map<string, (typeof allProducts)[number]>();
       for (const p of allProducts) {
-        bySkuLower.set(p.sku.toLowerCase(), p.id);
+        bySkuLower.set(p.sku.toLowerCase(), p);
       }
 
       let updated = 0;
+      let pricesUpdated = 0;
       let skipped = 0;
 
       for (const row of input.rows) {
         const articleLower = row.article.toLowerCase();
 
         // Pass 1: by SKU
-        let productId = bySkuLower.get(articleLower);
+        let product = bySkuLower.get(articleLower);
 
         // Pass 2: by name token
-        if (!productId) {
+        if (!product) {
           const escaped = articleLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-          const tokenRe = new RegExp(`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "i");
-          const match = allProducts.find((p) => tokenRe.test(p.name));
-          productId = match?.id;
+          const tokenRe = new RegExp(`(?<![A-Za-z0-9-])${escaped}(?![A-Za-z0-9-])`, "i");
+          product = allProducts.find((p) => tokenRe.test(p.name));
         }
 
-        if (!productId) {
+        if (!product) {
           skipped++;
           continue;
         }
 
         const result = await prisma.productVariant.updateMany({
-          where: { productId },
+          where: { productId: product.id },
           data: { quantity: row.quantity },
         });
 
         if (result.count > 0) updated += result.count;
         else skipped++;
+
+        const priceCents = row.priceCents ?? null;
+        if (priceCents !== null && priceCents !== product.priceCents) {
+          await prisma.product.update({
+            where: { id: product.id },
+            data: { priceCents, compareAtPriceCents: null },
+          });
+          await prisma.productVariant.updateMany({
+            where: { productId: product.id },
+            data: { priceCents },
+          });
+          pricesUpdated++;
+          indexProduct(product.id);
+          await revalidateProduct(product.slug);
+        }
       }
 
-      return { updated, skipped };
+      await audit({
+        actorUserId: ctx.userId,
+        action: "update",
+        entity: "Product",
+        entityId: "stock-sync",
+        after: { fileRows: input.rows.length, updated, pricesUpdated, skipped },
+      });
+
+      return { updated, pricesUpdated, skipped };
+    }),
+
+  /**
+   * Zero out stock for the given products. Used from the stock-sync page for
+   * products that are absent from the uploaded 1C report ("нет в файле").
+   * Never touches product status — the product stays visible as "нет в наличии".
+   */
+  zeroStock: protectedProcedure
+    .input(z.object({ productIds: z.array(z.string().min(1)).min(1) }))
+    .mutation(async ({ input, ctx }) => {
+      requireAdminOrManager(ctx.userRole);
+      const prisma = await getPrisma();
+
+      const result = await prisma.productVariant.updateMany({
+        where: { productId: { in: input.productIds } },
+        data: { quantity: 0 },
+      });
+
+      for (const id of input.productIds) indexProduct(id);
+
+      await audit({
+        actorUserId: ctx.userId,
+        action: "update",
+        entity: "Product",
+        entityId: "stock-sync-zero",
+        after: { productIds: input.productIds, variantsZeroed: result.count },
+      });
+
+      return { variantsZeroed: result.count };
     }),
 });

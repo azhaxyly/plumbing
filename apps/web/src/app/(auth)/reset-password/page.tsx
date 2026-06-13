@@ -9,6 +9,7 @@ import { ResetPasswordForm } from "./reset-password-form";
 export const metadata: Metadata = {
   title: "Новый пароль",
   description: "Установите новый пароль",
+  robots: { index: false, follow: true },
 };
 
 export default async function ResetPasswordPage({
