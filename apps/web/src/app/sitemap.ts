@@ -1,8 +1,9 @@
 ﻿import { getAllCategoryPaths, prisma } from "@timsan/db";
 import type { MetadataRoute } from "next";
 
-const SITE_URL =
-  process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
+export const dynamic = "force-dynamic";
+
+const SITE_URL = process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
 
 function url(path: string): string {
   return `${SITE_URL}${path}`;
