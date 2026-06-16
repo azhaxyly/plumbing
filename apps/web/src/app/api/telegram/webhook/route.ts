@@ -1,6 +1,7 @@
-﻿import { prisma } from "@timsan/db";
-import { canTransition } from "@timsan/domain";
-import type { OrderStatus } from "@timsan/domain";
+﻿export const dynamic = "force-dynamic";
+
+import { prisma } from "@timsan/db";
+import { canTransition, type OrderStatus } from "@timsan/domain";
 import { env } from "@timsan/shared";
 import { type NextRequest, NextResponse } from "next/server";
 
