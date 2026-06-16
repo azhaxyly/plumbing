@@ -12,8 +12,8 @@
     "build": "tsc",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:pbt": "vitest run --reporter=verbose"
+    "test": "vitest run --passWithNoTests",
+    "test:pbt": "vitest run --reporter=verbose --passWithNoTests"
   },
   "dependencies": {
     "@t3-oss/env-nextjs": "0.10.1",
