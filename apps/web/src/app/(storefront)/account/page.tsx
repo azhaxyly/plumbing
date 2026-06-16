@@ -4,10 +4,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { ChangePasswordForm } from "./change-password-form";
-
 import { auth } from "@/auth";
 import { logoutAction } from "@/lib/auth-actions";
+
+import { ChangePasswordForm } from "./change-password-form";
 
 export const dynamic = "force-dynamic";
 

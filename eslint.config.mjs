@@ -78,6 +78,13 @@ const config = [
             "sibling",
             "index",
           ],
+          pathGroups: [
+            {
+              pattern: "@/**",
+              group: "internal",
+            },
+          ],
+          pathGroupsExcludedImportTypes: ["builtin"],
           "newlines-between": "always",
           alphabetize: { order: "asc", caseInsensitive: true },
         },
