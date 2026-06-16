@@ -14,8 +14,6 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
     return null;
   }
 
-  const visibleBrands = brands.slice(0, 10);
-
   return (
     <section className="bg-white py-6 md:py-12">
       <div className="container mx-auto px-4">
@@ -32,13 +30,13 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
 
         <div className="overflow-hidden border border-stone-200">
           <div className="grid grid-cols-3 md:grid-cols-5">
-            {visibleBrands.map((brand, index) => (
+            {brands.map((brand, index) => (
               <Link
                 key={brand.id}
                 href={`/brand/${brand.slug}` as Route}
                 className={[
                   "flex flex-col items-center justify-center gap-2 border-b border-r border-stone-200 p-3 transition-colors hover:bg-stone-50 md:gap-3 md:p-6",
-                  index >= 6 ? "hidden md:flex" : "",
+                  index >= 10 ? "hidden md:flex" : "",
                 ]
                   .join(" ")
                   .trim()}
