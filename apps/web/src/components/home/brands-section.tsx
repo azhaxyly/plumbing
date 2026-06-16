@@ -36,7 +36,7 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
                 href={`/brand/${brand.slug}` as Route}
                 className={[
                   "flex flex-col items-center justify-center gap-2 border-b border-r border-stone-200 p-3 transition-colors hover:bg-stone-50 md:gap-3 md:p-6",
-                  index >= 10 ? "hidden md:flex" : "",
+                  index >= 9 ? "hidden md:flex" : "",
                 ]
                   .join(" ")
                   .trim()}

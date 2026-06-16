@@ -37,10 +37,10 @@ let _searchQueue: Queue | null = null;
 
 function getSearchQueue(): Queue {
   if (!_searchQueue) {
-    const connection = new IORedis(
-      process.env["REDIS_URL"] ?? "redis://localhost:6379",
-      { maxRetriesPerRequest: null, lazyConnect: true },
-    );
+    const connection = new IORedis(process.env["REDIS_URL"] ?? "redis://localhost:6379", {
+      maxRetriesPerRequest: null,
+      lazyConnect: true,
+    });
     _searchQueue = new Queue("search-indexing", { connection });
   }
   return _searchQueue;
@@ -49,9 +49,7 @@ function getSearchQueue(): Queue {
 function indexProduct(productId: string, action: "upsert" | "delete" = "upsert"): void {
   getSearchQueue()
     .add("index-product", { productId, action })
-    .catch((err) =>
-      console.error(`[indexProduct] Failed to enqueue ${productId}:`, err),
-    );
+    .catch((err) => console.error(`[indexProduct] Failed to enqueue ${productId}:`, err));
 }
 
 /**
@@ -61,13 +59,7 @@ function indexProduct(productId: string, action: "upsert" | "delete" = "upsert")
  * brand that cannot be split into excluded/included parts, so all of Grohe is
  * kept out of the "нет в файле" list. Lower-cased brand names.
  */
-const STOCK_SYNC_EXCLUDED_BRANDS = new Set([
-  "grohe",
-  "hansgrohe",
-  "iva",
-  "vitra",
-  "orbita",
-]);
+const STOCK_SYNC_EXCLUDED_BRANDS = new Set(["grohe", "hansgrohe", "iva", "vitra", "orbita"]);
 
 // ─── Input schemas ────────────────────────────────────────────────────────────
 
@@ -157,9 +149,7 @@ export const adminProductsRouter = createTRPCRouter({
           : {}),
         ...(status ? { status } : {}),
         ...(brandId ? { brandId } : {}),
-        ...(categoryId
-          ? { categories: { some: { categoryId } } }
-          : {}),
+        ...(categoryId ? { categories: { some: { categoryId } } } : {}),
       };
 
       const [total, products] = await Promise.all([
@@ -250,36 +240,121 @@ export const adminProductsRouter = createTRPCRouter({
   /**
    * Create a new product.
    */
-  create: protectedProcedure
-    .input(createProductInput)
-    .mutation(async ({ ctx, input }) => {
-      requireAdminOrManager(ctx.userRole);
+  create: protectedProcedure.input(createProductInput).mutation(async ({ ctx, input }) => {
+    requireAdminOrManager(ctx.userRole);
 
-      const prisma = await getPrisma();
+    const prisma = await getPrisma();
 
-      // Check slug uniqueness
-      const existingSlug = await prisma.product.findUnique({
+    // Check slug uniqueness
+    const existingSlug = await prisma.product.findUnique({
+      where: { slug: input.slug },
+    });
+    if (existingSlug) {
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: `Товар со slug "${input.slug}" уже существует`,
+      });
+    }
+
+    // Check SKU uniqueness
+    const existingSku = await prisma.product.findUnique({
+      where: { sku: input.sku },
+    });
+    if (existingSku) {
+      throw new TRPCError({
+        code: "CONFLICT",
+        message: `Товар с SKU "${input.sku}" уже существует`,
+      });
+    }
+
+    // Validate brand
+    const brand = await prisma.brand.findUnique({
+      where: { id: input.brandId },
+    });
+    if (!brand) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Бренд не найден",
+      });
+    }
+
+    const product = await prisma.product.create({
+      data: {
+        name: input.name,
+        slug: input.slug,
+        sku: input.sku,
+        brandId: input.brandId,
+        status: input.status,
+        priceCents: input.priceCents,
+        compareAtPriceCents: input.compareAtPriceCents ?? null,
+        shortDescription: input.shortDescription ?? null,
+        description: input.description ?? null,
+        seoTitle: input.seoTitle ?? null,
+        seoDescription: input.seoDescription ?? null,
+        seoKeywords: input.seoKeywords ?? null,
+      },
+    });
+
+    await audit({
+      actorUserId: ctx.userId,
+      action: "create",
+      entity: "Product",
+      entityId: product.id,
+      after: product,
+    });
+
+    await revalidateProduct(product.slug);
+    indexProduct(product.id);
+
+    return product;
+  }),
+
+  /**
+   * Update an existing product.
+   */
+  update: protectedProcedure.input(updateProductInput).mutation(async ({ ctx, input }) => {
+    requireAdminOrManager(ctx.userRole);
+
+    const prisma = await getPrisma();
+
+    const before = await prisma.product.findUnique({
+      where: { id: input.id },
+    });
+    if (!before) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Товар не найден",
+      });
+    }
+
+    // Check slug uniqueness if changing
+    if (input.slug && input.slug !== before.slug) {
+      const existing = await prisma.product.findUnique({
         where: { slug: input.slug },
       });
-      if (existingSlug) {
+      if (existing) {
         throw new TRPCError({
           code: "CONFLICT",
           message: `Товар со slug "${input.slug}" уже существует`,
         });
       }
+    }
 
-      // Check SKU uniqueness
-      const existingSku = await prisma.product.findUnique({
+    // Check SKU uniqueness if changing
+    if (input.sku && input.sku !== before.sku) {
+      const existing = await prisma.product.findUnique({
         where: { sku: input.sku },
       });
-      if (existingSku) {
+      if (existing) {
         throw new TRPCError({
           code: "CONFLICT",
           message: `Товар с SKU "${input.sku}" уже существует`,
         });
       }
+    }
 
-      // Validate brand
+    // Validate brand if changing
+    if (input.brandId && input.brandId !== before.brandId) {
       const brand = await prisma.brand.findUnique({
         where: { id: input.brandId },
       });
@@ -289,144 +364,47 @@ export const adminProductsRouter = createTRPCRouter({
           message: "Бренд не найден",
         });
       }
+    }
 
-      const product = await prisma.product.create({
-        data: {
-          name: input.name,
-          slug: input.slug,
-          sku: input.sku,
-          brandId: input.brandId,
-          status: input.status,
-          priceCents: input.priceCents,
-          compareAtPriceCents: input.compareAtPriceCents ?? null,
-          shortDescription: input.shortDescription ?? null,
-          description: input.description ?? null,
-          seoTitle: input.seoTitle ?? null,
-          seoDescription: input.seoDescription ?? null,
-          seoKeywords: input.seoKeywords ?? null,
-        },
-      });
+    const after = await prisma.product.update({
+      where: { id: input.id },
+      data: {
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.slug !== undefined ? { slug: input.slug } : {}),
+        ...(input.sku !== undefined ? { sku: input.sku } : {}),
+        ...(input.brandId !== undefined ? { brandId: input.brandId } : {}),
+        ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(input.priceCents !== undefined ? { priceCents: input.priceCents } : {}),
+        ...(input.compareAtPriceCents !== undefined
+          ? { compareAtPriceCents: input.compareAtPriceCents }
+          : {}),
+        ...(input.shortDescription !== undefined
+          ? { shortDescription: input.shortDescription }
+          : {}),
+        ...(input.description !== undefined ? { description: input.description } : {}),
+        ...(input.seoTitle !== undefined ? { seoTitle: input.seoTitle } : {}),
+        ...(input.seoDescription !== undefined ? { seoDescription: input.seoDescription } : {}),
+        ...(input.seoKeywords !== undefined ? { seoKeywords: input.seoKeywords } : {}),
+      },
+    });
 
-      await audit({
-        actorUserId: ctx.userId,
-        action: "create",
-        entity: "Product",
-        entityId: product.id,
-        after: product,
-      });
+    await audit({
+      actorUserId: ctx.userId,
+      action: "update",
+      entity: "Product",
+      entityId: after.id,
+      before,
+      after,
+    });
 
-      await revalidateProduct(product.slug);
-      indexProduct(product.id);
+    await revalidateProduct(after.slug);
+    if (before.slug !== after.slug) {
+      await revalidateProduct(before.slug);
+    }
+    indexProduct(after.id);
 
-      return product;
-    }),
-
-  /**
-   * Update an existing product.
-   */
-  update: protectedProcedure
-    .input(updateProductInput)
-    .mutation(async ({ ctx, input }) => {
-      requireAdminOrManager(ctx.userRole);
-
-      const prisma = await getPrisma();
-
-      const before = await prisma.product.findUnique({
-        where: { id: input.id },
-      });
-      if (!before) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Товар не найден",
-        });
-      }
-
-      // Check slug uniqueness if changing
-      if (input.slug && input.slug !== before.slug) {
-        const existing = await prisma.product.findUnique({
-          where: { slug: input.slug },
-        });
-        if (existing) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: `Товар со slug "${input.slug}" уже существует`,
-          });
-        }
-      }
-
-      // Check SKU uniqueness if changing
-      if (input.sku && input.sku !== before.sku) {
-        const existing = await prisma.product.findUnique({
-          where: { sku: input.sku },
-        });
-        if (existing) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: `Товар с SKU "${input.sku}" уже существует`,
-          });
-        }
-      }
-
-      // Validate brand if changing
-      if (input.brandId && input.brandId !== before.brandId) {
-        const brand = await prisma.brand.findUnique({
-          where: { id: input.brandId },
-        });
-        if (!brand) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Бренд не найден",
-          });
-        }
-      }
-
-      const after = await prisma.product.update({
-        where: { id: input.id },
-        data: {
-          ...(input.name !== undefined ? { name: input.name } : {}),
-          ...(input.slug !== undefined ? { slug: input.slug } : {}),
-          ...(input.sku !== undefined ? { sku: input.sku } : {}),
-          ...(input.brandId !== undefined ? { brandId: input.brandId } : {}),
-          ...(input.status !== undefined ? { status: input.status } : {}),
-          ...(input.priceCents !== undefined
-            ? { priceCents: input.priceCents }
-            : {}),
-          ...(input.compareAtPriceCents !== undefined
-            ? { compareAtPriceCents: input.compareAtPriceCents }
-            : {}),
-          ...(input.shortDescription !== undefined
-            ? { shortDescription: input.shortDescription }
-            : {}),
-          ...(input.description !== undefined
-            ? { description: input.description }
-            : {}),
-          ...(input.seoTitle !== undefined ? { seoTitle: input.seoTitle } : {}),
-          ...(input.seoDescription !== undefined
-            ? { seoDescription: input.seoDescription }
-            : {}),
-          ...(input.seoKeywords !== undefined
-            ? { seoKeywords: input.seoKeywords }
-            : {}),
-        },
-      });
-
-      await audit({
-        actorUserId: ctx.userId,
-        action: "update",
-        entity: "Product",
-        entityId: after.id,
-        before,
-        after,
-      });
-
-      await revalidateProduct(after.slug);
-      if (before.slug !== after.slug) {
-        await revalidateProduct(before.slug);
-      }
-      indexProduct(after.id);
-
-      return after;
-    }),
+    return after;
+  }),
 
   /**
    * Delete a product.
@@ -467,70 +445,37 @@ export const adminProductsRouter = createTRPCRouter({
   /**
    * Add or update a product variant.
    */
-  upsertVariant: protectedProcedure
-    .input(upsertVariantInput)
-    .mutation(async ({ ctx, input }) => {
-      requireAdminOrManager(ctx.userRole);
+  upsertVariant: protectedProcedure.input(upsertVariantInput).mutation(async ({ ctx, input }) => {
+    requireAdminOrManager(ctx.userRole);
 
-      const prisma = await getPrisma();
+    const prisma = await getPrisma();
 
-      // Validate product exists
-      const product = await prisma.product.findUnique({
-        where: { id: input.productId },
+    // Validate product exists
+    const product = await prisma.product.findUnique({
+      where: { id: input.productId },
+    });
+    if (!product) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Товар не найден",
       });
-      if (!product) {
+    }
+
+    let variant;
+    if (input.id) {
+      // Update existing variant
+      const before = await prisma.productVariant.findUnique({
+        where: { id: input.id },
+      });
+      if (!before) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Товар не найден",
+          message: "Вариант не найден",
         });
       }
 
-      let variant;
-      if (input.id) {
-        // Update existing variant
-        const before = await prisma.productVariant.findUnique({
-          where: { id: input.id },
-        });
-        if (!before) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Вариант не найден",
-          });
-        }
-
-        // Check SKU uniqueness if changing
-        if (input.sku !== before.sku) {
-          const existing = await prisma.productVariant.findUnique({
-            where: { sku: input.sku },
-          });
-          if (existing) {
-            throw new TRPCError({
-              code: "CONFLICT",
-              message: `Вариант с SKU "${input.sku}" уже существует`,
-            });
-          }
-        }
-
-        variant = await prisma.productVariant.update({
-          where: { id: input.id },
-          data: {
-            sku: input.sku,
-            priceCents: input.priceCents,
-            quantity: input.quantity,
-            attributes: input.attributes,
-          },
-        });
-
-        await audit({
-          actorUserId: ctx.userId,
-          action: "update",
-          entity: "Product",
-          entityId: input.productId,
-          before,
-          after: variant,
-        });
-      } else {
-        // Create new variant — check SKU uniqueness
+      // Check SKU uniqueness if changing
+      if (input.sku !== before.sku) {
         const existing = await prisma.productVariant.findUnique({
           where: { sku: input.sku },
         });
@@ -540,30 +485,61 @@ export const adminProductsRouter = createTRPCRouter({
             message: `Вариант с SKU "${input.sku}" уже существует`,
           });
         }
+      }
 
-        variant = await prisma.productVariant.create({
-          data: {
-            productId: input.productId,
-            sku: input.sku,
-            priceCents: input.priceCents,
-            quantity: input.quantity,
-            attributes: input.attributes,
-          },
-        });
+      variant = await prisma.productVariant.update({
+        where: { id: input.id },
+        data: {
+          sku: input.sku,
+          priceCents: input.priceCents,
+          quantity: input.quantity,
+          attributes: input.attributes,
+        },
+      });
 
-        await audit({
-          actorUserId: ctx.userId,
-          action: "create",
-          entity: "Product",
-          entityId: input.productId,
-          after: variant,
+      await audit({
+        actorUserId: ctx.userId,
+        action: "update",
+        entity: "Product",
+        entityId: input.productId,
+        before,
+        after: variant,
+      });
+    } else {
+      // Create new variant — check SKU uniqueness
+      const existing = await prisma.productVariant.findUnique({
+        where: { sku: input.sku },
+      });
+      if (existing) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: `Вариант с SKU "${input.sku}" уже существует`,
         });
       }
 
-      indexProduct(input.productId);
+      variant = await prisma.productVariant.create({
+        data: {
+          productId: input.productId,
+          sku: input.sku,
+          priceCents: input.priceCents,
+          quantity: input.quantity,
+          attributes: input.attributes,
+        },
+      });
 
-      return variant;
-    }),
+      await audit({
+        actorUserId: ctx.userId,
+        action: "create",
+        entity: "Product",
+        entityId: input.productId,
+        after: variant,
+      });
+    }
+
+    indexProduct(input.productId);
+
+    return variant;
+  }),
 
   /**
    * Delete a product variant.
@@ -603,78 +579,76 @@ export const adminProductsRouter = createTRPCRouter({
   /**
    * Add or update a product image.
    */
-  upsertImage: protectedProcedure
-    .input(upsertImageInput)
-    .mutation(async ({ ctx, input }) => {
-      requireAdminOrManager(ctx.userRole);
+  upsertImage: protectedProcedure.input(upsertImageInput).mutation(async ({ ctx, input }) => {
+    requireAdminOrManager(ctx.userRole);
 
-      const prisma = await getPrisma();
+    const prisma = await getPrisma();
 
-      // Validate product exists
-      const product = await prisma.product.findUnique({
-        where: { id: input.productId },
+    // Validate product exists
+    const product = await prisma.product.findUnique({
+      where: { id: input.productId },
+    });
+    if (!product) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Товар не найден",
       });
-      if (!product) {
+    }
+
+    let image;
+    if (input.id) {
+      const before = await prisma.productImage.findUnique({
+        where: { id: input.id },
+      });
+      if (!before) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Товар не найден",
+          message: "Изображение не найдено",
         });
       }
 
-      let image;
-      if (input.id) {
-        const before = await prisma.productImage.findUnique({
-          where: { id: input.id },
-        });
-        if (!before) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Изображение не найдено",
-          });
-        }
-
-        image = await prisma.productImage.update({
-          where: { id: input.id },
-          data: {
-            url: input.url,
-            alt: input.alt,
-            position: input.position,
-            isPrimary: input.isPrimary,
-          },
-        });
-      } else {
-        // If this is primary, unset other primary images
-        if (input.isPrimary) {
-          await prisma.productImage.updateMany({
-            where: { productId: input.productId, isPrimary: true },
-            data: { isPrimary: false },
-          });
-        }
-
-        image = await prisma.productImage.create({
-          data: {
-            productId: input.productId,
-            url: input.url,
-            alt: input.alt,
-            position: input.position,
-            isPrimary: input.isPrimary,
-          },
-        });
-      }
-
-      await audit({
-        actorUserId: ctx.userId,
-        action: input.id ? "update" : "create",
-        entity: "Product",
-        entityId: input.productId,
-        after: image,
+      image = await prisma.productImage.update({
+        where: { id: input.id },
+        data: {
+          url: input.url,
+          alt: input.alt,
+          position: input.position,
+          isPrimary: input.isPrimary,
+        },
       });
+    } else {
+      // If this is primary, unset other primary images
+      if (input.isPrimary) {
+        await prisma.productImage.updateMany({
+          where: { productId: input.productId, isPrimary: true },
+          data: { isPrimary: false },
+        });
+      }
 
-      await revalidateProduct(product.slug);
-      indexProduct(input.productId);
+      image = await prisma.productImage.create({
+        data: {
+          productId: input.productId,
+          url: input.url,
+          alt: input.alt,
+          position: input.position,
+          isPrimary: input.isPrimary,
+        },
+      });
+    }
 
-      return image;
-    }),
+    await audit({
+      actorUserId: ctx.userId,
+      action: input.id ? "update" : "create",
+      entity: "Product",
+      entityId: input.productId,
+      after: image,
+    });
+
+    await revalidateProduct(product.slug);
+    indexProduct(input.productId);
+
+    return image;
+  }),
 
   /**
    * Delete a product image.
@@ -911,8 +885,7 @@ export const adminProductsRouter = createTRPCRouter({
       const matchedProductIds = new Set<string>();
 
       const results = rows.map((row) => {
-        const quantity =
-          row.quantity !== null ? row.quantity : input.quantityForMore;
+        const quantity = row.quantity !== null ? row.quantity : input.quantityForMore;
         const articleLower = row.article.toLowerCase();
 
         // Pass 1: exact SKU match
@@ -1088,4 +1061,24 @@ export const adminProductsRouter = createTRPCRouter({
 
       return { variantsZeroed: result.count };
     }),
+
+  reindexAll: protectedProcedure.mutation(async ({ ctx }) => {
+    requireAdminOrManager(ctx.userRole);
+    const prisma = await getPrisma();
+
+    const products = await prisma.product.findMany({
+      where: { status: "active" },
+      select: { id: true },
+    });
+
+    const queue = getSearchQueue();
+    await queue.addBulk(
+      products.map((p) => ({
+        name: "index-product",
+        data: { productId: p.id, action: "upsert" as const },
+      })),
+    );
+
+    return { enqueued: products.length };
+  }),
 });

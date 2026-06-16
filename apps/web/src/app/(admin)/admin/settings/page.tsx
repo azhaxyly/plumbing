@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 
 import { auth } from "@/auth";
 import { NotificationsForm } from "@/components/admin/settings/notifications-form";
+import { SearchReindexButton } from "@/components/admin/settings/search-reindex-button";
 import { ShopContactsForm } from "@/components/admin/settings/shop-contacts-form";
 
 export const metadata: Metadata = {
@@ -84,6 +85,25 @@ export default async function AdminSettingsPage() {
         </div>
         <ShopContactsForm initialValues={shopContactsInitial} />
       </section>
+
+      {/* Поиск */}
+      {isAdmin && (
+        <section
+          aria-labelledby="search-heading"
+          className="rounded-lg border bg-white p-6 shadow-sm"
+        >
+          <div className="mb-4">
+            <h2 id="search-heading" className="text-lg font-semibold text-gray-900">
+              Поиск
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Переиндексирует все активные товары в Meilisearch. Запускайте если товары не находятся
+              в поиске.
+            </p>
+          </div>
+          <SearchReindexButton />
+        </section>
+      )}
 
       {/* Уведомления */}
       {isAdmin ? (
