@@ -1,7 +1,9 @@
 import { prisma } from "@timsan/db";
 import { Package, ShoppingCart, Tag, TrendingUp, Users, ArrowRight, Plus } from "lucide-react";
-import type { Metadata , Route } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 import { auth } from "@/auth";
 import { OrdersFeed } from "@/components/admin/dashboard/orders-feed";
@@ -136,9 +138,7 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8">
       {/* Greeting */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          Добро пожаловать, {firstName}!
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">Добро пожаловать, {firstName}!</h1>
         <p className="mt-1 text-sm capitalize text-gray-500">{formatDate()}</p>
       </div>
 

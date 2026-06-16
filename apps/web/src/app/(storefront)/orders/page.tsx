@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 import { auth } from "@/auth";
 import { CART_GUEST_COOKIE } from "@/lib/cart-redis";
 
@@ -50,18 +52,21 @@ export default async function OrdersPage() {
   const cookieStore = await cookies();
   const guestId = cookieStore.get(CART_GUEST_COOKIE)?.value ?? null;
 
-  const orders = !userId && !guestId ? [] : await prisma.order.findMany({
-    where: userId ? { userId } : { guestId: guestId ?? "" },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      status: true,
-      contactName: true,
-      subtotalCents: true,
-      createdAt: true,
-      _count: { select: { items: true } },
-    },
-  });
+  const orders =
+    !userId && !guestId
+      ? []
+      : await prisma.order.findMany({
+          where: userId ? { userId } : { guestId: guestId ?? "" },
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            status: true,
+            contactName: true,
+            subtotalCents: true,
+            createdAt: true,
+            _count: { select: { items: true } },
+          },
+        });
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6">
@@ -106,9 +111,7 @@ export default async function OrdersPage() {
                       <span className="font-mono text-sm font-semibold text-stone-900">
                         #{orderNumber}
                       </span>
-                      <p className="mt-0.5 text-xs text-stone-500">
-                        {formatDate(order.createdAt)}
-                      </p>
+                      <p className="mt-0.5 text-xs text-stone-500">{formatDate(order.createdAt)}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">

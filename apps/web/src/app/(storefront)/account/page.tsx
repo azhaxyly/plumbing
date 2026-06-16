@@ -4,10 +4,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
-import { logoutAction } from "@/lib/auth-actions";
+export const dynamic = "force-dynamic";
 
 import { ChangePasswordForm } from "./change-password-form";
+
+import { auth } from "@/auth";
+import { logoutAction } from "@/lib/auth-actions";
 
 export const metadata: Metadata = {
   title: "Личный кабинет",
@@ -83,9 +85,7 @@ export default async function AccountPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6">
-      <h1 className="mb-8 text-2xl font-bold text-stone-900 md:text-3xl">
-        Личный кабинет
-      </h1>
+      <h1 className="mb-8 text-2xl font-bold text-stone-900 md:text-3xl">Личный кабинет</h1>
 
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left column: profile + logout */}
@@ -106,9 +106,7 @@ export default async function AccountPage() {
               )}
               <div>
                 <dt className="text-stone-500">Зарегистрирован</dt>
-                <dd className="mt-0.5 font-medium text-stone-900">
-                  {formatDate(user.createdAt)}
-                </dd>
+                <dd className="mt-0.5 font-medium text-stone-900">{formatDate(user.createdAt)}</dd>
               </div>
             </dl>
           </section>
@@ -136,9 +134,7 @@ export default async function AccountPage() {
             <h2 className="mb-4 text-lg font-semibold text-stone-900">
               Мои заказы
               {orders.length > 0 && (
-                <span className="ml-2 text-sm font-normal text-stone-500">
-                  ({orders.length})
-                </span>
+                <span className="ml-2 text-sm font-normal text-stone-500">({orders.length})</span>
               )}
             </h2>
 
@@ -151,27 +147,20 @@ export default async function AccountPage() {
                     <tr className="border-b border-stone-100 text-left text-stone-500">
                       <th className="pb-3 pr-4 font-medium">Заказ</th>
                       <th className="pb-3 pr-4 font-medium">Дата</th>
-                      <th className="pb-3 pr-4 font-medium hidden sm:table-cell">Товаров</th>
+                      <th className="hidden pb-3 pr-4 font-medium sm:table-cell">Товаров</th>
                       <th className="pb-3 pr-4 font-medium">Сумма</th>
                       <th className="pb-3 font-medium">Статус</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100">
                     {orders.map((order) => {
-                      const itemCount = order.items.reduce(
-                        (sum, item) => sum + item.quantity,
-                        0,
-                      );
-                      const statusLabel =
-                        ORDER_STATUS_LABELS[order.status] ?? order.status;
+                      const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+                      const statusLabel = ORDER_STATUS_LABELS[order.status] ?? order.status;
                       const statusColor =
                         ORDER_STATUS_COLORS[order.status] ?? "bg-stone-100 text-stone-700";
 
                       return (
-                        <tr
-                          key={order.id}
-                          className="transition-colors hover:bg-stone-50"
-                        >
+                        <tr key={order.id} className="transition-colors hover:bg-stone-50">
                           <td className="py-3 pr-4">
                             <Link
                               href={`/account/orders/${order.id}`}
@@ -183,7 +172,9 @@ export default async function AccountPage() {
                           <td className="py-3 pr-4 text-stone-600">
                             {formatDate(order.createdAt)}
                           </td>
-                          <td className="py-3 pr-4 text-stone-600 hidden sm:table-cell">{itemCount}</td>
+                          <td className="hidden py-3 pr-4 text-stone-600 sm:table-cell">
+                            {itemCount}
+                          </td>
                           <td className="py-3 pr-4 font-medium text-stone-900">
                             {formatPrice(order.subtotalCents)}
                           </td>

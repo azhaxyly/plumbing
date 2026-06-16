@@ -10,6 +10,8 @@ import type { Prisma } from "@timsan/db";
 import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 import { OrdersFilters } from "@/components/admin/orders/orders-filters";
 import type { OrderSortOption } from "@/components/admin/orders/orders-filters";
 import { OrdersTable } from "@/components/admin/orders/orders-table";
@@ -78,8 +80,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
 
   // Parse & validate params
   const statusParam = params.status ?? "";
-  const status: ValidStatus | undefined =
-    isValidStatus(statusParam) ? statusParam : undefined;
+  const status: ValidStatus | undefined = isValidStatus(statusParam) ? statusParam : undefined;
 
   const fromParam = params.from ?? "";
   const toParam = params.to ?? "";
@@ -154,9 +155,7 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Заказы</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Управление заказами покупателей
-        </p>
+        <p className="mt-1 text-sm text-gray-500">Управление заказами покупателей</p>
       </div>
 
       {/* Filters */}

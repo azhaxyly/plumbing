@@ -10,6 +10,8 @@ import type { Prisma } from "@timsan/db";
 import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 import { AuditFilters } from "@/components/admin/audit/audit-filters";
 import { AuditTable } from "@/components/admin/audit/audit-table";
 import type { AuditLogRow } from "@/components/admin/audit/audit-table";
@@ -80,10 +82,8 @@ export default async function AdminAuditPage({ searchParams }: PageProps) {
   const toParam = params.to ?? "";
   const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
 
-  const entity: ValidEntity | undefined =
-    isValidEntity(entityParam) ? entityParam : undefined;
-  const action: ValidAction | undefined =
-    isValidAction(actionParam) ? actionParam : undefined;
+  const entity: ValidEntity | undefined = isValidEntity(entityParam) ? entityParam : undefined;
+  const action: ValidAction | undefined = isValidAction(actionParam) ? actionParam : undefined;
 
   // Build Prisma where clause
   const where: Prisma.AuditLogWhereInput = {};
@@ -153,9 +153,7 @@ export default async function AdminAuditPage({ searchParams }: PageProps) {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Аудит</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          История действий администраторов и менеджеров
-        </p>
+        <p className="mt-1 text-sm text-gray-500">История действий администраторов и менеджеров</p>
       </div>
 
       {/* Filters */}

@@ -9,6 +9,7 @@
 import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
 
 import { auth } from "@/auth";
 import { NotificationsForm } from "@/components/admin/settings/notifications-form";
@@ -26,11 +27,7 @@ const SHOP_CONTACT_KEYS = [
   "shop_bin",
 ] as const;
 
-const NOTIFICATION_KEYS = [
-  "owner_emails",
-  "telegram_bot_token",
-  "telegram_chat_ids",
-] as const;
+const NOTIFICATION_KEYS = ["owner_emails", "telegram_bot_token", "telegram_chat_ids"] as const;
 
 const ALL_KEYS = [...SHOP_CONTACT_KEYS, ...NOTIFICATION_KEYS];
 
@@ -99,8 +96,8 @@ export default async function AdminSettingsPage() {
               Уведомления
             </h2>
             <p className="mt-1 text-sm text-gray-500">
-              Email-адреса и Telegram-бот для получения уведомлений о новых заказах.
-              Доступно только администратору.
+              Email-адреса и Telegram-бот для получения уведомлений о новых заказах. Доступно только
+              администратору.
             </p>
           </div>
           <NotificationsForm initialValues={notificationsInitial} />
@@ -108,7 +105,7 @@ export default async function AdminSettingsPage() {
       ) : (
         <section
           aria-labelledby="notifications-heading"
-          className="rounded-lg border bg-white p-6 shadow-sm opacity-60"
+          className="rounded-lg border bg-white p-6 opacity-60 shadow-sm"
         >
           <div className="mb-2">
             <h2 id="notifications-heading" className="text-lg font-semibold text-gray-900">

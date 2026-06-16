@@ -10,6 +10,8 @@ import type { Prisma } from "@timsan/db";
 import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 import { auth } from "@/auth";
 import { UsersFilters } from "@/components/admin/users/users-filters";
 import { UsersTable } from "@/components/admin/users/users-table";
@@ -50,8 +52,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
   const statusParam = params.status ?? "";
   const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
 
-  const role: ValidRole | undefined =
-    isValidRole(roleParam) ? roleParam : undefined;
+  const role: ValidRole | undefined = isValidRole(roleParam) ? roleParam : undefined;
 
   // Build Prisma where clause
   const where: Prisma.UserWhereInput = {};
@@ -94,8 +95,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
 
   // Get current session to identify self
   const session = await auth();
-  const currentUserId =
-    (session?.user as { id?: string } | undefined)?.id ?? null;
+  const currentUserId = (session?.user as { id?: string } | undefined)?.id ?? null;
 
   // Build base URL for pagination (preserves all filters except page)
   const filterParams = new URLSearchParams();
@@ -108,16 +108,11 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Пользователи</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Управление пользователями и их ролями
-        </p>
+        <p className="mt-1 text-sm text-gray-500">Управление пользователями и их ролями</p>
       </div>
 
       {/* Filters */}
-      <UsersFilters
-        currentRole={roleParam}
-        currentStatus={statusParam}
-      />
+      <UsersFilters currentRole={roleParam} currentStatus={statusParam} />
 
       {/* Table */}
       <UsersTable
