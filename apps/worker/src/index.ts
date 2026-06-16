@@ -7,15 +7,12 @@
 // Load .env before any other imports (for local dev without a process manager)
 import "dotenv/config";
 
+import { prisma } from "@timsan/db";
+import { configureProductIndex, indexProduct, deleteProductFromIndex } from "@timsan/search";
+import type { ProductSearchDocument } from "@timsan/search";
 import { Worker, Queue } from "bullmq";
 import IORedis from "ioredis";
-import { prisma } from "@timsan/db";
-import {
-  configureProductIndex,
-  indexProduct,
-  deleteProductFromIndex,
-} from "@timsan/search";
-import type { ProductSearchDocument } from "@timsan/search";
+
 import { handleNotificationJob } from "./notification-handler";
 import type { NotificationJobData } from "./notification-handler";
 
@@ -46,10 +43,7 @@ defaultWorker.on("completed", (job) => {
 });
 
 defaultWorker.on("failed", (job, err) => {
-  console.error(
-    `[worker] Job failed: ${job?.name} (id=${job?.id})`,
-    err,
-  );
+  console.error(`[worker] Job failed: ${job?.name} (id=${job?.id})`, err);
 });
 
 // ─── Search indexing worker ───────────────────────────────────────────────────
@@ -105,10 +99,7 @@ const searchIndexingWorker = new Worker<IndexProductJobData>(
     }
 
     const primaryImage = product.images[0] ?? null;
-    const totalAvailable = product.variants.reduce(
-      (sum, v) => sum + (v.quantity - v.reserved),
-      0,
-    );
+    const totalAvailable = product.variants.reduce((sum, v) => sum + (v.quantity - v.reserved), 0);
 
     const doc: ProductSearchDocument = {
       id: product.id,
@@ -137,16 +128,11 @@ const searchIndexingWorker = new Worker<IndexProductJobData>(
 );
 
 searchIndexingWorker.on("completed", (job) => {
-  console.warn(
-    `[worker] Search indexing job completed: ${job.name} (id=${job.id})`,
-  );
+  console.warn(`[worker] Search indexing job completed: ${job.name} (id=${job.id})`);
 });
 
 searchIndexingWorker.on("failed", (job, err) => {
-  console.error(
-    `[worker] Search indexing job failed: ${job?.name} (id=${job?.id})`,
-    err,
-  );
+  console.error(`[worker] Search indexing job failed: ${job?.name} (id=${job?.id})`, err);
 });
 
 // ─── Notification worker ──────────────────────────────────────────────────────
@@ -171,10 +157,7 @@ notificationWorker.on("completed", (job) => {
 });
 
 notificationWorker.on("failed", (job, err) => {
-  console.error(
-    `[worker] Notification job failed: ${job?.name} (id=${job?.id})`,
-    err,
-  );
+  console.error(`[worker] Notification job failed: ${job?.name} (id=${job?.id})`, err);
 });
 
 // ─── Startup: configure Meilisearch index ─────────────────────────────────────

@@ -14,8 +14,8 @@
  * See design.md → «Phase 5 — Уведомления», tasks 36.1–36.3.
  */
 
-import nodemailer from "nodemailer";
 import { prisma } from "@timsan/db";
+import nodemailer from "nodemailer";
 
 // ─── Types (inline to avoid ESM incompatibility with @timsan/domain) ──────
 // @timsan/domain → @timsan/shared → @t3-oss/env-nextjs (ESM-only)
@@ -478,8 +478,7 @@ export async function handleNotificationJob(job: { data: NotificationJobData }):
   const ownerEmails = getSetting("owner_emails") ?? process.env["OWNER_EMAILS"] ?? "";
   const telegramBotToken =
     getSetting("telegram_bot_token") ?? process.env["TELEGRAM_BOT_TOKEN"] ?? "";
-  const telegramChatIds =
-    getSetting("telegram_chat_ids") ?? process.env["TELEGRAM_CHAT_IDS"] ?? "";
+  const telegramChatIds = getSetting("telegram_chat_ids") ?? process.env["TELEGRAM_CHAT_IDS"] ?? "";
   const emailEnabled = getSetting("notifications_email_enabled") !== "false";
   const telegramEnabled = getSetting("notifications_telegram_enabled") !== "false";
 
@@ -507,7 +506,9 @@ export async function handleNotificationJob(job: { data: NotificationJobData }):
   if (emailEnabled && payload.customerEmail) {
     try {
       await sendCustomerOrderConfirmation(payload.customerEmail, payload, siteUrl);
-      console.warn(`[worker] Customer confirmation email sent to ${payload.customerEmail} for order ${orderId}`);
+      console.warn(
+        `[worker] Customer confirmation email sent to ${payload.customerEmail} for order ${orderId}`,
+      );
     } catch (err) {
       console.error(`[worker] Customer confirmation email failed for order ${orderId}:`, err);
       // Non-critical: don't affect retry logic
