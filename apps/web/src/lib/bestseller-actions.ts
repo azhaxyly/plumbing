@@ -1,8 +1,9 @@
 "use server";
 
 import { TRPCError } from "@trpc/server";
-import { createServerTrpc } from "@/lib/trpc-server";
+
 import { revalidateHomepage } from "@/lib/revalidate";
+import { createServerTrpc } from "@/lib/trpc-server";
 
 interface ActionResult<T = undefined> {
   data?: T;

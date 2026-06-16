@@ -1,9 +1,7 @@
-import type { Metadata } from "next";
-import { Package, ShoppingCart, Tag, TrendingUp, Users, ArrowRight, Plus } from "lucide-react";
-import type { Route } from "next";
-import Link from "next/link";
-
 import { prisma } from "@timsan/db";
+import { Package, ShoppingCart, Tag, TrendingUp, Users, ArrowRight, Plus } from "lucide-react";
+import type { Metadata , Route } from "next";
+import Link from "next/link";
 
 import { auth } from "@/auth";
 import { OrdersFeed } from "@/components/admin/dashboard/orders-feed";

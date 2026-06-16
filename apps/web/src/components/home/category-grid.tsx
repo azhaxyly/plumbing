@@ -16,10 +16,10 @@ function CategoryCard({ category, href }: { category: CategoryItem; href: string
   return (
     <Link
       href={href as Route}
-      className="group overflow-hidden rounded-xl bg-[#DCDCDC] flex flex-col p-3"
+      className="group overflow-hidden rounded-xl bg-[#DCDCDC] flex flex-col p-2 md:p-3"
     >
       {/* Title — top-left */}
-      <span className="font-semibold text-base text-gray-900 group-hover:text-[#2B7BC8] transition-colors leading-tight mb-2 shrink-0">
+      <span className="font-semibold text-sm md:text-base text-gray-900 group-hover:text-[#2B7BC8] transition-colors leading-tight mb-1.5 md:mb-2 shrink-0">
         {category.name}
       </span>
 
@@ -42,11 +42,11 @@ function CategoryCard({ category, href }: { category: CategoryItem; href: string
               </div>
             )}
           </div>
-          <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-1 content-start pt-1">
-            {category.children!.slice(0, 6).map((child) => (
+          <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-1 content-start pt-1 [&>*:nth-child(n+5)]:hidden md:[&>*:nth-child(n+5)]:block">
+            {(category.children ?? []).slice(0, 6).map((child) => (
               <span
                 key={child.id}
-                className="text-xs text-gray-500 leading-tight"
+                className="text-[11px] md:text-xs text-gray-500 leading-tight line-clamp-1"
               >
                 {child.name}
               </span>
@@ -81,7 +81,7 @@ export function CategoryGrid({ categories, getHref }: CategoryGridProps) {
   return (
     <section className="mt-3">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 gap-3 auto-rows-[200px] md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 auto-rows-[150px] md:gap-3 md:auto-rows-[200px] md:grid-cols-4">
           {categories.map((category) => (
             <CategoryCard
               key={category.id}

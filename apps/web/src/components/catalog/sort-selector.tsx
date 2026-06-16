@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useFilterTransition } from "@/contexts/filter-transition-context";
@@ -31,7 +32,7 @@ export function SortSelector({ currentSort, basePath }: SortSelectorProps) {
     next.delete("page");
     const qs = next.toString();
     startFilterTransition(() => {
-      router.push(qs ? `${basePath}?${qs}` : basePath);
+      router.push((qs ? `${basePath}?${qs}` : basePath) as Route);
     });
   }
 

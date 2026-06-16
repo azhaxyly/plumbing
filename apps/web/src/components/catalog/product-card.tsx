@@ -6,11 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+import { BRAND_COUNTRY } from "@/lib/brand-country";
+import { formatPrice } from "@/lib/format-price";
+
 import { AddToCartButton } from "./add-to-cart-button";
 import { WishlistButton } from "./wishlist-button";
 
-import { BRAND_COUNTRY } from "@/lib/brand-country";
-import { formatPrice } from "@/lib/format-price";
 
 export interface ProductCardData {
   id: string;
@@ -63,7 +64,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
   }
 
   return (
-    <article className="group relative flex flex-col rounded-xl border bg-white shadow-sm transition-shadow hover:shadow-md">
+    <article className="group relative flex flex-col border-0 bg-white transition-shadow sm:rounded-xl sm:border sm:shadow-sm sm:hover:shadow-md">
       {/* Badges container */}
       <div className="absolute left-3 top-3 z-10 flex flex-col items-start gap-1">
         {hasDiscount && discountPercent > 0 && (
@@ -92,7 +93,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
       {/* Product image */}
       <Link
         href={`/product/${product.slug}` as Route}
-        className="relative block aspect-[4/3] overflow-hidden rounded-t-xl bg-gray-50"
+        className="relative block aspect-[4/3] overflow-hidden bg-gray-50 sm:rounded-t-xl"
         aria-label={product.name}
         tabIndex={-1}
         onMouseMove={handleMouseMove}
@@ -107,7 +108,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
                 alt={i === 0 ? (product.primaryImageAlt || product.name) : product.name}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                className={`object-contain p-4 transition-opacity duration-150 ${
+                className={`object-contain p-2 sm:p-4 transition-opacity duration-150 ${
                   i === activeIndex ? "opacity-100" : "opacity-0"
                 }`}
                 loading={i === 0 ? "eager" : "lazy"}
@@ -134,7 +135,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
       </Link>
 
       {/* Card body */}
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-1.5 p-2.5 sm:gap-2 sm:p-4">
         {(() => {
           const bc = product.brandSlug ? BRAND_COUNTRY[product.brandSlug] : undefined;
           return bc ? (
@@ -192,7 +193,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
           unitPrice={product.priceCents}
           productName={product.name}
           productSku={product.sku}
-          productImageUrl={product.primaryImageUrl ?? undefined}
+          {...(product.primaryImageUrl ? { productImageUrl: product.primaryImageUrl } : {})}
           size="sm"
           className="mt-1 w-full bg-[#2B7BC8] text-white hover:bg-[#2568a8]"
           disabled={!product.inStock}

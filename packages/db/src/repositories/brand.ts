@@ -25,6 +25,7 @@ export interface BrandProductItem {
   id: string;
   slug: string;
   name: string;
+  sku: string;
   priceCents: number;
   compareAtPriceCents: number | null;
   primaryImageUrl: string | null;
@@ -162,6 +163,7 @@ export async function getBrandProductsPage(
         id: true,
         slug: true,
         name: true,
+        sku: true,
         priceCents: true,
         compareAtPriceCents: true,
         brand: { select: { name: true, slug: true } },
@@ -186,6 +188,7 @@ export async function getBrandProductsPage(
       id: p.id,
       slug: p.slug,
       name: p.name,
+      sku: p.sku,
       priceCents: p.priceCents,
       compareAtPriceCents: p.compareAtPriceCents,
       primaryImageUrl: primaryImage?.url ?? null,
@@ -221,6 +224,7 @@ export async function getBrandBySlug(
           id: true,
           slug: true,
           name: true,
+          sku: true,
           priceCents: true,
           compareAtPriceCents: true,
           brand: {
@@ -256,6 +260,7 @@ export async function getBrandBySlug(
       name: p.name,
       priceCents: p.priceCents,
       compareAtPriceCents: p.compareAtPriceCents,
+      sku: p.sku,
       primaryImageUrl: primaryImage?.url ?? null,
       primaryImageAlt: primaryImage?.alt ?? p.name,
       brandName: p.brand?.name ?? null,

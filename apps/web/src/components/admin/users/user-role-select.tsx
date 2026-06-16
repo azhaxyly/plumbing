@@ -6,9 +6,9 @@
  * Calls the changeUserRole Server Action.
  * See task 27.
  */
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import { changeUserRole } from "@/app/(admin)/admin/users/actions";
 

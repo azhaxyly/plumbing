@@ -1,0 +1,26 @@
+# Keep the build context small and free of secrets/build junk.
+**/node_modules
+**/.next
+**/dist
+**/build
+**/out
+.git
+.gitignore
+.turbo
+**/.turbo
+**/.env*
+*.log
+**/*.tsbuildinfo
+coverage
+**/coverage
+.vscode
+.idea
+.claude
+.agents
+# Prisma client is regenerated inside the image.
+packages/db/generated
+# Docker/infra files aren't needed inside the image context.
+infra
+Dockerfile
+.dockerignore
+README*.md

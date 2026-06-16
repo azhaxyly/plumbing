@@ -12,13 +12,6 @@
  * See task 25.3.
  */
 
-import { Loader2, Pencil, Trash2 } from "lucide-react";
-import type { Route } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useCallback, useTransition } from "react";
-
 import {
   Button,
   Dialog,
@@ -29,6 +22,13 @@ import {
   DialogTitle,
   Input,
 } from "@timsan/ui";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
+import type { Route } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useCallback, useTransition } from "react";
+
 
 import { deleteProductAction } from "@/lib/product-actions";
 

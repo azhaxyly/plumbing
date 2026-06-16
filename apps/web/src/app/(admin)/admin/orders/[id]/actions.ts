@@ -11,9 +11,9 @@ import { prisma } from "@timsan/db";
 import { canTransition } from "@timsan/domain";
 
 import { auth } from "@/auth";
+import type { OrderStatus } from "@/components/admin/orders/order-status-badge";
 import { audit } from "@/lib/audit";
 
-import type { OrderStatus } from "@/components/admin/orders/order-status-badge";
 
 // ─── transitionOrderStatus ────────────────────────────────────────────────────
 
@@ -78,17 +78,25 @@ export async function transitionOrderStatus(
         data: { status: newStatus },
       });
 
-      // Decrement stock when order is confirmed
+      // Decrement stock when order is confirmed.
+      // OrderItem.variantId is a snapshot, not an FK — the variant may have been
+      // deleted/re-created since the order was placed. Use updateMany so a missing
+      // variant affects 0 rows instead of throwing and rolling back the whole tx.
       if (newStatus === "confirmed") {
         const items = await tx.orderItem.findMany({
           where: { orderId },
           select: { variantId: true, quantity: true },
         });
         for (const item of items) {
-          await tx.productVariant.update({
+          const res = await tx.productVariant.updateMany({
             where: { id: item.variantId },
             data: { quantity: { decrement: item.quantity } },
           });
+          if (res.count === 0) {
+            console.warn(
+              `[transitionOrderStatus] Variant ${item.variantId} not found for order ${orderId}; skipping stock decrement`,
+            );
+          }
         }
       }
 
@@ -99,10 +107,15 @@ export async function transitionOrderStatus(
           select: { variantId: true, quantity: true },
         });
         for (const item of items) {
-          await tx.productVariant.update({
+          const res = await tx.productVariant.updateMany({
             where: { id: item.variantId },
             data: { quantity: { increment: item.quantity } },
           });
+          if (res.count === 0) {
+            console.warn(
+              `[transitionOrderStatus] Variant ${item.variantId} not found for order ${orderId}; skipping stock restore`,
+            );
+          }
         }
       }
     });

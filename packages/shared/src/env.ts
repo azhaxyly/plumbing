@@ -43,19 +43,6 @@ export const env = createEnv({
     MEILI_HOST: z.string().url(),
     MEILI_MASTER_KEY: z.string().min(1),
 
-    // === Kaspi ===
-    KASPI_API_BASE_URL: z.string().url(),
-    KASPI_MERCHANT_ID: z.string().min(1),
-    KASPI_API_KEY: z.string().min(1),
-    KASPI_WEBHOOK_SECRET: z.string().min(1),
-    KASPI_SIGNATURE_ALGO: z.string().default("HMAC-SHA256"),
-    KASPI_RETURN_URL: z.string().url(),
-    KASPI_FAILED_URL: z.string().url(),
-    KASPI_WEBHOOK_URL: z.string().url(),
-    KASPI_ENDPOINT_CREATE_PAYMENT: z.string().min(1),
-    KASPI_ENDPOINT_GET_STATUS: z.string().min(1),
-    KASPI_ENDPOINT_REFUND: z.string().min(1),
-
     // === SMTP / Email ===
     SMTP_HOST: z.string().min(1),
     SMTP_PORT: z.coerce.number().int().positive().default(1025),
@@ -84,8 +71,6 @@ export const env = createEnv({
       .transform((v) => v === "true")
       .default("false"),
     SMS_NOTIFY_THRESHOLD_KZT: z.coerce.number().int().nonnegative().default(200000),
-    CRM_WEBHOOK_URL: z.string().default(""),
-    CRM_WEBHOOK_SECRET: z.string().default(""),
 
     // === Kaspi catalog import ===
     KASPI_CATALOG_FEED_URL: z.string().default(""),
@@ -131,17 +116,6 @@ export const env = createEnv({
     S3_PUBLIC_URL: process.env["S3_PUBLIC_URL"],
     MEILI_HOST: process.env["MEILI_HOST"],
     MEILI_MASTER_KEY: process.env["MEILI_MASTER_KEY"],
-    KASPI_API_BASE_URL: process.env["KASPI_API_BASE_URL"],
-    KASPI_MERCHANT_ID: process.env["KASPI_MERCHANT_ID"],
-    KASPI_API_KEY: process.env["KASPI_API_KEY"],
-    KASPI_WEBHOOK_SECRET: process.env["KASPI_WEBHOOK_SECRET"],
-    KASPI_SIGNATURE_ALGO: process.env["KASPI_SIGNATURE_ALGO"],
-    KASPI_RETURN_URL: process.env["KASPI_RETURN_URL"],
-    KASPI_FAILED_URL: process.env["KASPI_FAILED_URL"],
-    KASPI_WEBHOOK_URL: process.env["KASPI_WEBHOOK_URL"],
-    KASPI_ENDPOINT_CREATE_PAYMENT: process.env["KASPI_ENDPOINT_CREATE_PAYMENT"],
-    KASPI_ENDPOINT_GET_STATUS: process.env["KASPI_ENDPOINT_GET_STATUS"],
-    KASPI_ENDPOINT_REFUND: process.env["KASPI_ENDPOINT_REFUND"],
     SMTP_HOST: process.env["SMTP_HOST"],
     SMTP_PORT: process.env["SMTP_PORT"],
     SMTP_USER: process.env["SMTP_USER"],
@@ -160,8 +134,6 @@ export const env = createEnv({
     TELEGRAM_CHAT_IDS: process.env["TELEGRAM_CHAT_IDS"],
     SMS_NOTIFY_ENABLED: process.env["SMS_NOTIFY_ENABLED"],
     SMS_NOTIFY_THRESHOLD_KZT: process.env["SMS_NOTIFY_THRESHOLD_KZT"],
-    CRM_WEBHOOK_URL: process.env["CRM_WEBHOOK_URL"],
-    CRM_WEBHOOK_SECRET: process.env["CRM_WEBHOOK_SECRET"],
     KASPI_CATALOG_FEED_URL: process.env["KASPI_CATALOG_FEED_URL"],
     KASPI_CATALOG_AUTH_HEADER: process.env["KASPI_CATALOG_AUTH_HEADER"],
     KASPI_CATALOG_SYNC_CRON: process.env["KASPI_CATALOG_SYNC_CRON"],

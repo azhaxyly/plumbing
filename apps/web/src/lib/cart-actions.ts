@@ -11,6 +11,7 @@
  */
 
 import { cookies } from "next/headers";
+
 import {
   getGuestCart,
   deleteGuestCart,
@@ -57,18 +58,6 @@ export async function ensureGuestCartCookie(guestId: string): Promise<void> {
       secure: process.env["NODE_ENV"] === "production",
     });
   }
-}
-
-/**
- * Adds a product to the user's wishlist.
- *
- * @param productId - The ID of the product to add to wishlist
- *
- * TODO (Phase 3+): Implement real wishlist logic — persist to DB for
- * authenticated users, store in localStorage/cookie for guests.
- */
-export async function addToWishlist(productId: string): Promise<void> {
-  console.log("[addToWishlist] stub called", { productId });
 }
 
 /**

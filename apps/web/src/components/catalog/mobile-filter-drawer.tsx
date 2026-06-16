@@ -1,8 +1,10 @@
 "use client";
 
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@timsan/ui";
 import { SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@timsan/ui";
+
+import type { FacetFilters } from "@/lib/facet-utils";
 
 import { FacetPanel } from "./facet-panel";
 import type {
@@ -10,7 +12,6 @@ import type {
   AttributeFacetItem,
   PriceRange,
 } from "./facet-panel";
-import type { FacetFilters } from "@/lib/facet-utils";
 
 interface MobileFilterDrawerProps {
   brands: BrandFacetItem[];

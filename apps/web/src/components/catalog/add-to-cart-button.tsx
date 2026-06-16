@@ -8,10 +8,10 @@
  * so the cartGuestId cookie is set for subsequent SSR renders (e.g. /cart page).
  */
 
-import { useState, useTransition } from "react";
-import { ShoppingCart, Check } from "lucide-react";
-import { Button } from "@timsan/ui";
 import type { Cart } from "@timsan/domain";
+import { Button } from "@timsan/ui";
+import { ShoppingCart, Check } from "lucide-react";
+import { useState, useTransition } from "react";
 
 interface AddToCartButtonProps {
   variantId: string;

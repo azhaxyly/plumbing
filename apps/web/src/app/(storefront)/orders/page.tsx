@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { cookies } from "next/headers";
 import { prisma } from "@timsan/db";
+import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import Link from "next/link";
+
 import { auth } from "@/auth";
 import { CART_GUEST_COOKIE } from "@/lib/cart-redis";
 
 export const metadata: Metadata = {
-  title: "Мои заказы — Timsan",
+  title: "Мои заказы",
   robots: { index: false, follow: true },
 };
 
@@ -50,7 +51,7 @@ export default async function OrdersPage() {
   const guestId = cookieStore.get(CART_GUEST_COOKIE)?.value ?? null;
 
   const orders = !userId && !guestId ? [] : await prisma.order.findMany({
-    where: userId ? { userId } : { guestId: guestId! },
+    where: userId ? { userId } : { guestId: guestId ?? "" },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,

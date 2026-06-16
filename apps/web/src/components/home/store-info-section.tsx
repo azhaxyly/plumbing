@@ -1,17 +1,16 @@
-import type { Route } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import {
   Phone,
   Check,
   Truck,
   ShieldCheck,
-  Clock,
   Sparkles,
   Search,
   ClipboardCheck,
   PackageOpen,
 } from "lucide-react";
+import type { Route } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
 import type { CategoryItem } from "@/lib/homepage-data";
 
@@ -46,7 +45,6 @@ const steps = [
 const badges = [
   { icon: Truck, label: "Доставка по РК" },
   { icon: ShieldCheck, label: "Гарантия качества" },
-  { icon: Clock, label: "Ежедневно 09:00–22:00" },
 ];
 
 export function StoreInfoSection({

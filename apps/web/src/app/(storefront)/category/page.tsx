@@ -1,6 +1,5 @@
 import { getCategoryTree } from "@timsan/db";
-import type { Metadata } from "next";
-import type { Route } from "next";
+import type { Metadata , Route } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
@@ -27,7 +26,7 @@ const breadcrumbItems = [
 ];
 
 export default async function CatalogPage() {
-  let categories = await getCategoryTree().catch(() => []);
+  const categories = await getCategoryTree().catch(() => []);
 
   return (
     <>

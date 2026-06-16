@@ -404,9 +404,10 @@ export function ProductForm({ mode, product, brands, categories, attributes }: P
     startTransition(() => router.refresh());
     // Optimistic update
     if (variantDialog.variant) {
+      const variantId = variantDialog.variant.id;
       setVariants((prev) =>
         prev.map((v) =>
-          v.id === variantDialog.variant!.id
+          v.id === variantId
             ? { ...v, sku: data.sku, priceCents: data.priceCents, quantity: data.quantity }
             : v,
         ),

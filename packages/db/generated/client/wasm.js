@@ -277,6 +277,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   status: 'status',
   contactName: 'contactName',
   contactPhone: 'contactPhone',
+  contactEmail: 'contactEmail',
   addressStreet: 'addressStreet',
   addressBuilding: 'addressBuilding',
   addressApartment: 'addressApartment',

@@ -1,6 +1,6 @@
-﻿import { notFound } from "next/navigation";
+﻿import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
-import { prisma } from "@timsan/db";
+import { notFound } from "next/navigation";
 
 import { buildMetadata, excerpt } from "@/lib/metadata";
 

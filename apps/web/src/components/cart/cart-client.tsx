@@ -6,13 +6,14 @@
  * optimistic updates via tRPC mutations.
  */
 
-import { useState, useTransition } from "react";
-import Link from "next/link";
-import type { Route } from "next";
-import { ShoppingBag } from "lucide-react";
-import { Button } from "@timsan/ui";
 import { computeTotals } from "@timsan/domain";
 import type { Cart } from "@timsan/domain";
+import { Button } from "@timsan/ui";
+import { ShoppingBag } from "lucide-react";
+import type { Route } from "next";
+import Link from "next/link";
+import { useState, useTransition } from "react";
+
 import { CartItemRow } from "./cart-item-row";
 
 // ─── Price formatter ──────────────────────────────────────────────────────────

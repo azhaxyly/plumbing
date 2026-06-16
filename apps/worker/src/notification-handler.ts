@@ -124,6 +124,191 @@ function buildPlainTextEmail(payload: OrderNotificationPayload): string {
     .join("\n");
 }
 
+// ─── Customer confirmation email ──────────────────────────────────────────────
+
+/** Formats a price in tiyins as a KZT string, e.g. 4914000 → "49 140". */
+function formatKzt(cents: number): string {
+  return Math.round(cents / 100).toLocaleString("ru-KZ");
+}
+
+/** Resolves a (possibly relative) image path to an absolute URL for email clients. */
+function absoluteImageUrl(url: string | undefined, siteUrl: string): string | null {
+  if (!url) return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${siteUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+}
+
+/**
+ * Builds a responsive, email-client-safe HTML confirmation for the customer.
+ *
+ * Uses table-based layout and fully inline styles — the only reliable approach
+ * across Gmail / Outlook / Apple Mail, which strip <style> blocks and ignore fl-
+ * box/grid. Keep edits inline; do not extract to CSS classes.
+ */
+function buildCustomerEmailHtml(
+  payload: OrderNotificationPayload,
+  orderUrl: string,
+  siteUrl: string,
+): string {
+  const totalKzt = formatKzt(payload.totalCents);
+
+  const itemRows = payload.items
+    .map((it) => {
+      const img = absoluteImageUrl(it.imageUrl, siteUrl);
+      const thumb = img
+        ? `<img src="${img}" width="56" height="56" alt="" style="display:block;width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;" />`
+        : `<div style="width:56px;height:56px;border-radius:8px;background:#f3f4f6;"></div>`;
+      return `
+            <tr>
+              <td style="padding:14px 0;border-bottom:1px solid #f0f0f0;vertical-align:top;width:56px;">${thumb}</td>
+              <td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;vertical-align:top;">
+                <div style="font-size:14px;color:#111827;font-weight:600;line-height:1.4;">${escapeHtml(it.name)}</div>
+                <div style="font-size:12px;color:#9ca3af;margin-top:3px;">Артикул: ${escapeHtml(it.sku)}</div>
+                <div style="font-size:13px;color:#6b7280;margin-top:5px;">${it.quantity} × ${formatKzt(it.unitPriceCents)} ₸</div>
+              </td>
+              <td style="padding:14px 0;border-bottom:1px solid #f0f0f0;vertical-align:top;text-align:right;white-space:nowrap;font-size:14px;color:#111827;font-weight:700;">${formatKzt(it.unitPriceCents * it.quantity)} ₸</td>
+            </tr>`;
+    })
+    .join("");
+
+  const commentRow = payload.notes
+    ? `<p style="margin:6px 0 0;font-size:13px;color:#6b7280;"><span style="color:#9ca3af;">Комментарий:</span> ${escapeHtml(payload.notes)}</p>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Заказ №${escapeHtml(payload.orderNumber)}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f5f7;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f7;padding:24px 12px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#ffffff;border-radius:14px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+          <!-- Header -->
+          <tr>
+            <td style="background:#0f172a;padding:28px 32px;">
+              <div style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">TIMSAN</div>
+              <div style="font-size:13px;color:#94a3b8;margin-top:4px;">Сантехника и инженерные системы</div>
+            </td>
+          </tr>
+          <!-- Greeting -->
+          <tr>
+            <td style="padding:32px 32px 8px;">
+              <h1 style="margin:0;font-size:22px;color:#111827;">Спасибо за заказ, ${escapeHtml(payload.customerName)}!</h1>
+              <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#4b5563;">
+                Заказ <strong style="color:#111827;">№${escapeHtml(payload.orderNumber)}</strong> успешно принят и передан в обработку. Мы свяжемся с вами для подтверждения.
+              </p>
+            </td>
+          </tr>
+          <!-- Items -->
+          <tr>
+            <td style="padding:24px 32px 8px;">
+              <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#9ca3af;margin-bottom:4px;">Состав заказа</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${itemRows}
+              </table>
+            </td>
+          </tr>
+          <!-- Total -->
+          <tr>
+            <td style="padding:8px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:16px 0 0;font-size:16px;font-weight:700;color:#111827;">Итого</td>
+                  <td style="padding:16px 0 0;text-align:right;font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap;">${totalKzt} ₸</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Delivery -->
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <div style="background:#f8fafc;border:1px solid #eef0f4;border-radius:10px;padding:16px 18px;">
+                <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#9ca3af;">Доставка</div>
+                <p style="margin:6px 0 0;font-size:14px;color:#111827;">${escapeHtml(payload.shippingAddress)}</p>
+                ${commentRow}
+              </div>
+            </td>
+          </tr>
+          <!-- CTA -->
+          <tr>
+            <td style="padding:28px 32px;" align="center">
+              <a href="${orderUrl}" style="display:inline-block;background:#2563eb;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:10px;">Посмотреть заказ</a>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f8fafc;border-top:1px solid #eef0f4;padding:22px 32px;">
+              <p style="margin:0;font-size:12px;line-height:1.6;color:#9ca3af;">
+                Это письмо отправлено автоматически после оформления заказа на сайте TIMSAN. Если вы не оформляли заказ, просто проигнорируйте его.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+async function sendCustomerOrderConfirmation(
+  customerEmail: string,
+  payload: OrderNotificationPayload,
+  siteUrl: string,
+): Promise<void> {
+  const host = process.env["SMTP_HOST"] ?? "localhost";
+  const port = parseInt(process.env["SMTP_PORT"] ?? "1025", 10);
+  const user = process.env["SMTP_USER"] ?? "";
+  const pass = process.env["SMTP_PASS"] ?? "";
+  const from = process.env["SMTP_FROM"] ?? "noreply@example.kz";
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure: port === 465,
+    auth: user ? { user, pass } : undefined,
+  });
+
+  const totalKzt = Math.round(payload.totalCents / 100).toLocaleString("ru-KZ");
+  const subject = `Ваш заказ №${payload.orderNumber} принят`;
+  const orderUrl = `${siteUrl}/account/orders/${payload.orderId}`;
+
+  const itemsText = payload.items
+    .map(
+      (it) =>
+        `  - ${it.name} (${it.sku}): ${it.quantity} × ${Math.round(it.unitPriceCents / 100).toLocaleString("ru-KZ")} ₸`,
+    )
+    .join("\n");
+
+  const text = [
+    `Здравствуйте, ${payload.customerName}!`,
+    ``,
+    `Ваш заказ №${payload.orderNumber} успешно принят и передан в обработку.`,
+    ``,
+    `Состав заказа:`,
+    itemsText,
+    ``,
+    `Итого: ${totalKzt} ₸`,
+    ``,
+    `Адрес доставки: ${payload.shippingAddress}`,
+    payload.notes ? `Комментарий: ${payload.notes}` : null,
+    ``,
+    `Статус заказа: ${orderUrl}`,
+    ``,
+    `Спасибо за покупку!`,
+  ]
+    .filter((line) => line !== null)
+    .join("\n");
+
+  const html = buildCustomerEmailHtml(payload, orderUrl, siteUrl);
+
+  await transporter.sendMail({ from, to: customerEmail, subject, html, text });
+}
+
 // ─── Telegram provider (inline, no web import) ────────────────────────────────
 
 async function sendTelegramNotification(
@@ -253,7 +438,7 @@ export async function handleNotificationJob(job: { data: NotificationJobData }):
     orderNumber: order.id.slice(-8).toUpperCase(),
     customerName: order.contactName,
     customerPhone: order.contactPhone,
-    customerEmail: "",
+    customerEmail: order.contactEmail ?? "",
     items,
     totalCents: order.subtotalCents,
     shippingAddress: [
@@ -315,6 +500,17 @@ export async function handleNotificationJob(job: { data: NotificationJobData }):
         console.error(`[worker] Email notification failed for order ${orderId}:`, err);
         results.push({ channel: "email", success: false, error });
       }
+    }
+  }
+
+  // Send customer confirmation email (only for registered users who have email)
+  if (emailEnabled && payload.customerEmail) {
+    try {
+      await sendCustomerOrderConfirmation(payload.customerEmail, payload, siteUrl);
+      console.warn(`[worker] Customer confirmation email sent to ${payload.customerEmail} for order ${orderId}`);
+    } catch (err) {
+      console.error(`[worker] Customer confirmation email failed for order ${orderId}:`, err);
+      // Non-critical: don't affect retry logic
     }
   }
 

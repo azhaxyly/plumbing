@@ -6,13 +6,13 @@
  *
  * See tasks 28.1 and 28.2.
  */
+import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
 
-import { prisma } from "@timsan/db";
 
 import { auth } from "@/auth";
-import { ShopContactsForm } from "@/components/admin/settings/shop-contacts-form";
 import { NotificationsForm } from "@/components/admin/settings/notifications-form";
+import { ShopContactsForm } from "@/components/admin/settings/shop-contacts-form";
 
 export const metadata: Metadata = {
   title: "Настройки — Timsan Admin",

@@ -8,9 +8,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
+import type { BannerWithProducts } from "@/lib/homepage-data";
+
 import { BannerProductCard } from "./banner-product-card";
 
-import type { BannerWithProducts } from "@/lib/homepage-data";
 
 interface HeroBannerClientProps {
   banners: BannerWithProducts[];
@@ -29,11 +30,13 @@ export function HeroBannerClient({ banners }: HeroBannerClientProps) {
   const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
 
   const onInit = useCallback((api: typeof emblaApi) => {
-    setScrollSnaps(api!.scrollSnapList());
+    if (!api) return;
+    setScrollSnaps(api.scrollSnapList());
   }, []);
 
   const onSelect = useCallback((api: typeof emblaApi) => {
-    setSelectedIndex(api!.selectedScrollSnap());
+    if (!api) return;
+    setSelectedIndex(api.selectedScrollSnap());
   }, []);
 
   useEffect(() => {

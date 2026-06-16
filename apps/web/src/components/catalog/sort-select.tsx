@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const SORT_OPTIONS = [
@@ -25,7 +26,7 @@ export function SortSelect({ basePath }: SortSelectProps) {
     } else {
       params.delete("sort");
     }
-    router.push(`${basePath}?${params.toString()}`);
+    router.push(`${basePath}?${params.toString()}` as Route);
   };
 
   return (

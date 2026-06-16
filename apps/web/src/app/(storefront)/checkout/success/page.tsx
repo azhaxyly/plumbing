@@ -5,14 +5,14 @@
  * Displays the order ID and links to continue shopping.
  */
 
-import type { Metadata } from "next";
-import Link from "next/link";
-import type { Route } from "next";
-import { CheckCircle } from "lucide-react";
 import { Button } from "@timsan/ui";
+import { CheckCircle } from "lucide-react";
+import type { Metadata , Route } from "next";
+import Link from "next/link";
+
 
 export const metadata: Metadata = {
-  title: "Заявка оформлена — Timsan",
+  title: "Заявка оформлена",
   description: "Ваша заявка успешно оформлена",
   robots: { index: false, follow: true },
 };

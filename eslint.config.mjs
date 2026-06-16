@@ -24,6 +24,7 @@ const config = [
       "**/coverage/**",
       "**/*.config.js",
       "**/*.config.mjs",
+      "**/generated/**",
     ],
   },
   ...compat.extends("next/core-web-vitals"),
@@ -60,7 +61,10 @@ const config = [
       "@typescript-eslint/no-non-null-assertion": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/await-thenable": "error",
-      "@typescript-eslint/no-misused-promises": "error",
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        { checksVoidReturn: { attributes: false } },
+      ],
 
       // Import ordering
       "import/order": [

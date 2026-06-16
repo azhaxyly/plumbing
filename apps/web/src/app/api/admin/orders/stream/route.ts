@@ -10,9 +10,9 @@
  * See task 30.1.
  */
 
+import { prisma } from "@timsan/db";
 import { NextResponse } from "next/server";
 
-import { prisma } from "@timsan/db";
 
 import { auth } from "@/auth";
 

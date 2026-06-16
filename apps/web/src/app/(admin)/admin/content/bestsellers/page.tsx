@@ -16,7 +16,7 @@ export default async function AdminBestsellersPage() {
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Хиты продаж</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Управление списком товаров в разделе "Хиты продаж" на главной странице
+          Управление списком товаров в разделе &quot;Хиты продаж&quot; на главной странице
         </p>
       </div>
 

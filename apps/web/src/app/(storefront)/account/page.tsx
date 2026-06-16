@@ -1,15 +1,16 @@
+import { prisma } from "@timsan/db";
+import { Button } from "@timsan/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { prisma } from "@timsan/db";
-import { Button } from "@timsan/ui";
 
 import { auth } from "@/auth";
 import { logoutAction } from "@/lib/auth-actions";
+
 import { ChangePasswordForm } from "./change-password-form";
 
 export const metadata: Metadata = {
-  title: "Личный кабинет — Timsan",
+  title: "Личный кабинет",
   robots: { index: false, follow: true },
 };
 

@@ -1,5 +1,26 @@
 ﻿import type { NextConfig } from "next";
 
+// Derive the production image host from S3_PUBLIC_URL (single source of truth,
+// e.g. https://cdn.example.kz/media). In dev this is the localhost:9000 entry
+// below; in prod next/image must whitelist the CDN subdomain or uploaded
+// images get blocked.
+const prodImagePattern = (() => {
+  const url = process.env.S3_PUBLIC_URL;
+  if (!url) return null;
+  try {
+    const { protocol, hostname, port } = new URL(url);
+    if (hostname === "localhost") return null; // already covered below
+    return {
+      protocol: protocol.replace(":", "") as "http" | "https",
+      hostname,
+      ...(port ? { port } : {}),
+      pathname: "/media/**",
+    };
+  } catch {
+    return null;
+  }
+})();
+
 const nextConfig: NextConfig = {
   // Self-contained build for Docker/production deploys.
   output: "standalone",
@@ -42,6 +63,8 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "placehold.co",
       },
+      // Production CDN host (cdn.<домен>), derived from S3_PUBLIC_URL.
+      ...(prodImagePattern ? [prodImagePattern] : []),
     ],
   },
   transpilePackages: [

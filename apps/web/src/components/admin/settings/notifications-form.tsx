@@ -14,10 +14,10 @@
  * See task 28.2.
  */
 
-import { useState, useTransition } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-
 import { cn } from "@timsan/ui";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useState, useTransition } from "react";
+
 
 import { saveNotificationSettings } from "@/app/(admin)/admin/settings/actions";
 

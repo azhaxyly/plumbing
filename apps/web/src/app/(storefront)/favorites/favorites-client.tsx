@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Heart, ShoppingBag } from "lucide-react";
-import Link from "next/link";
 import type { Route } from "next";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { useFavorites } from "@/contexts/favorites-context";
 import { ProductCard } from "@/components/catalog/product-card";
 import type { ProductCardData } from "@/components/catalog/product-card";
+import { useFavorites } from "@/contexts/favorites-context";
 
 export function FavoritesClient() {
   const { productIds, count } = useFavorites();

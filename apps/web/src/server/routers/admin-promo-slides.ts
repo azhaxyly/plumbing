@@ -66,13 +66,20 @@ export const adminPromoSlidesRouter = createTRPCRouter({
       requireAdminOrManager(ctx.userRole);
       const prisma = await getPrisma();
       const { id, startsAt, endsAt, ...rest } = input;
+      // Strip undefined values: exactOptionalPropertyTypes forbids explicit undefined
+      // in Prisma update data (optional field must be absent, not undefined).
+      const definedRest = Object.fromEntries(
+        Object.entries(rest).filter(([, v]) => v !== undefined),
+      );
       return prisma.promoSlide.update({
         where: { id },
+         
         data: {
-          ...rest,
+          ...definedRest,
           ...(startsAt !== undefined ? { startsAt: startsAt ? new Date(startsAt) : null } : {}),
           ...(endsAt !== undefined ? { endsAt: endsAt ? new Date(endsAt) : null } : {}),
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
       });
     }),
 

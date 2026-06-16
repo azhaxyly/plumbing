@@ -6,11 +6,12 @@
  */
 
 import type { Metadata } from "next";
-import { createServerTrpc } from "@/lib/trpc-server";
+
 import { CartClient } from "@/components/cart/cart-client";
+import { createServerTrpc } from "@/lib/trpc-server";
 
 export const metadata: Metadata = {
-  title: "Корзина — Timsan",
+  title: "Корзина",
   description: "Ваша корзина покупок",
   robots: { index: false, follow: true },
 };
@@ -18,9 +19,6 @@ export const metadata: Metadata = {
 export default async function CartPage() {
   const trpc = await createServerTrpc();
   const cart = await trpc.cart.get();
-
-  // Debug: log what we got
-  console.log("[CartPage] cart:", JSON.stringify(cart, null, 2));
 
   return (
     <div className="container mx-auto px-4 py-8 md:px-6">

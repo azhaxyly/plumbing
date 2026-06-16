@@ -67,6 +67,16 @@ export async function submitOrder(
 ): Promise<SubmitOrderResult> {
   const prisma = await getPrisma();
 
+  // ── 0. Fetch user email for notification snapshot ──────────────────────────
+  let contactEmail: string | null = null;
+  if (userId) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    });
+    contactEmail = user?.email ?? null;
+  }
+
   // ── 1. Load cart from DB ───────────────────────────────────────────────────
   const cart = await prisma.cart.findUnique({
     where: { id: cartId },
@@ -109,6 +119,7 @@ export async function submitOrder(
         status: "new",
         contactName: contactInfo.name,
         contactPhone: contactInfo.phone,
+        contactEmail: contactEmail,
         addressStreet: address.street,
         addressBuilding: address.building,
         addressApartment: address.apartment ?? null,

@@ -5,11 +5,11 @@
  * See task 25.4.
  */
 
+import { Button, Input } from "@timsan/ui";
 import { ChevronDown, ChevronRight, Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState, useTransition } from "react";
 
-import { Button, Input } from "@timsan/ui";
 
 import {
   createAttributeAction,

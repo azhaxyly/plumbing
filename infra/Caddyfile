@@ -1,0 +1,14 @@
+# Domains are injected from infra/.env.production (SITE_DOMAIN / CDN_DOMAIN),
+# so there is nothing to hand-edit here. Caddy fetches Let's Encrypt certs
+# automatically for every site listed below.
+
+{$SITE_DOMAIN}, www.{$SITE_DOMAIN} {
+	encode gzip zstd
+	reverse_proxy web:3000
+}
+
+# Uploaded images (MinIO) served from the cdn subdomain.
+{$CDN_DOMAIN} {
+	encode gzip zstd
+	reverse_proxy minio:9000
+}

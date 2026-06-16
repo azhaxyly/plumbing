@@ -16654,6 +16654,7 @@ export namespace Prisma {
     status: $Enums.OrderStatus | null
     contactName: string | null
     contactPhone: string | null
+    contactEmail: string | null
     addressStreet: string | null
     addressBuilding: string | null
     addressApartment: string | null
@@ -16673,6 +16674,7 @@ export namespace Prisma {
     status: $Enums.OrderStatus | null
     contactName: string | null
     contactPhone: string | null
+    contactEmail: string | null
     addressStreet: string | null
     addressBuilding: string | null
     addressApartment: string | null
@@ -16692,6 +16694,7 @@ export namespace Prisma {
     status: number
     contactName: number
     contactPhone: number
+    contactEmail: number
     addressStreet: number
     addressBuilding: number
     addressApartment: number
@@ -16721,6 +16724,7 @@ export namespace Prisma {
     status?: true
     contactName?: true
     contactPhone?: true
+    contactEmail?: true
     addressStreet?: true
     addressBuilding?: true
     addressApartment?: true
@@ -16740,6 +16744,7 @@ export namespace Prisma {
     status?: true
     contactName?: true
     contactPhone?: true
+    contactEmail?: true
     addressStreet?: true
     addressBuilding?: true
     addressApartment?: true
@@ -16759,6 +16764,7 @@ export namespace Prisma {
     status?: true
     contactName?: true
     contactPhone?: true
+    contactEmail?: true
     addressStreet?: true
     addressBuilding?: true
     addressApartment?: true
@@ -16865,6 +16871,7 @@ export namespace Prisma {
     status: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment: string | null
@@ -16903,6 +16910,7 @@ export namespace Prisma {
     status?: boolean
     contactName?: boolean
     contactPhone?: boolean
+    contactEmail?: boolean
     addressStreet?: boolean
     addressBuilding?: boolean
     addressApartment?: boolean
@@ -16925,6 +16933,7 @@ export namespace Prisma {
     status?: boolean
     contactName?: boolean
     contactPhone?: boolean
+    contactEmail?: boolean
     addressStreet?: boolean
     addressBuilding?: boolean
     addressApartment?: boolean
@@ -16945,6 +16954,7 @@ export namespace Prisma {
     status?: boolean
     contactName?: boolean
     contactPhone?: boolean
+    contactEmail?: boolean
     addressStreet?: boolean
     addressBuilding?: boolean
     addressApartment?: boolean
@@ -16979,6 +16989,7 @@ export namespace Prisma {
       status: $Enums.OrderStatus
       contactName: string
       contactPhone: string
+      contactEmail: string | null
       addressStreet: string
       addressBuilding: string
       addressApartment: string | null
@@ -17390,6 +17401,7 @@ export namespace Prisma {
     readonly status: FieldRef<"Order", 'OrderStatus'>
     readonly contactName: FieldRef<"Order", 'String'>
     readonly contactPhone: FieldRef<"Order", 'String'>
+    readonly contactEmail: FieldRef<"Order", 'String'>
     readonly addressStreet: FieldRef<"Order", 'String'>
     readonly addressBuilding: FieldRef<"Order", 'String'>
     readonly addressApartment: FieldRef<"Order", 'String'>
@@ -27737,6 +27749,7 @@ export namespace Prisma {
     status: 'status',
     contactName: 'contactName',
     contactPhone: 'contactPhone',
+    contactEmail: 'contactEmail',
     addressStreet: 'addressStreet',
     addressBuilding: 'addressBuilding',
     addressApartment: 'addressApartment',
@@ -29091,6 +29104,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     contactName?: StringFilter<"Order"> | string
     contactPhone?: StringFilter<"Order"> | string
+    contactEmail?: StringNullableFilter<"Order"> | string | null
     addressStreet?: StringFilter<"Order"> | string
     addressBuilding?: StringFilter<"Order"> | string
     addressApartment?: StringNullableFilter<"Order"> | string | null
@@ -29112,6 +29126,7 @@ export namespace Prisma {
     status?: SortOrder
     contactName?: SortOrder
     contactPhone?: SortOrder
+    contactEmail?: SortOrderInput | SortOrder
     addressStreet?: SortOrder
     addressBuilding?: SortOrder
     addressApartment?: SortOrderInput | SortOrder
@@ -29136,6 +29151,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     contactName?: StringFilter<"Order"> | string
     contactPhone?: StringFilter<"Order"> | string
+    contactEmail?: StringNullableFilter<"Order"> | string | null
     addressStreet?: StringFilter<"Order"> | string
     addressBuilding?: StringFilter<"Order"> | string
     addressApartment?: StringNullableFilter<"Order"> | string | null
@@ -29157,6 +29173,7 @@ export namespace Prisma {
     status?: SortOrder
     contactName?: SortOrder
     contactPhone?: SortOrder
+    contactEmail?: SortOrderInput | SortOrder
     addressStreet?: SortOrder
     addressBuilding?: SortOrder
     addressApartment?: SortOrderInput | SortOrder
@@ -29184,6 +29201,7 @@ export namespace Prisma {
     status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
     contactName?: StringWithAggregatesFilter<"Order"> | string
     contactPhone?: StringWithAggregatesFilter<"Order"> | string
+    contactEmail?: StringNullableWithAggregatesFilter<"Order"> | string | null
     addressStreet?: StringWithAggregatesFilter<"Order"> | string
     addressBuilding?: StringWithAggregatesFilter<"Order"> | string
     addressApartment?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -31012,6 +31030,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -31033,6 +31052,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -31052,6 +31072,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31073,6 +31094,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31093,6 +31115,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -31111,6 +31134,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31130,6 +31154,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32902,6 +32927,7 @@ export namespace Prisma {
     status?: SortOrder
     contactName?: SortOrder
     contactPhone?: SortOrder
+    contactEmail?: SortOrder
     addressStreet?: SortOrder
     addressBuilding?: SortOrder
     addressApartment?: SortOrder
@@ -32925,6 +32951,7 @@ export namespace Prisma {
     status?: SortOrder
     contactName?: SortOrder
     contactPhone?: SortOrder
+    contactEmail?: SortOrder
     addressStreet?: SortOrder
     addressBuilding?: SortOrder
     addressApartment?: SortOrder
@@ -32944,6 +32971,7 @@ export namespace Prisma {
     status?: SortOrder
     contactName?: SortOrder
     contactPhone?: SortOrder
+    contactEmail?: SortOrder
     addressStreet?: SortOrder
     addressBuilding?: SortOrder
     addressApartment?: SortOrder
@@ -35050,6 +35078,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -35069,6 +35098,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -35225,6 +35255,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     contactName?: StringFilter<"Order"> | string
     contactPhone?: StringFilter<"Order"> | string
+    contactEmail?: StringNullableFilter<"Order"> | string | null
     addressStreet?: StringFilter<"Order"> | string
     addressBuilding?: StringFilter<"Order"> | string
     addressApartment?: StringNullableFilter<"Order"> | string | null
@@ -37326,6 +37357,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -37346,6 +37378,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -37380,6 +37413,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37400,6 +37434,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38095,6 +38130,7 @@ export namespace Prisma {
     status?: $Enums.OrderStatus
     contactName: string
     contactPhone: string
+    contactEmail?: string | null
     addressStreet: string
     addressBuilding: string
     addressApartment?: string | null
@@ -38176,6 +38212,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38195,6 +38232,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38214,6 +38252,7 @@ export namespace Prisma {
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     contactName?: StringFieldUpdateOperationsInput | string
     contactPhone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
     addressStreet?: StringFieldUpdateOperationsInput | string
     addressBuilding?: StringFieldUpdateOperationsInput | string
     addressApartment?: NullableStringFieldUpdateOperationsInput | string | null

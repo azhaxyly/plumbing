@@ -82,6 +82,6 @@ export async function getClientIp(): Promise<string> {
   const headersList = await headers();
   const xff = headersList.get("x-forwarded-for");
   return xff
-    ? xff.split(",")[0]!.trim()
+    ? (xff.split(",")[0] ?? "").trim()
     : (headersList.get("x-real-ip") ?? "127.0.0.1");
 }

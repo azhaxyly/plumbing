@@ -5,14 +5,15 @@
  * client component. Redirects to /cart/ if the cart is empty.
  */
 
+import { computeTotals } from "@timsan/domain";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { computeTotals } from "@timsan/domain";
-import { createServerTrpc } from "@/lib/trpc-server";
+
 import { CheckoutForm } from "@/components/checkout/checkout-form";
+import { createServerTrpc } from "@/lib/trpc-server";
 
 export const metadata: Metadata = {
-  title: "Оформление заявки — Timsan",
+  title: "Оформление заявки",
   description: "Оформите заявку на доставку товаров",
   robots: { index: false, follow: true },
 };

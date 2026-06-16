@@ -304,8 +304,8 @@ async function main() {
 }
 
 async function reindexMeilisearch(): Promise<void> {
-  const MEILI_URL = process.env["MEILISEARCH_URL"] ?? "http://localhost:7700";
-  const MEILI_KEY = process.env["MEILISEARCH_API_KEY"] ?? "";
+  const MEILI_URL = process.env["MEILI_HOST"] ?? "http://localhost:7700";
+  const MEILI_KEY = process.env["MEILI_MASTER_KEY"] ?? "";
   const MEILI_INDEX = "products";
   const BATCH = 500;
   const total = await prisma.product.count({ where: { status: "active" } });

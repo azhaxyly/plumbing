@@ -5,6 +5,15 @@
 
 import { MeiliSearch } from "meilisearch";
 import type { SearchParams } from "meilisearch";
+import { buildProductSynonyms } from "./synonyms";
+
+export {
+  cyrToLat,
+  latToCyr,
+  alphabetVariants,
+  buildBrandSynonyms,
+} from "./transliterate";
+export { buildProductSynonyms } from "./synonyms";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -61,8 +70,8 @@ export interface PrismaClientLike {
 // ─── Client ───────────────────────────────────────────────────────────────────
 
 const MEILISEARCH_URL =
-  process.env["MEILISEARCH_URL"] ?? "http://localhost:7700";
-const MEILISEARCH_API_KEY = process.env["MEILISEARCH_API_KEY"] ?? "";
+  process.env["MEILI_HOST"] ?? "http://localhost:7700";
+const MEILISEARCH_API_KEY = process.env["MEILI_MASTER_KEY"] ?? "";
 
 const INDEX_NAME = "products";
 
@@ -96,8 +105,14 @@ async function isIndexPopulated(): Promise<boolean> {
 /**
  * Configures the Meilisearch products index with the correct settings.
  * Should be called once on startup (e.g. from the worker).
+ *
+ * @param brandNames - Brand names from the DB. Used to generate cross-alphabet
+ *   synonyms (e.g. "triton" ↔ "тритон") so brand search works in either
+ *   alphabet. Pass an empty array to only seed the curated category synonyms.
  */
-export async function configureProductIndex(): Promise<void> {
+export async function configureProductIndex(
+  brandNames: string[] = [],
+): Promise<void> {
   const client = getClient();
   const index = client.index(INDEX_NAME);
 
@@ -119,6 +134,13 @@ export async function configureProductIndex(): Promise<void> {
       "inStock",
     ],
     sortableAttributes: ["priceCents", "createdAt", "name"],
+    // Russian plurals/cases ("ванна"/"ванны") and brand transliteration
+    // ("triton"/"тритон") — Meili has no Russian stemmer, so we seed synonyms.
+    synonyms: buildProductSynonyms(brandNames),
+    typoTolerance: {
+      enabled: true,
+      minWordSizeForTypos: { oneTypo: 4, twoTypos: 8 },
+    },
   });
 }
 
@@ -316,13 +338,23 @@ export async function getProductFallbackSearch(
     LEFT JOIN "ProductVariant" pv ON pv."productId" = p.id
     WHERE
       p.status = 'active'
-      AND to_tsvector('simple',
-        p.name || ' ' ||
-        COALESCE(p."shortDescription", '') || ' ' ||
-        COALESCE(p.description, '') || ' ' ||
-        COALESCE(b.name, '') || ' ' ||
-        COALESCE(p.sku, '')
-      ) @@ plainto_tsquery('simple', ${query})
+      AND (
+        -- 'russian' stems plurals/cases ("ванны" → "ванна"); 'simple' keeps
+        -- exact Latin/brand/SKU matching that the Russian config would mangle.
+        to_tsvector('russian',
+          p.name || ' ' ||
+          COALESCE(p."shortDescription", '') || ' ' ||
+          COALESCE(p.description, '') || ' ' ||
+          COALESCE(b.name, '')
+        ) @@ plainto_tsquery('russian', ${query})
+        OR to_tsvector('simple',
+          p.name || ' ' ||
+          COALESCE(p."shortDescription", '') || ' ' ||
+          COALESCE(p.description, '') || ' ' ||
+          COALESCE(b.name, '') || ' ' ||
+          COALESCE(p.sku, '')
+        ) @@ plainto_tsquery('simple', ${query})
+      )
     GROUP BY p.id, b.name, b.slug
     ORDER BY
       ts_rank(
@@ -341,13 +373,21 @@ export async function getProductFallbackSearch(
     LEFT JOIN "Brand" b ON b.id = p."brandId"
     WHERE
       p.status = 'active'
-      AND to_tsvector('simple',
-        p.name || ' ' ||
-        COALESCE(p."shortDescription", '') || ' ' ||
-        COALESCE(p.description, '') || ' ' ||
-        COALESCE(b.name, '') || ' ' ||
-        COALESCE(p.sku, '')
-      ) @@ plainto_tsquery('simple', ${query})
+      AND (
+        to_tsvector('russian',
+          p.name || ' ' ||
+          COALESCE(p."shortDescription", '') || ' ' ||
+          COALESCE(p.description, '') || ' ' ||
+          COALESCE(b.name, '')
+        ) @@ plainto_tsquery('russian', ${query})
+        OR to_tsvector('simple',
+          p.name || ' ' ||
+          COALESCE(p."shortDescription", '') || ' ' ||
+          COALESCE(p.description, '') || ' ' ||
+          COALESCE(b.name, '') || ' ' ||
+          COALESCE(p.sku, '')
+        ) @@ plainto_tsquery('simple', ${query})
+      )
   `;
   const totalHits = Number(countRows[0]?.count ?? 0);
 
@@ -395,6 +435,7 @@ export async function getProductFallbackSearch(
       brandSlug: r.brand_slug,
       categoryIds: cats.ids,
       categoryNames: cats.names,
+      attributeValues: [],
       primaryImageUrl: r.primary_image_url,
       inStock: totalAvailable > 0,
       createdAt: r.created_at.toISOString(),

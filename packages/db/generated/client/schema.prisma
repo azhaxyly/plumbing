@@ -267,6 +267,7 @@ model Order {
   // Contact info snapshot
   contactName  String
   contactPhone String
+  contactEmail String? // snapshot of user.email at time of order (null for guests)
 
   // Delivery address snapshot
   addressStreet    String

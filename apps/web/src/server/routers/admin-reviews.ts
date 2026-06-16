@@ -60,7 +60,13 @@ export const adminReviewsRouter = createTRPCRouter({
       requireAdminOrManager(ctx.userRole);
       const prisma = await getPrisma();
       const { id, ...rest } = input;
-      return prisma.review.update({ where: { id }, data: rest });
+      // Strip undefined values: exactOptionalPropertyTypes forbids explicit undefined
+      // in Prisma update data.
+      const definedRest = Object.fromEntries(
+        Object.entries(rest).filter(([, v]) => v !== undefined),
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return prisma.review.update({ where: { id }, data: definedRest as any });
     }),
 
   delete: protectedProcedure

@@ -1,15 +1,17 @@
-import type { CategoryTreeNode } from "@timsan/db";
-import { getCategoryTree } from "@timsan/db";
+import type { BrandSummary, CategoryTreeNode } from "@timsan/db";
+import { getAllBrands, getCategoryTree } from "@timsan/db";
 import { ClipboardList, LayoutDashboard, Mail, Phone, ShoppingCart, User } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
 import { auth } from "@/auth";
+
+import { FavoritesLink } from "./favorites-link";
 import { MegaMenu } from "./mega-menu";
 import { MobileMenu } from "./mobile-menu";
 import { SearchBar } from "./search-bar";
-import { FavoritesLink } from "./favorites-link";
+import { StickyHeader } from "./sticky-header";
 
 const topLinks = [
   { href: "/about-us", label: "О компании" },
@@ -20,12 +22,24 @@ const topLinks = [
 const phone = process.env["NEXT_PUBLIC_SHOP_PHONE"] ?? "+7 (776) 201-64-66";
 const email = process.env["NEXT_PUBLIC_SHOP_EMAIL"] ?? "adilet.timat@gmail.com";
 
+const iconBtn =
+  "flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-stone-600 transition-colors hover:bg-accent/10 hover:text-accent";
+const iconBtnMobile =
+  "flex items-center justify-center rounded-xl p-2 text-stone-600 transition-colors hover:bg-accent/10 hover:text-accent";
+
 export async function Header() {
   let categories: CategoryTreeNode[] | null = null;
   try {
     categories = await getCategoryTree();
   } catch {
     // categories remains null
+  }
+
+  let brands: BrandSummary[] | null = null;
+  try {
+    brands = await getAllBrands();
+  } catch {
+    // brands remains null
   }
 
   const session = await auth();
@@ -37,46 +51,50 @@ export async function Header() {
 
   return (
     <>
-      {/* Top bar — не sticky, уходит при скролле */}
-      <div className="border-b border-stone-100 bg-white w-full">
-        <div className="container mx-auto flex min-h-[52px] items-center px-4 md:px-6 text-sm text-stone-500">
-          <nav className="hidden items-center gap-5 md:flex" aria-label="Вспомогательная навигация">
-            {topLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href as Route}
-                className="transition-colors hover:text-stone-900"
-              >
-                {link.label}
-              </Link>
+      {/* Top bar — slim navy strip, not sticky → scrolls away. Hidden on mobile (empty there). */}
+      <div className="hidden w-full bg-primary text-white/70 md:block">
+        <div className="container mx-auto flex min-h-[42px] items-center px-4 text-[13px] md:px-6">
+          <nav
+            className="hidden items-center gap-1 md:flex"
+            aria-label="Вспомогательная навигация"
+          >
+            {topLinks.map((link, i) => (
+              <span key={link.href} className="flex items-center">
+                {i > 0 && <span className="mx-1 text-white/25">•</span>}
+                <Link
+                  href={link.href as Route}
+                  className="rounded px-1.5 py-0.5 transition-colors hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              </span>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-5">
             <a
               href={`tel:${phone.replace(/\s/g, "")}`}
-              className="flex items-center gap-1.5 font-medium text-stone-700 transition-colors hover:text-stone-900"
+              className="flex items-center gap-1.5 font-medium text-white transition-colors hover:text-accent"
             >
-              <Phone className="h-3 w-3" />
+              <Phone className="h-3.5 w-3.5 text-accent" />
               {phone}
             </a>
             <a
               href={`mailto:${email}`}
-              className="hidden items-center gap-1.5 transition-colors hover:text-stone-900 lg:flex"
+              className="hidden items-center gap-1.5 transition-colors hover:text-white lg:flex"
             >
-              <Mail className="h-3 w-3" />
+              <Mail className="h-3.5 w-3.5 text-accent" />
               {email}
             </a>
           </div>
         </div>
       </div>
 
-      {/* Main header row — sticky */}
-      <div className="sticky top-0 z-40 border-b border-stone-100 bg-white shadow-sm">
-        <div className="container mx-auto px-3 py-2 md:pl-2 md:pr-6 md:py-3">
+      {/* Main header row — sticky + scroll-shrink */}
+      <StickyHeader>
+        <div className="container mx-auto px-3 py-2 transition-[padding] duration-300 group-data-[scrolled=true]:py-1.5 md:px-6 md:py-3 md:group-data-[scrolled=true]:py-2">
 
-          {/* ── Mobile: две строки (< md) ── */}
+          {/* ── Mobile: two rows (< md) ── */}
           <div className="md:hidden">
-            {/* Строка 1: логотип + корзина + гамбургер */}
             <div className="flex items-center justify-between">
               <Link
                 href="/"
@@ -86,43 +104,31 @@ export async function Header() {
                 <Image
                   src="/logo.png"
                   alt="Timsan Сантехника"
-                  width={96}
-                  height={64}
-                  className="h-[64px] w-[96px] object-contain"
+                  width={173}
+                  height={115}
+                  className="h-14 w-auto object-contain"
                   priority
                 />
               </Link>
 
               <div className="flex items-center gap-1">
                 {isAdmin ? (
-                  <Link
-                    href={"/admin" as Route}
-                    className="flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                    aria-label="Панель администратора"
-                  >
+                  <Link href={"/admin" as Route} className={iconBtnMobile} aria-label="Панель администратора">
                     <LayoutDashboard className="h-6 w-6" />
                   </Link>
                 ) : isAuthenticated ? (
-                  <Link
-                    href={"/account" as Route}
-                    className="flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                    aria-label="Личный кабинет"
-                  >
+                  <Link href={"/account" as Route} className={iconBtnMobile} aria-label="Личный кабинет">
                     <User className="h-6 w-6" />
                   </Link>
                 ) : (
-                  <Link
-                    href={"/login" as Route}
-                    className="flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                    aria-label="Войти"
-                  >
+                  <Link href={"/login" as Route} className={iconBtnMobile} aria-label="Войти">
                     <User className="h-6 w-6" />
                   </Link>
                 )}
 
                 <Link
                   href={"/cart" as Route}
-                  className="relative flex items-center justify-center rounded-lg p-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                  className={`relative ${iconBtnMobile}`}
                   aria-label={`Корзина${cartCount > 0 ? `, ${cartCount} товаров` : ""}`}
                 >
                   <ShoppingCart className="h-6 w-6" />
@@ -132,19 +138,18 @@ export async function Header() {
                     </span>
                   )}
                 </Link>
-                <MobileMenu categories={categories} />
+                <MobileMenu categories={categories} brands={brands} />
               </div>
             </div>
 
-            {/* Строка 2: поисковая строка */}
             <div className="mt-2">
               <SearchBar />
             </div>
           </div>
 
-          {/* ── Desktop: одна строка (md+) ── */}
-          <div className="hidden md:flex min-h-[80px] items-center gap-4">
-            {/* Логотип */}
+          {/* ── Desktop: single row (md+) ── */}
+          <div className="hidden items-center gap-4 md:flex">
+            {/* Logo */}
             <Link
               href="/"
               className="shrink-0 transition-opacity hover:opacity-80"
@@ -155,45 +160,33 @@ export async function Header() {
                 alt="Timsan Сантехника"
                 width={173}
                 height={115}
-                className="h-[115px] w-[173px] object-contain"
+                className="h-20 w-auto object-contain transition-[height] duration-300 group-data-[scrolled=true]:h-14"
                 priority
               />
             </Link>
 
-            {/* Каталог */}
-            <MegaMenu categories={categories} />
+            {/* Catalog */}
+            <MegaMenu categories={categories} brands={brands} />
 
-            {/* Search */}
+            {/* Search — size unaffected by scroll */}
             <SearchBar />
 
             {/* Icons */}
             <div className="flex items-center gap-1">
               {isAdmin ? (
-                <Link
-                  href={"/admin" as Route}
-                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                  aria-label="Панель администратора"
-                >
-                  <LayoutDashboard className="h-7 w-7" />
-                  <span className="hidden lg:block text-[12px] font-medium">Админка</span>
+                <Link href={"/admin" as Route} className={iconBtn} aria-label="Панель администратора">
+                  <LayoutDashboard className="h-6 w-6" />
+                  <span className="hidden text-[12px] font-medium lg:block">Админка</span>
                 </Link>
               ) : isAuthenticated ? (
-                <Link
-                  href={"/account" as Route}
-                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                  aria-label="Личный кабинет"
-                >
-                  <User className="h-7 w-7" />
-                  <span className="hidden lg:block text-[12px] font-medium">Кабинет</span>
+                <Link href={"/account" as Route} className={iconBtn} aria-label="Личный кабинет">
+                  <User className="h-6 w-6" />
+                  <span className="hidden text-[12px] font-medium lg:block">Кабинет</span>
                 </Link>
               ) : (
-                <Link
-                  href={"/orders" as Route}
-                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                  aria-label="Мои заказы"
-                >
-                  <ClipboardList className="h-7 w-7" />
-                  <span className="hidden lg:block text-[12px] font-medium">Заказы</span>
+                <Link href={"/orders" as Route} className={iconBtn} aria-label="Мои заказы">
+                  <ClipboardList className="h-6 w-6" />
+                  <span className="hidden text-[12px] font-medium lg:block">Заказы</span>
                 </Link>
               )}
 
@@ -201,11 +194,11 @@ export async function Header() {
 
               <Link
                 href={"/cart" as Route}
-                className="relative flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
+                className={`relative ${iconBtn}`}
                 aria-label={`Корзина${cartCount > 0 ? `, ${cartCount} товаров` : ""}`}
               >
-                <ShoppingCart className="h-7 w-7" />
-                <span className="hidden lg:block text-[12px] font-medium">Корзина</span>
+                <ShoppingCart className="h-6 w-6" />
+                <span className="hidden text-[12px] font-medium lg:block">Корзина</span>
                 {cartCount > 0 && (
                   <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white">
                     {cartCount > 99 ? "99+" : cartCount}
@@ -214,22 +207,18 @@ export async function Header() {
               </Link>
 
               {!isAuthenticated && !isAdmin && (
-                <Link
-                  href={"/login" as Route}
-                  className="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900"
-                  aria-label="Войти"
-                >
-                  <User className="h-7 w-7" />
-                  <span className="hidden lg:block text-[12px] font-medium">Войти</span>
+                <Link href={"/login" as Route} className={iconBtn} aria-label="Войти">
+                  <User className="h-6 w-6" />
+                  <span className="hidden text-[12px] font-medium lg:block">Войти</span>
                 </Link>
               )}
 
-              <MobileMenu categories={categories} />
+              <MobileMenu categories={categories} brands={brands} />
             </div>
           </div>
 
         </div>
-      </div>
+      </StickyHeader>
     </>
   );
 }

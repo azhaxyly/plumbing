@@ -1,8 +1,8 @@
+import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { prisma } from "@timsan/db";
 
 import { auth } from "@/auth";
 
@@ -45,7 +45,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   return {
-    title: `Заказ #${id.slice(-8).toUpperCase()} — Timsan`,
+    title: `Заказ #${id.slice(-8).toUpperCase()}`,
     robots: { index: false, follow: true },
   };
 }

@@ -1,5 +1,5 @@
-import { SectionHeader } from "@/components/home/section-header";
 import { ReviewsSliderClient } from "@/components/home/reviews-slider-client";
+import { SectionHeader } from "@/components/home/section-header";
 import type { ReviewItem } from "@/lib/homepage-data";
 
 interface ReviewsSectionProps {

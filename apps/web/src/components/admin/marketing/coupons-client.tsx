@@ -5,11 +5,11 @@
  * See task 25.7.
  */
 
+import { Button, Input, cn } from "@timsan/ui";
 import { Loader2, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState, useTransition } from "react";
 
-import { Button, Input, cn } from "@timsan/ui";
 
 import { createCouponAction, deleteCouponAction, updateCouponAction } from "@/lib/coupon-actions";
 

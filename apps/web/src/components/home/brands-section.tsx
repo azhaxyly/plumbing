@@ -1,7 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { Route } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
 import type { BrandItem } from "@/lib/homepage-data";
 
@@ -14,11 +14,13 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
     return null;
   }
 
+  const visibleBrands = brands.slice(0, 6);
+
   return (
-    <section className="py-8 md:py-12 bg-white">
+    <section className="py-6 md:py-12 bg-white">
       <div className="container mx-auto px-4">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold sm:text-3xl text-stone-900">
+        <div className="mb-4 md:mb-6 flex items-center justify-between gap-3">
+          <h2 className="text-xl font-bold md:text-3xl text-stone-900">
             Популярные бренды
           </h2>
           <Link
@@ -31,20 +33,20 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
         </div>
 
         <div className="border border-stone-200 overflow-hidden">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {brands.map((brand) => (
+          <div className="grid grid-cols-3 md:grid-cols-6">
+            {visibleBrands.map((brand) => (
               <Link
                 key={brand.id}
                 href={`/brand/${brand.slug}` as Route}
-                className="flex flex-col items-center justify-center gap-3 border-b border-r border-stone-200 p-6 transition-colors hover:bg-stone-50"
+                className="flex flex-col items-center justify-center gap-2 md:gap-3 border-b border-r border-stone-200 p-3 md:p-6 transition-colors hover:bg-stone-50"
               >
                 {brand.logoUrl ? (
-                  <div className="relative h-16 w-full">
+                  <div className="relative h-12 w-full md:h-16">
                     <Image
                       src={brand.logoUrl}
                       alt={`Логотип бренда ${brand.name}`}
                       fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                      sizes="(max-width: 768px) 33vw, 16vw"
                       className="object-contain"
                       loading="lazy"
                     />

@@ -24,8 +24,8 @@ try {
 const prisma = new PrismaClient();
 
 const MEILISEARCH_URL =
-  process.env["MEILISEARCH_URL"] ?? "http://localhost:7700";
-const MEILISEARCH_API_KEY = process.env["MEILISEARCH_API_KEY"] ?? "";
+  process.env["MEILI_HOST"] ?? "http://localhost:7700";
+const MEILISEARCH_API_KEY = process.env["MEILI_MASTER_KEY"] ?? "";
 const INDEX_NAME = "products";
 const BATCH_SIZE = 500;
 

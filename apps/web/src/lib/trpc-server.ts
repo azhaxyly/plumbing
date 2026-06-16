@@ -9,10 +9,11 @@
 
 import "server-only";
 import { headers } from "next/headers";
+import type { NextRequest } from "next/server";
 import { cache } from "react";
+
 import { appRouter } from "@/server/root";
 import { createCallerFactory, createTRPCContext } from "@/server/trpc";
-import type { NextRequest } from "next/server";
 
 const createCaller = createCallerFactory(appRouter);
 

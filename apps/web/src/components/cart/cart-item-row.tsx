@@ -5,11 +5,11 @@
  * Handles quantity changes (+/-/direct input) and item removal via tRPC.
  */
 
-import { useState, useTransition } from "react";
-import Image from "next/image";
-import { Minus, Plus, Trash2 } from "lucide-react";
-import { Button } from "@timsan/ui";
 import type { CartItemWithTotal } from "@timsan/domain";
+import { Button } from "@timsan/ui";
+import { Minus, Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useState, useTransition } from "react";
 
 // ─── Price formatter ──────────────────────────────────────────────────────────
 

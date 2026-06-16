@@ -182,8 +182,11 @@ notificationWorker.on("failed", (job, err) => {
 async function startup() {
   try {
     console.warn("[worker] Configuring Meilisearch product index...");
-    await configureProductIndex();
-    console.warn("[worker] Meilisearch product index configured.");
+    const brands = await prisma.brand.findMany({ select: { name: true } });
+    await configureProductIndex(brands.map((b) => b.name));
+    console.warn(
+      `[worker] Meilisearch product index configured (${brands.length} brands → synonyms).`,
+    );
   } catch (err) {
     console.error("[worker] Failed to configure Meilisearch index:", err);
     // Non-fatal: worker continues even if Meilisearch is temporarily unavailable

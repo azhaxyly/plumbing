@@ -5,12 +5,12 @@
  * Updates URL search params on change/submit.
  * See task 26.1.
  */
+import { Button } from "@timsan/ui";
 import { Loader2 } from "lucide-react";
 import type { Route } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 
-import { Button } from "@timsan/ui";
 
 export type OrderSortOption =
   | "createdAt_desc"

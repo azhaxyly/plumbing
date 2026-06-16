@@ -12,11 +12,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ callbackUrl?: string; reset?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; reset?: string; verified?: string }>;
 }) {
+  const params = await searchParams;
+  const isVerified = params.verified === "true";
+
   return (
     <div className="rounded-2xl border border-border bg-card p-6 shadow-xl shadow-primary/5 sm:p-8 md:p-10">
       <div>
@@ -28,24 +31,30 @@ export default function LoginPage({
         </p>
       </div>
 
+      {isVerified && (
+        <div className="mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          Почта успешно подтверждена! Теперь вы можете войти.
+        </div>
+      )}
+
       <div className="mt-8">
-        <LoginForm searchParams={searchParams} />
+        <LoginForm searchParams={Promise.resolve(params)} />
       </div>
 
-      <div className="mt-6 flex items-center justify-between text-sm">
+      <div className="mt-8 border-t border-border pt-6 flex items-center justify-between text-sm">
         <Link
           href="/forgot-password"
           className="font-medium text-accent transition-colors hover:text-accent/80"
         >
           Забыли пароль?
         </Link>
-        <p className="text-muted-foreground">
-          Нет аккаунта?{" "}
+        <p className="flex flex-col items-end text-muted-foreground">
+          Нет аккаунта?
           <Link
             href="/register"
             className="font-medium text-accent transition-colors hover:text-accent/80"
           >
-            Создать
+            Создать аккаунт
           </Link>
         </p>
       </div>

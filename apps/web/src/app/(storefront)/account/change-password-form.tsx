@@ -3,8 +3,8 @@
 import { Button, Input } from "@timsan/ui";
 import { useActionState } from "react";
 
-import type { ActionResult } from "@/lib/auth-actions";
 import { changePasswordAction } from "@/lib/account-actions";
+import type { ActionResult } from "@/lib/auth-actions";
 
 const initialState: ActionResult = { success: false };
 

@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { Store } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { AdminHeader } from "./admin-header";
 import { AdminMobileDrawer } from "./admin-mobile-drawer";
@@ -20,8 +20,38 @@ export function AdminLayoutClient({
 }: AdminLayoutClientProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  // Edge-swipe to open the drawer (mobile only): start near the left edge and
+  // drag right. vaul handles drag-to-close once it's open.
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  function handleTouchStart(e: React.TouchEvent) {
+    if (drawerOpen || window.innerWidth >= 1024) return;
+    const t = e.touches[0];
+    if (t && t.clientX <= 24) {
+      touchStart.current = { x: t.clientX, y: t.clientY };
+    } else {
+      touchStart.current = null;
+    }
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    const start = touchStart.current;
+    const t = e.touches[0];
+    if (!start || !t) return;
+    const dx = t.clientX - start.x;
+    const dy = Math.abs(t.clientY - start.y);
+    if (dx > 48 && dy < 40) {
+      touchStart.current = null;
+      setDrawerOpen(true);
+    }
+  }
+
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div
+      className="flex min-h-screen bg-slate-50"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+    >
       {/* Desktop sidebar — fixed, hidden on mobile */}
       <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 lg:border-r lg:bg-white lg:shadow-sm">
         {/* Sidebar logo */}

@@ -318,8 +318,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
               Характеристики
             </h2>
             <div className="rounded-xl border border-gray-200 overflow-hidden">
-              {product.brand && BRAND_COUNTRY[product.brand.slug] && (() => {
-                const bc = BRAND_COUNTRY[product.brand!.slug]!;
+              {product.brand && (() => {
+                const bc = BRAND_COUNTRY[product.brand.slug];
+                if (!bc) return null;
                 return (
                   <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100">
                     <span className="text-sm font-semibold text-gray-800">Страна производителя</span>

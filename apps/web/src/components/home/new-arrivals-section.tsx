@@ -1,6 +1,7 @@
 import type { ProductCardData } from "@/components/catalog/product-card";
-import { SectionHeader } from "./section-header";
+
 import { ProductSliderClient } from "./product-slider-client";
+import { SectionHeader } from "./section-header";
 
 interface NewArrivalsSectionProps {
   products: ProductCardData[];

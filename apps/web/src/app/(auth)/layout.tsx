@@ -2,7 +2,7 @@
  * Split-screen layout for authentication pages (login, register, etc.)
  * Left: branded showcase panel. Right: centered form card.
  */
-import { ShieldCheck, Truck, Wrench } from "lucide-react";
+import { Headphones, PackageSearch, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,14 +13,14 @@ const highlights = [
     text: "Проверенные бренды и гарантия на каждый товар",
   },
   {
-    icon: Truck,
-    title: "Быстрая доставка",
-    text: "По Казахстану — со склада в день заказа",
+    icon: PackageSearch,
+    title: "Большой каталог",
+    text: "Тысячи товаров для сантехники, отопления и водоснабжения",
   },
   {
-    icon: ShieldCheck,
-    title: "Безопасные платежи",
-    text: "Ваши данные под защитой на всех этапах",
+    icon: Headphones,
+    title: "Помощь специалиста",
+    text: "Подберём товар и ответим на ваши вопросы",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function AuthLayout({
           }}
         />
 
-        <div className="relative">
+        <Link href="/" aria-label="Timsan — на главную" className="relative">
           <Image
             src="/timsan-logo-dark.png"
             alt="Timsan Сантехника"
@@ -56,11 +56,11 @@ export default function AuthLayout({
             className="h-28 w-auto object-contain"
             priority
           />
-        </div>
+        </Link>
 
         <div className="relative max-w-md">
           <h2 className="text-3xl font-bold leading-tight text-white xl:text-4xl">
-            Всё для воды и комфорта вашего дома
+            Сантехника и комплектующие для дома и бизнеса
           </h2>
           <p className="mt-4 text-base leading-relaxed text-white/70">
             Тысячи товаров для сантехники, отопления и водоснабжения — в одном
@@ -83,7 +83,7 @@ export default function AuthLayout({
         </div>
 
         <p className="relative text-sm text-white/50">
-          © {new Date().getFullYear()} TIMSAN. Сантехника и комплектующие.
+          © {new Date().getFullYear()} TIMSAN. Все права защищены.
         </p>
       </aside>
 

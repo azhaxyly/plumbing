@@ -145,7 +145,7 @@ export function FavoritesProvider({
 
   return (
     <FavoritesContext.Provider
-      value={{ productIds, toggle, isFavorite, count: productIds.length }}
+      value={{ productIds, toggle: (id) => { void toggle(id); }, isFavorite, count: productIds.length }}
     >
       {children}
     </FavoritesContext.Provider>

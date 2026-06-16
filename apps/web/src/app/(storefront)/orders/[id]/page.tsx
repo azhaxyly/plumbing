@@ -1,9 +1,10 @@
+import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { prisma } from "@timsan/db";
+
 import { auth } from "@/auth";
 import { CART_GUEST_COOKIE } from "@/lib/cart-redis";
 
@@ -46,7 +47,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   return {
-    title: `Заказ #${id.slice(-8).toUpperCase()} — Timsan`,
+    title: `Заказ #${id.slice(-8).toUpperCase()}`,
     robots: { index: false, follow: true },
   };
 }

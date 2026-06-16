@@ -6,9 +6,9 @@
  *
  * See task 27.
  */
-import type { Metadata } from "next";
 import type { Prisma } from "@timsan/db";
 import { prisma } from "@timsan/db";
+import type { Metadata } from "next";
 
 import { auth } from "@/auth";
 import { UsersFilters } from "@/components/admin/users/users-filters";

@@ -131,8 +131,8 @@ async function mergeAttr(sourceSlug: string, targetSlug: string) {
       const created = await prisma.attributeValue.create({
         data: { attributeId: tgt.id, value: srcVal.value, slug: srcVal.slug },
       });
-      tgtValues.push({ id: created.id, slug: created.slug });
-      tgtVal = tgtValues[tgtValues.length - 1];
+      tgtVal = { id: created.id, slug: created.slug };
+      tgtValues.push(tgtVal);
     }
 
     await prisma.productAttribute.update({

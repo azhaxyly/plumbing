@@ -234,11 +234,12 @@ export function OrdersTable({ data, baseUrl }: OrdersTableProps) {
                         <div className="flex items-center justify-end gap-1">
                           <Link
                             href={`/admin/orders/${order.id}` as Route}
-                            className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-blue-600"
+                            className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                             aria-label={`Открыть заказ ${order.id}`}
-                            title="Открыть"
+                            title="Открыть заказ"
                           >
                             <Eye className="h-4 w-4" />
+                            <span>Открыть</span>
                           </Link>
                         </div>
                       </td>

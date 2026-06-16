@@ -1,9 +1,10 @@
-﻿import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@timsan/db";
+﻿import { prisma } from "@timsan/db";
 import { canTransition } from "@timsan/domain";
-import { audit } from "@/lib/audit";
-import { env } from "@timsan/shared";
 import type { OrderStatus } from "@timsan/domain";
+import { env } from "@timsan/shared";
+import { type NextRequest, NextResponse } from "next/server";
+
+import { audit } from "@/lib/audit";
 
 interface TelegramUpdate {
   update_id: number;

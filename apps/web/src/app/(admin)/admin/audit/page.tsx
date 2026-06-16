@@ -6,9 +6,9 @@
  *
  * See task 29.3.
  */
-import type { Metadata } from "next";
 import type { Prisma } from "@timsan/db";
 import { prisma } from "@timsan/db";
+import type { Metadata } from "next";
 
 import { AuditFilters } from "@/components/admin/audit/audit-filters";
 import { AuditTable } from "@/components/admin/audit/audit-table";

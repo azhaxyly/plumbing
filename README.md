@@ -62,23 +62,7 @@ pnpm format       # Prettier форматирование
 
 ```bash
 pnpm seed           # базовый seed: admin-пользователь, категории, бренды, демо-товары, настройки
-pnpm seed:phase4    # seed для Phase 4: 21+ пользователей, 21+ заказов, 25+ записей аудита, настройки
 ```
-
-`pnpm seed:phase4` создаёт данные, необходимые для тест-кейсов Phase 4 (TC-24 — TC-30, TC-RBAC):
-
-| Данные | Количество | Назначение |
-|---|---|---|
-| Пользователи | 21 (1 admin + 1 manager + 19 customer) | Пагинация TC-27 |
-| Заблокированные пользователи | 2 (`customer01`, `customer02`) | TC-27 фильтр по статусу |
-| Заказы | 21 (по 6 в статусах `new`/`confirmed`/`delivered`, 3 `cancelled`) | Пагинация TC-26 |
-| Заказы с разными датами | разброс ≥ 40 дней | TC-26 фильтр по дате |
-| Заказы с разными суммами | от 5 000 до 500 000 KZT | TC-26 сортировка |
-| AuditLog | 29 записей | Пагинация TC-29 |
-| AuditLog системные | часть с `actorUserId = null` | TC-29.11 |
-| Settings | `shop_phone`, `shop_email`, `shop_instagram`, `shop_legal_name`, `shop_bin`, `owner_emails`, `telegram_bot_token`, `telegram_chat_ids` | TC-28 |
-
-Скрипт **идемпотентен** — повторный запуск не дублирует данные.
 
 ## Документация
 

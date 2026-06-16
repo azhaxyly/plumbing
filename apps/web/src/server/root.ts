@@ -3,19 +3,19 @@
  * Combines all sub-routers into a single app router.
  */
 
-import { createTRPCRouter } from "@/server/trpc";
-import { cartRouter } from "@/server/routers/cart";
-import { favoritesRouter } from "@/server/routers/favorites";
-import { adminCategoriesRouter } from "@/server/routers/admin-categories";
-import { adminBrandsRouter } from "@/server/routers/admin-brands";
-import { adminProductsRouter } from "@/server/routers/admin-products";
 import { adminAttributesRouter } from "@/server/routers/admin-attributes";
-import { adminPagesRouter } from "@/server/routers/admin-pages";
 import { adminBannersRouter } from "@/server/routers/admin-banners";
-import { adminCouponsRouter } from "@/server/routers/admin-coupons";
 import { adminBestsellersRouter } from "@/server/routers/admin-bestsellers";
+import { adminBrandsRouter } from "@/server/routers/admin-brands";
+import { adminCategoriesRouter } from "@/server/routers/admin-categories";
+import { adminCouponsRouter } from "@/server/routers/admin-coupons";
+import { adminPagesRouter } from "@/server/routers/admin-pages";
+import { adminProductsRouter } from "@/server/routers/admin-products";
 import { adminPromoSlidesRouter } from "@/server/routers/admin-promo-slides";
 import { adminReviewsRouter } from "@/server/routers/admin-reviews";
+import { cartRouter } from "@/server/routers/cart";
+import { favoritesRouter } from "@/server/routers/favorites";
+import { createTRPCRouter } from "@/server/trpc";
 
 export const appRouter = createTRPCRouter({
   cart: cartRouter,

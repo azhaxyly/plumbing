@@ -419,7 +419,9 @@ function BrandGridManager({ brands, onSaved }: BrandGridManagerProps) {
     if (index === 0) return;
     setItems((prev) => {
       const next = [...prev];
-      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      const a = next[index];
+      const b = next[index - 1];
+      if (a !== undefined && b !== undefined) { next[index - 1] = a; next[index] = b; }
       return next.map((item, i) => ({ ...item, gridOrder: i }));
     });
     setSaved(false);
@@ -429,7 +431,9 @@ function BrandGridManager({ brands, onSaved }: BrandGridManagerProps) {
     setItems((prev) => {
       if (index >= prev.length - 1) return prev;
       const next = [...prev];
-      [next[index], next[index + 1]] = [next[index + 1], next[index]];
+      const c = next[index + 1];
+      const d = next[index];
+      if (c !== undefined && d !== undefined) { next[index] = c; next[index + 1] = d; }
       return next.map((item, i) => ({ ...item, gridOrder: i }));
     });
     setSaved(false);

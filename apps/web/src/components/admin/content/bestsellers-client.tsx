@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input } from "@timsan/ui";
 import {
   ArrowDown,
   ArrowUp,
@@ -11,7 +12,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState, useTransition } from "react";
 
-import { Button, Input } from "@timsan/ui";
 
 import {
   addBestsellerProductAction,
@@ -80,11 +80,13 @@ export function BestsellersClient({ initialItems }: BestsellersClientProps) {
       setSearchResults([]);
       return;
     }
-    searchTimeout.current = setTimeout(async () => {
-      setIsSearching(true);
-      const result = await searchProductsForBestsellerAction(q.trim());
-      setIsSearching(false);
-      if (result.data) setSearchResults(result.data);
+    searchTimeout.current = setTimeout(() => {
+      void (async () => {
+        setIsSearching(true);
+        const result = await searchProductsForBestsellerAction(q.trim());
+        setIsSearching(false);
+        if (result.data) setSearchResults(result.data);
+      })();
     }, 300);
   }, []);
 
@@ -156,7 +158,9 @@ export function BestsellersClient({ initialItems }: BestsellersClientProps) {
         const newIdx = direction === "up" ? idx - 1 : idx + 1;
         if (newIdx < 0 || newIdx >= prev.length) return prev;
         const updated = [...prev];
-        [updated[idx], updated[newIdx]] = [updated[newIdx]!, updated[idx]!];
+        const e1 = updated[newIdx];
+        const e2 = updated[idx];
+        if (e1 !== undefined && e2 !== undefined) { updated[idx] = e1; updated[newIdx] = e2; }
         const reordered = updated.map((item, i) => ({ ...item, position: i }));
 
         startTransition(async () => {

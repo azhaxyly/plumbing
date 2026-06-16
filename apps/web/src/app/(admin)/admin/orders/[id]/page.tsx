@@ -6,15 +6,15 @@
  *
  * See tasks 26.2 and 26.3.
  */
+import { prisma } from "@timsan/db";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { prisma } from "@timsan/db";
 
-import { OrderStatusBadge } from "@/components/admin/orders/order-status-badge";
 import { OrderActions } from "@/components/admin/orders/order-actions";
+import { OrderStatusBadge } from "@/components/admin/orders/order-status-badge";
 import type { OrderStatus } from "@/components/admin/orders/order-status-badge";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

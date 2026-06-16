@@ -1,7 +1,8 @@
 ﻿import { prisma } from "@timsan/db";
 import { env } from "@timsan/shared";
-import { NotificationService } from "./notification-service";
+
 import { NodemailerEmailProvider } from "./email/nodemailer-email-provider";
+import { NotificationService } from "./notification-service";
 import { HttpTelegramProvider } from "./telegram/telegram-provider";
 
 export async function createNotificationService(): Promise<NotificationService> {

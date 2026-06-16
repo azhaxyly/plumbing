@@ -11,7 +11,7 @@ function parseQuantity(raw: string): number | null {
   const trimmed = raw.trim();
   if (!trimmed || trimmed.includes("более")) return null;
   // Russian decimal format: "17,000" = 17, "2,000" = 2
-  const left = trimmed.split(",")[0]!.replace(/\s/g, "");
+  const left = (trimmed.split(",")[0] ?? "").replace(/\s/g, "");
   const n = parseInt(left, 10);
   return isNaN(n) ? null : Math.max(0, n);
 }
@@ -41,7 +41,7 @@ function rowsFromSheet(sheet: XLSX.WorkSheet): StockRow[] {
 
   const results: StockRow[] = [];
   for (let i = headerIdx + 1; i < raw.length; i++) {
-    const row = raw[i]!;
+    const row = raw[i] ?? [];
     const article = String(row[1] ?? "").trim();
     const brand = String(row[5] ?? "").trim();
     const qtyRaw = String(row[6] ?? "").trim();
@@ -64,15 +64,18 @@ export function parseStockFile(buffer: Buffer, fileName: string): StockRow[] {
   const lower = fileName.toLowerCase();
 
   if (lower.endsWith(".csv")) {
-    // Parse CSV via xlsx so we reuse the same logic
     const workbook = XLSX.read(buffer, { type: "buffer", codepage: 65001 });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]!]!;
+    const sheetName = workbook.SheetNames[0] ?? "";
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet) throw new Error("CSV-файл не содержит листов");
     return rowsFromSheet(sheet);
   }
 
   if (lower.endsWith(".xlsx") || lower.endsWith(".xls") || lower.endsWith(".ods")) {
     const workbook = XLSX.read(buffer, { type: "buffer" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]!]!;
+    const sheetName = workbook.SheetNames[0] ?? "";
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet) throw new Error("Файл не содержит листов");
     return rowsFromSheet(sheet);
   }
 

@@ -1,8 +1,8 @@
 "use client";
 
+import { Button , cn } from "@timsan/ui";
 import { Heart } from "lucide-react";
-import { Button } from "@timsan/ui";
-import { cn } from "@timsan/ui";
+
 import { useFavorites } from "@/contexts/favorites-context";
 
 interface WishlistButtonProps {

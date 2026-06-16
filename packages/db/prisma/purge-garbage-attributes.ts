@@ -59,7 +59,7 @@ function cleanAttrName(raw: string): string {
   // Trim
   s = s.trim();
   // Capitalize first character
-  if (s.length > 0) s = s[0].toUpperCase() + s.slice(1);
+  if (s.length > 0) s = s[0]!.toUpperCase() + s.slice(1);
   return s;
 }
 
@@ -91,7 +91,6 @@ async function mergeAttr(sourceSlug: string, targetSlug: string) {
   if (!tgt) { console.log(`  SKIP  merge [${sourceSlug}] → [${targetSlug}] target not found`); return; }
 
   const srcLinks = await prisma.productAttribute.findMany({ where: { attributeId: src.id } });
-  const tgtSlugSet = new Set(tgt.values.map((v) => v.slug));
   let moved = 0;
   let dropped = 0;
 

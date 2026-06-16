@@ -13,18 +13,20 @@
  * See design.md → «Корзина гостя», task 19.2.
  */
 
-import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
-import { cookies } from "next/headers";
+import type { Cart, CartItem , CartId, CartItemId, ProductId, VariantId, UserId } from "@timsan/domain";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, publicProcedure } from "@/server/trpc";
+import { cookies } from "next/headers";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+
 import {
   getGuestCart,
   setGuestCart,
   getOrCreateGuestId,
 } from "@/lib/cart-redis";
-import type { Cart, CartItem } from "@timsan/domain";
-import type { CartId, CartItemId, ProductId, VariantId, UserId } from "@timsan/domain";
+import { createTRPCRouter, publicProcedure } from "@/server/trpc";
+
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

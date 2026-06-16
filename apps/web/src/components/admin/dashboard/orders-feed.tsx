@@ -9,13 +9,13 @@
  * See task 30.2.
  */
 
-import { useCallback, useEffect, useState } from "react";
 import type { Route } from "next";
 import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 
-import { OrderStatusBadge } from "@/components/admin/orders/order-status-badge";
 import { transitionOrderStatus } from "@/app/(admin)/admin/orders/[id]/actions";
 import type { OrderSummary } from "@/app/api/admin/orders/stream/route";
+import { OrderStatusBadge } from "@/components/admin/orders/order-status-badge";
 
 // Re-export type so the page can import it from one place
 export type { OrderSummary };

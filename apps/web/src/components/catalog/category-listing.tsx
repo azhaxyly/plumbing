@@ -101,8 +101,8 @@ export function CategoryListing({
             </Suspense>
           </div>
 
-          <section aria-label={`Товары в категории ${categoryName}`}>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <section aria-label={`Товары в категории ${categoryName}`} className="-mx-4 md:mx-0">
+            <div className="grid grid-cols-2 gap-px border-y border-stone-200 bg-stone-200 sm:grid-cols-3 sm:gap-4 sm:border-0 sm:bg-transparent lg:grid-cols-4">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

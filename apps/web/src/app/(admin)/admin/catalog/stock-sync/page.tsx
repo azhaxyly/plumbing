@@ -99,7 +99,7 @@ export default function StockSyncPage() {
       const ab = e.target?.result as ArrayBuffer;
       const bytes = new Uint8Array(ab);
       let binary = "";
-      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]!);
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i] ?? 0);
       setFileBase64(btoa(binary));
     };
     reader.readAsArrayBuffer(file);
@@ -339,7 +339,7 @@ export default function StockSyncPage() {
                     row.currentPriceCents !== null &&
                     row.newPriceCents !== row.currentPriceCents;
                   const priceUp =
-                    priceChanged && row.newPriceCents! > row.currentPriceCents!;
+                    priceChanged && (row.newPriceCents ?? 0) > (row.currentPriceCents ?? 0);
                   return (
                     <tr key={`${row.article}-${i}`} className="hover:bg-gray-50">
                       <td className="px-4 py-2 font-mono text-xs">

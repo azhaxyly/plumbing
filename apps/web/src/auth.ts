@@ -24,7 +24,7 @@ async function getArgon2() {
 }
 
 async function getRedis() {
-  const { Redis } = await import("ioredis");
+  const { default: Redis } = await import("ioredis");
   const redis = new Redis(process.env["REDIS_URL"] ?? "redis://localhost:6379", {
     lazyConnect: true,
     maxRetriesPerRequest: 1,

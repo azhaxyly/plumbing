@@ -1,7 +1,8 @@
-﻿import nodemailer from "nodemailer";
-import { render } from "@react-email/render";
-import { createElement } from "react";
+﻿import { render } from "@react-email/render";
 import type { EmailProvider, OrderNotificationPayload } from "@timsan/domain";
+import nodemailer from "nodemailer";
+import { createElement } from "react";
+
 import { OrderNotificationEmail } from "./order-notification-template";
 
 export interface NodemailerConfig {

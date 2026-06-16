@@ -83,8 +83,8 @@ export async function getFacetDataForBrand(brandId: string): Promise<FacetData> 
     }))
     .sort((a, b) => a.name.localeCompare(b.name, "ru"));
 
-  let minPrice = products[0]!.priceCents;
-  let maxPrice = products[0]!.priceCents;
+  let minPrice = Infinity;
+  let maxPrice = 0;
   for (const p of products) {
     if (p.priceCents < minPrice) minPrice = p.priceCents;
     if (p.priceCents > maxPrice) maxPrice = p.priceCents;

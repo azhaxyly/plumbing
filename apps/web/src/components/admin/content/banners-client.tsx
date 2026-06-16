@@ -187,7 +187,7 @@ function ProductSearch({
   const search = useCallback((q: string) => {
     if (!q.trim()) { setResults([]); return; }
     setLoading(true);
-    searchProductsForBannerAction({ q }).then((res) => {
+    void searchProductsForBannerAction({ q }).then((res) => {
       setResults(res.data ?? []);
       setLoading(false);
     });
@@ -297,7 +297,9 @@ function BannerProductsSection({
     const newProducts = [...products];
     const target = direction === "up" ? index - 1 : index + 1;
     if (target < 0 || target >= newProducts.length) return;
-    [newProducts[index], newProducts[target]] = [newProducts[target]!, newProducts[index]!];
+    const p1 = newProducts[target];
+    const p2 = newProducts[index];
+    if (p1 !== undefined && p2 !== undefined) { newProducts[index] = p1; newProducts[target] = p2; }
     setProducts(newProducts);
     await reorderBannerProductsAction({
       bannerId,

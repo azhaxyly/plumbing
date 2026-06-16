@@ -3,13 +3,13 @@
  * Renders the table rows, role/status badges, action buttons, and pagination.
  * See task 27.
  */
+import { cn } from "@timsan/ui";
 import type { Route } from "next";
 import Link from "next/link";
 
-import { cn } from "@timsan/ui";
 
-import { UserRoleSelect } from "./user-role-select";
 import { UserBlockButton } from "./user-block-button";
+import { UserRoleSelect } from "./user-role-select";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

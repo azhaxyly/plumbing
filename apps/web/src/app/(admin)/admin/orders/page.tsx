@@ -6,9 +6,9 @@
  *
  * See task 26.1.
  */
-import type { Metadata } from "next";
 import type { Prisma } from "@timsan/db";
 import { prisma } from "@timsan/db";
+import type { Metadata } from "next";
 
 import { OrdersFilters } from "@/components/admin/orders/orders-filters";
 import type { OrderSortOption } from "@/components/admin/orders/orders-filters";

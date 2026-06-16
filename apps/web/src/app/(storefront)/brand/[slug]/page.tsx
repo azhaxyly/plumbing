@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { BrandDescription } from "@/components/catalog/brand-description";
 import { CategoryListing } from "@/components/catalog/category-listing";
 import { FacetPanel } from "@/components/catalog/facet-panel";
 import { CategoryGrid } from "@/components/home/category-grid";
@@ -28,8 +29,10 @@ export async function generateMetadata({ params, searchParams }: BrandPageProps)
 
   if (!brand) return { title: "Бренд не найден" };
 
-  const title = brand.name;
-  const description = brand.description ?? `Товары бренда ${brand.name}`;
+  const title = `Сантехника ${brand.name} - интернет-магазин в Алматы`;
+  const description =
+    brand.description ??
+    `Сантехника ${brand.name} в интернет-магазине Timsan - широкий выбор, доставка по Алматы и Казахстану.`;
 
   // Self-canonical pagination (page param only; facets/sort excluded).
   const page = Math.max(1, parseInt((await searchParams).page as string) || 1);
@@ -163,7 +166,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
         {showHero && (
           <div className="relative w-full">
             {/* Banner — clips the background image */}
-            <div className="relative h-[420px] overflow-hidden">
+            <div className="relative h-[240px] overflow-hidden md:h-[420px]">
               {brand.coverImageUrl ? (
                 <div
                   className="absolute inset-0"
@@ -181,15 +184,15 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
               <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-transparent" />
 
               {/* Brand name — top left */}
-              <div className="absolute left-0 top-0 z-10 px-4 pt-8 md:px-6">
-                <h1 className="text-3xl font-bold text-white drop-shadow-md md:text-4xl">{brand.name}</h1>
+              <div className="absolute left-0 top-0 z-10 px-4 pt-6 md:px-6 md:pt-8">
+                <h1 className="text-2xl font-bold text-white drop-shadow-md md:text-4xl">{brand.name}</h1>
               </div>
             </div>
 
             {/* Logo — overflows half outside the banner bottom edge */}
             {brand.logoUrl && (
               <div className="absolute bottom-0 left-4 z-20 translate-y-1/2 md:left-6">
-                <div className="relative h-28 w-44 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg">
+                <div className="relative h-20 w-32 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg md:h-28 md:w-44">
                   <Image
                     src={brand.logoUrl}
                     alt={brand.name}
@@ -206,15 +209,10 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
         {/* Below-banner section: spacer for logo + description */}
         {showHero && (brand.logoUrl || brand.description) && (
           <div className="border-b bg-white">
-            <div className="container mx-auto flex items-start gap-8 px-4 pb-10 pt-16 md:px-6">
-              {brand.logoUrl && <div className="w-44 shrink-0" />}
+            <div className="container mx-auto flex flex-col items-start gap-8 px-4 pb-6 pt-12 md:flex-row md:px-6 md:pb-10 md:pt-16">
+              {brand.logoUrl && <div className="hidden w-44 shrink-0 md:block" />}
               {brand.description && (
-                <div className="min-w-0 flex-1">
-                  <h2 className="mb-3 text-lg font-semibold text-gray-900">О бренде</h2>
-                  <p className="whitespace-pre-line text-sm leading-7 text-gray-600 md:text-base md:leading-8">
-                    {brand.description}
-                  </p>
-                </div>
+                <BrandDescription description={brand.description} />
               )}
             </div>
           </div>

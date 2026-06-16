@@ -13,10 +13,10 @@ const geologica = Geologica({
 export const metadata: Metadata = {
   title: {
     template: "%s | Timsan",
-    default: "Timsan — Сантехника и мебель для ванной",
+    default: "Timsan - интернет-магазин сантехники в Алматы",
   },
   description:
-    "Интернет-магазин сантехники и мебели для ванной комнаты. Широкий выбор, доставка по Казахстану, оплата через Kaspi.",
+    "Интернет-магазин сантехники и мебели для ванной в Алматы. Широкий выбор брендов, доставка по Казахстану, оплата через Kaspi.",
   metadataBase: new URL(
     process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000",
   ),
