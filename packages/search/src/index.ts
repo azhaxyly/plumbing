@@ -3,16 +3,11 @@
  * Meilisearch wrapper for product search and indexing.
  */
 
-import { MeiliSearch } from "meilisearch";
-import type { SearchParams } from "meilisearch";
+import { MeiliSearch, type SearchParams } from "meilisearch";
+
 import { buildProductSynonyms } from "./synonyms";
 
-export {
-  cyrToLat,
-  latToCyr,
-  alphabetVariants,
-  buildBrandSynonyms,
-} from "./transliterate";
+export { cyrToLat, latToCyr, alphabetVariants, buildBrandSynonyms } from "./transliterate";
 export { buildProductSynonyms } from "./synonyms";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -57,20 +52,14 @@ export interface SearchResult {
  */
 export interface PrismaClientLike {
   setting: {
-    findUnique(args: {
-      where: { key: string };
-    }): Promise<{ key: string; value: string } | null>;
+    findUnique(args: { where: { key: string } }): Promise<{ key: string; value: string } | null>;
   };
-  $queryRaw<T = unknown>(
-    query: TemplateStringsArray,
-    ...values: unknown[]
-  ): Promise<T>;
+  $queryRaw<T = unknown>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
 }
 
 // ─── Client ───────────────────────────────────────────────────────────────────
 
-const MEILISEARCH_URL =
-  process.env["MEILI_HOST"] ?? "http://localhost:7700";
+const MEILISEARCH_URL = process.env["MEILI_HOST"] ?? "http://localhost:7700";
 const MEILISEARCH_API_KEY = process.env["MEILI_MASTER_KEY"] ?? "";
 
 const INDEX_NAME = "products";
@@ -110,9 +99,7 @@ async function isIndexPopulated(): Promise<boolean> {
  *   synonyms (e.g. "triton" ↔ "тритон") so brand search works in either
  *   alphabet. Pass an empty array to only seed the curated category synonyms.
  */
-export async function configureProductIndex(
-  brandNames: string[] = [],
-): Promise<void> {
+export async function configureProductIndex(brandNames: string[] = []): Promise<void> {
   const client = getClient();
   const index = client.index(INDEX_NAME);
 
@@ -126,13 +113,7 @@ export async function configureProductIndex(
       "shortDescription",
       "description",
     ],
-    filterableAttributes: [
-      "status",
-      "brandSlug",
-      "categoryIds",
-      "priceCents",
-      "inStock",
-    ],
+    filterableAttributes: ["status", "brandSlug", "categoryIds", "priceCents", "inStock"],
     sortableAttributes: ["priceCents", "createdAt", "name"],
     // Russian plurals/cases ("ванна"/"ванны") and brand transliteration
     // ("triton"/"тритон") — Meili has no Russian stemmer, so we seed synonyms.
@@ -149,9 +130,7 @@ export async function configureProductIndex(
 /**
  * Upserts a product document into the Meilisearch index.
  */
-export async function indexProduct(
-  product: ProductSearchDocument,
-): Promise<void> {
+export async function indexProduct(product: ProductSearchDocument): Promise<void> {
   const client = getClient();
   const index = client.index(INDEX_NAME);
   await index.addDocuments([product], { primaryKey: "id" });
@@ -160,9 +139,7 @@ export async function indexProduct(
 /**
  * Removes a product from the Meilisearch index.
  */
-export async function deleteProductFromIndex(
-  productId: string,
-): Promise<void> {
+export async function deleteProductFromIndex(productId: string): Promise<void> {
   const client = getClient();
   const index = client.index(INDEX_NAME);
   await index.deleteDocument(productId);
@@ -207,10 +184,7 @@ export async function searchProducts(
       return getProductFallbackSearch(query, options, prismaClient);
     }
 
-    const result = await index.search<ProductSearchDocument>(
-      query,
-      searchParams,
-    );
+    const result = await index.search<ProductSearchDocument>(query, searchParams);
 
     return {
       hits: result.hits,
@@ -221,10 +195,7 @@ export async function searchProducts(
   } catch (err) {
     // Meilisearch unavailable — fall back to Postgres FTS if client provided
     if (prismaClient) {
-      console.warn(
-        "[search] Meilisearch unavailable, falling back to Postgres FTS:",
-        err,
-      );
+      console.warn("[search] Meilisearch unavailable, falling back to Postgres FTS:", err);
       return getProductFallbackSearch(query, options, prismaClient);
     }
     // No fallback available — return empty result
@@ -409,18 +380,18 @@ export async function getProductFallbackSearch(
   // Group categories by product
   const categoryMap = new Map<string, { ids: string[]; names: string[] }>();
   for (const cr of categoryRows) {
-    if (!categoryMap.has(cr.product_id)) {
-      categoryMap.set(cr.product_id, { ids: [], names: [] });
+    let entry = categoryMap.get(cr.product_id);
+    if (!entry) {
+      entry = { ids: [], names: [] };
+      categoryMap.set(cr.product_id, entry);
     }
-    const entry = categoryMap.get(cr.product_id)!;
     entry.ids.push(cr.category_id);
     entry.names.push(cr.category_name);
   }
 
   const hits: ProductSearchDocument[] = rows.map((r) => {
     const cats = categoryMap.get(r.id) ?? { ids: [], names: [] };
-    const totalAvailable =
-      Number(r.total_quantity) - Number(r.total_reserved);
+    const totalAvailable = Number(r.total_quantity) - Number(r.total_reserved);
     return {
       id: r.id,
       slug: r.slug,

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { alphabetVariants, buildBrandSynonyms, cyrToLat, latToCyr } from "./transliterate";
+
 import { buildProductSynonyms } from "./synonyms";
+import { alphabetVariants, buildBrandSynonyms, cyrToLat, latToCyr } from "./transliterate";
 
 describe("transliteration", () => {
   it("converts Cyrillic brand to Latin", () => {

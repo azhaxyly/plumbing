@@ -14,23 +14,81 @@
 
 // Cyrillic → Latin (practical web transliteration).
 const CYR_TO_LAT: Record<string, string> = {
-  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh",
-  з: "z", и: "i", й: "y", к: "k", л: "l", м: "m", н: "n", о: "o",
-  п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f", х: "kh", ц: "ts",
-  ч: "ch", ш: "sh", щ: "shch", ъ: "", ы: "y", ь: "", э: "e", ю: "yu",
+  а: "a",
+  б: "b",
+  в: "v",
+  г: "g",
+  д: "d",
+  е: "e",
+  ё: "e",
+  ж: "zh",
+  з: "z",
+  и: "i",
+  й: "y",
+  к: "k",
+  л: "l",
+  м: "m",
+  н: "n",
+  о: "o",
+  п: "p",
+  р: "r",
+  с: "s",
+  т: "t",
+  у: "u",
+  ф: "f",
+  х: "kh",
+  ц: "ts",
+  ч: "ch",
+  ш: "sh",
+  щ: "shch",
+  ъ: "",
+  ы: "y",
+  ь: "",
+  э: "e",
+  ю: "yu",
   я: "ya",
 };
 
 // Latin → Cyrillic. Digraphs first (longest match wins), then single letters.
 const LAT_DIGRAPHS: [string, string][] = [
-  ["shch", "щ"], ["sch", "щ"], ["zh", "ж"], ["kh", "х"], ["ts", "ц"],
-  ["ch", "ч"], ["sh", "ш"], ["yu", "ю"], ["ya", "я"], ["ye", "е"],
+  ["shch", "щ"],
+  ["sch", "щ"],
+  ["zh", "ж"],
+  ["kh", "х"],
+  ["ts", "ц"],
+  ["ch", "ч"],
+  ["sh", "ш"],
+  ["yu", "ю"],
+  ["ya", "я"],
+  ["ye", "е"],
 ];
 const LAT_TO_CYR: Record<string, string> = {
-  a: "а", b: "б", c: "к", d: "д", e: "е", f: "ф", g: "г", h: "х",
-  i: "и", j: "дж", k: "к", l: "л", m: "м", n: "н", o: "о", p: "п",
-  q: "к", r: "р", s: "с", t: "т", u: "у", v: "в", w: "в", x: "кс",
-  y: "й", z: "з",
+  a: "а",
+  b: "б",
+  c: "к",
+  d: "д",
+  e: "е",
+  f: "ф",
+  g: "г",
+  h: "х",
+  i: "и",
+  j: "дж",
+  k: "к",
+  l: "л",
+  m: "м",
+  n: "н",
+  o: "о",
+  p: "п",
+  q: "к",
+  r: "р",
+  s: "с",
+  t: "т",
+  u: "у",
+  v: "в",
+  w: "в",
+  x: "кс",
+  y: "й",
+  z: "з",
 };
 
 const HAS_CYR = /[а-яё]/i;
@@ -58,7 +116,7 @@ export function latToCyr(word: string): string {
         continue outer;
       }
     }
-    const ch = lower[i]!;
+    const ch = lower[i] ?? "";
     out += ch in LAT_TO_CYR ? LAT_TO_CYR[ch] : ch;
     i += 1;
   }
@@ -81,14 +139,13 @@ export function alphabetVariants(token: string): string[] {
  * brand name we register the word and its cross-alphabet form as mutual
  * synonyms, so a query in either alphabet reaches the brand.
  */
-export function buildBrandSynonyms(
-  brandNames: string[],
-): Record<string, string[]> {
+export function buildBrandSynonyms(brandNames: string[]): Record<string, string[]> {
   const groups = new Map<string, Set<string>>();
   const link = (a: string, b: string) => {
     if (!a || !b || a === b) return;
-    if (!groups.has(a)) groups.set(a, new Set());
-    groups.get(a)!.add(b);
+    const group = groups.get(a) ?? new Set<string>();
+    groups.set(a, group);
+    group.add(b);
   };
 
   for (const name of brandNames) {
