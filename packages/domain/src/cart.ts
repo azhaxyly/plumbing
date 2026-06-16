@@ -9,6 +9,7 @@
  */
 
 import { add, mul, zero, type Money } from "@timsan/shared";
+
 import type { CartId, ProductId, UserId, VariantId } from "./types";
 
 // ─── Cart item ID ─────────────────────────────────────────────────────────────
@@ -126,15 +127,12 @@ export function computeTotals(items: CartItem[]): CartTotals {
     }
     if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
       throw new RangeError(
-        `computeTotals: items[${i}].quantity must be a positive integer, got: ${item.quantity}`
+        `computeTotals: items[${i}].quantity must be a positive integer, got: ${item.quantity}`,
       );
     }
-    if (
-      !Number.isInteger(item.unitPrice.amount) ||
-      item.unitPrice.amount < 0
-    ) {
+    if (!Number.isInteger(item.unitPrice.amount) || item.unitPrice.amount < 0) {
       throw new RangeError(
-        `computeTotals: items[${i}].unitPrice.amount must be a non-negative integer, got: ${item.unitPrice.amount}`
+        `computeTotals: items[${i}].unitPrice.amount must be a non-negative integer, got: ${item.unitPrice.amount}`,
       );
     }
   }

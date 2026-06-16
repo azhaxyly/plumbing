@@ -3,14 +3,14 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { computeTotals } from "./cart";
-import type { Cart, CartItem } from "./cart";
+
+import { computeTotals, type Cart, type CartItem } from "./cart";
 import type { CartId, ProductId, UserId, VariantId } from "./types";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeItem(
-  overrides: Partial<CartItem> & { quantity: number; unitPriceAmount: number }
+  overrides: Partial<CartItem> & { quantity: number; unitPriceAmount: number },
 ): CartItem {
   const { unitPriceAmount, ...rest } = overrides;
   return {
