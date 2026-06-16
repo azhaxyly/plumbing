@@ -4,12 +4,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
 import { ChangePasswordForm } from "./change-password-form";
 
 import { auth } from "@/auth";
 import { logoutAction } from "@/lib/auth-actions";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Личный кабинет",
