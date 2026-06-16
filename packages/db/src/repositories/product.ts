@@ -2,7 +2,7 @@
  * Product repository — queries for product detail pages.
  */
 
-import { prisma } from "../index";
+import { prisma } from "../client";
 
 export interface ProductFull {
   id: string;
@@ -58,9 +58,7 @@ export interface ProductFull {
  * Fetches full product data by slug, including variants, images, brand, and categories.
  * Returns null if the product is not found or not active.
  */
-export async function getProductBySlug(
-  slug: string
-): Promise<ProductFull | null> {
+export async function getProductBySlug(slug: string): Promise<ProductFull | null> {
   const product = await prisma.product.findUnique({
     where: { slug },
     select: {

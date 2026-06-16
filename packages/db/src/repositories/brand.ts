@@ -2,7 +2,7 @@
  * Brand repository — queries for brand list and brand detail pages.
  */
 
-import { prisma } from "../index";
+import { prisma } from "../client";
 
 export interface BrandCategoryItem {
   id: string;
@@ -105,10 +105,14 @@ type BrandSortValue = "newest" | "price_asc" | "price_desc" | "name_asc";
 
 function getBrandSortOrderBy(sort: BrandSortValue) {
   switch (sort) {
-    case "price_asc": return { priceCents: "asc" as const };
-    case "price_desc": return { priceCents: "desc" as const };
-    case "name_asc": return { name: "asc" as const };
-    default: return { createdAt: "desc" as const };
+    case "price_asc":
+      return { priceCents: "asc" as const };
+    case "price_desc":
+      return { priceCents: "desc" as const };
+    case "name_asc":
+      return { name: "asc" as const };
+    default:
+      return { createdAt: "desc" as const };
   }
 }
 
@@ -128,7 +132,15 @@ export interface BrandProductsOptions {
 export async function getBrandProductsPage(
   opts: BrandProductsOptions,
 ): Promise<{ products: BrandProductItem[]; totalCount: number }> {
-  const { brandId, sort = "newest", page = 1, pageSize = 48, priceMin, priceMax, attributeFilters = {} } = opts;
+  const {
+    brandId,
+    sort = "newest",
+    page = 1,
+    pageSize = 48,
+    priceMin,
+    priceMax,
+    attributeFilters = {},
+  } = opts;
 
   const priceFilter: { gte?: number; lte?: number } = {};
   if (priceMin !== undefined) priceFilter.gte = priceMin;
@@ -206,9 +218,7 @@ export async function getBrandProductsPage(
  * Returns a brand by slug with its active products.
  * Returns null if the brand is not found.
  */
-export async function getBrandBySlug(
-  slug: string
-): Promise<BrandWithProducts | null> {
+export async function getBrandBySlug(slug: string): Promise<BrandWithProducts | null> {
   const brand = await prisma.brand.findUnique({
     where: { slug },
     select: {
@@ -249,10 +259,7 @@ export async function getBrandBySlug(
 
   const products: BrandProductItem[] = brand.products.map((p) => {
     const primaryImage = p.images[0] ?? null;
-    const totalAvailable = p.variants.reduce(
-      (sum, v) => sum + (v.quantity - v.reserved),
-      0
-    );
+    const totalAvailable = p.variants.reduce((sum, v) => sum + (v.quantity - v.reserved), 0);
 
     return {
       id: p.id,

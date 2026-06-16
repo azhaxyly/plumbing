@@ -7,20 +7,7 @@
  * `pnpm --filter @timsan/db generate` before importing this package.
  */
 
-import { PrismaClient } from "../generated/client";
-
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log:
-      process.env["NODE_ENV"] === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
-  });
-
-if (process.env["NODE_ENV"] !== "production") globalForPrisma.prisma = prisma;
+export { prisma } from "./client";
 
 export * from "../generated/client";
 
@@ -43,4 +30,9 @@ export type {
   BrandCategoryItem,
   BrandProductsOptions,
 } from "./repositories/brand";
-export { getAllBrands, getBrandBySlug, getBrandCategories, getBrandProductsPage } from "./repositories/brand";
+export {
+  getAllBrands,
+  getBrandBySlug,
+  getBrandCategories,
+  getBrandProductsPage,
+} from "./repositories/brand";

@@ -2,7 +2,7 @@
  * Category repository — tree queries via recursive CTE.
  */
 
-import { prisma } from "../index";
+import { prisma } from "../client";
 
 /** Maximum depth for category tree traversal */
 const MAX_DEPTH = 8;
@@ -219,10 +219,7 @@ export async function getCategoryBySlugPath(slugPath: string[]): Promise<{
   if (!result) return null;
 
   // Canonical full path: ancestors are returned root→leaf, leaf last.
-  const canonicalPath = [
-    ...result.ancestors.map((a) => a.slug),
-    result.category.slug,
-  ];
+  const canonicalPath = [...result.ancestors.map((a) => a.slug), result.category.slug];
 
   return { ...result, canonicalPath };
 }
@@ -232,9 +229,7 @@ export async function getCategoryBySlugPath(slugPath: string[]): Promise<{
  * `updatedAt`, in a single query. Used by the sitemap so each category is listed
  * once, at its canonical URL.
  */
-export async function getAllCategoryPaths(): Promise<
-  { path: string; updatedAt: Date }[]
-> {
+export async function getAllCategoryPaths(): Promise<{ path: string; updatedAt: Date }[]> {
   const rows = await prisma.category.findMany({
     select: { id: true, slug: true, parentId: true, updatedAt: true },
   });
@@ -255,10 +250,7 @@ export async function getAllCategoryPaths(): Promise<
 }
 
 /** Recursively builds a nested tree from a flat list of CTE rows */
-function buildTree(
-  rows: CategoryCteRow[],
-  parentId: string | null
-): CategoryTreeNode[] {
+function buildTree(rows: CategoryCteRow[], parentId: string | null): CategoryTreeNode[] {
   return rows
     .filter((row) => row.parentId === parentId)
     .map((row) => ({
