@@ -21,14 +21,12 @@ import {
 } from "@/lib/homepage-data";
 import { buildMetadata } from "@/lib/metadata";
 
-const SITE_URL =
-  process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
-const SITE_NAME =
-  process.env["NEXT_PUBLIC_SITE_NAME"] ?? "Timsan";
+const SITE_URL = process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
+const SITE_NAME = process.env["NEXT_PUBLIC_SITE_NAME"] ?? "Timsan";
 
 // Revalidate homepage data (banners, categories, products) every 5 minutes —
 // without this the DB-driven content is baked at build time forever.
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildMetadata({
   title: "Интернет-магазин сантехники в Алматы",

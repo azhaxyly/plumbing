@@ -1,10 +1,9 @@
 ﻿import { getAllBrands } from "@timsan/db";
-import type { Metadata , Route } from "next";
+import type { Metadata, Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-
-export const revalidate = 300; // ISR: revalidate every 5 minutes
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Бренды",
@@ -27,12 +26,8 @@ export default async function BrandsPage() {
     <div className="container mx-auto px-4 py-8 md:px-6">
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-          Бренды
-        </h1>
-        <p className="mt-2 text-gray-500">
-          Выберите бренд, чтобы посмотреть товары
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">Бренды</h1>
+        <p className="mt-2 text-gray-500">Выберите бренд, чтобы посмотреть товары</p>
       </div>
 
       {brands.length > 0 ? (
@@ -68,8 +63,7 @@ export default async function BrandsPage() {
               {/* Products count */}
               {brand.productsCount > 0 && (
                 <span className="text-xs text-gray-400">
-                  {brand.productsCount}{" "}
-                  {pluralizeProducts(brand.productsCount)}
+                  {brand.productsCount} {pluralizeProducts(brand.productsCount)}
                 </span>
               )}
             </Link>
@@ -77,9 +71,7 @@ export default async function BrandsPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-lg font-medium text-gray-500">
-            Бренды не найдены
-          </p>
+          <p className="text-lg font-medium text-gray-500">Бренды не найдены</p>
           <p className="mt-1 text-sm text-gray-400">
             Бренды появятся здесь после добавления товаров
           </p>

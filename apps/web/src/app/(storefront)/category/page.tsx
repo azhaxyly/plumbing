@@ -1,10 +1,10 @@
 import { getCategoryTree } from "@timsan/db";
-import type { Metadata , Route } from "next";
+import type { Metadata, Route } from "next";
 import Link from "next/link";
 
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Каталог товаров",
@@ -34,27 +34,18 @@ export default async function CatalogPage() {
 
       <div className="container mx-auto px-4 py-8 md:px-6">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-            Каталог товаров
-          </h1>
-          <p className="mt-2 text-gray-500">
-            Выберите категорию, чтобы найти нужный товар
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">Каталог товаров</h1>
+          <p className="mt-2 text-gray-500">Выберите категорию, чтобы найти нужный товар</p>
         </div>
 
         {categories.length === 0 ? (
-          <p className="py-16 text-center text-gray-400">
-            Категории не найдены
-          </p>
+          <p className="py-16 text-center text-gray-400">Категории не найдены</p>
         ) : (
           <div className="space-y-10">
             {categories.map((cat) => (
               <section key={cat.id} aria-labelledby={`cat-${cat.id}`}>
                 <div className="mb-4 flex items-baseline gap-3 border-b border-stone-100 pb-3">
-                  <h2
-                    id={`cat-${cat.id}`}
-                    className="text-lg font-bold text-stone-800"
-                  >
+                  <h2 id={`cat-${cat.id}`} className="text-lg font-bold text-stone-800">
                     {cat.name}
                   </h2>
                   <Link
