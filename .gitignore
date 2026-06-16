@@ -20,6 +20,10 @@ out
 # Production secrets — single source of truth, never commit (template: infra/.env.production.example)
 infra/.env.production
 
+# Backups
+*.tar.gz
+*.sql
+
 # Logs
 *.log
 npm-debug.log*
