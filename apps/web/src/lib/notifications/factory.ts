@@ -1,5 +1,5 @@
 ﻿import { prisma } from "@timsan/db";
-import { env } from "@timsan/shared";
+import { env } from "@timsan/shared/env";
 
 import { NodemailerEmailProvider } from "./email/nodemailer-email-provider";
 import { NotificationService } from "./notification-service";
