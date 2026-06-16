@@ -36,7 +36,12 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
               <Link
                 key={brand.id}
                 href={`/brand/${brand.slug}` as Route}
-                className={`flex flex-col items-center justify-center gap-2 border-b border-r border-stone-200 p-3 transition-colors md:gap-3 md:p-6 hover:bg-stone-50${index >= 6 ? "hidden md:flex" : ""}`}
+                className={[
+                  "flex flex-col items-center justify-center gap-2 border-b border-r border-stone-200 p-3 transition-colors hover:bg-stone-50 md:gap-3 md:p-6",
+                  index >= 6 ? "hidden md:flex" : "",
+                ]
+                  .join(" ")
+                  .trim()}
               >
                 {brand.logoUrl ? (
                   <div className="relative h-12 w-full md:h-16">
