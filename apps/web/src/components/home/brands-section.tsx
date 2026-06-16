@@ -14,15 +14,13 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
     return null;
   }
 
-  const visibleBrands = brands.slice(0, 6);
+  const visibleBrands = brands.slice(0, 10);
 
   return (
-    <section className="py-6 md:py-12 bg-white">
+    <section className="bg-white py-6 md:py-12">
       <div className="container mx-auto px-4">
-        <div className="mb-4 md:mb-6 flex items-center justify-between gap-3">
-          <h2 className="text-xl font-bold md:text-3xl text-stone-900">
-            Популярные бренды
-          </h2>
+        <div className="mb-4 flex items-center justify-between gap-3 md:mb-6">
+          <h2 className="text-xl font-bold text-stone-900 md:text-3xl">Популярные бренды</h2>
           <Link
             href={"/brand" as Route}
             className="flex items-center rounded-lg border border-stone-300 px-3 py-1.5 text-sm font-semibold text-stone-700 transition-colors hover:text-stone-900"
@@ -32,13 +30,13 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
           </Link>
         </div>
 
-        <div className="border border-stone-200 overflow-hidden">
-          <div className="grid grid-cols-3 md:grid-cols-6">
-            {visibleBrands.map((brand) => (
+        <div className="overflow-hidden border border-stone-200">
+          <div className="grid grid-cols-3 md:grid-cols-5">
+            {visibleBrands.map((brand, index) => (
               <Link
                 key={brand.id}
                 href={`/brand/${brand.slug}` as Route}
-                className="flex flex-col items-center justify-center gap-2 md:gap-3 border-b border-r border-stone-200 p-3 md:p-6 transition-colors hover:bg-stone-50"
+                className={`flex flex-col items-center justify-center gap-2 border-b border-r border-stone-200 p-3 transition-colors md:gap-3 md:p-6 hover:bg-stone-50${index >= 6 ? "hidden md:flex" : ""}`}
               >
                 {brand.logoUrl ? (
                   <div className="relative h-12 w-full md:h-16">
@@ -52,7 +50,7 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
                     />
                   </div>
                 ) : null}
-                <span className="text-center text-sm text-stone-600 line-clamp-1">
+                <span className="line-clamp-1 text-center text-sm text-stone-600">
                   {brand.name}
                 </span>
               </Link>
