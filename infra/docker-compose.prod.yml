@@ -30,7 +30,13 @@ services:
       dockerfile: Dockerfile
       target: worker # worker image already has the Prisma CLI + schema + migrations
     command:
-      ["node_modules/.bin/prisma", "migrate", "deploy", "--schema", "packages/db/prisma/schema.prisma"]
+      [
+        "packages/db/node_modules/.bin/prisma",
+        "migrate",
+        "deploy",
+        "--schema",
+        "packages/db/prisma/schema.prisma",
+      ]
     env_file: ./.env.production
     restart: "no"
     depends_on:
@@ -44,6 +50,10 @@ services:
       context: ..
       dockerfile: Dockerfile
       target: web
+      args:
+        NEXT_PUBLIC_SITE_URL: "${NEXT_PUBLIC_SITE_URL}"
+        NEXT_PUBLIC_SITE_NAME: "${NEXT_PUBLIC_SITE_NAME}"
+        S3_PUBLIC_URL: "${S3_PUBLIC_URL}"
     restart: unless-stopped
     env_file: ./.env.production
     depends_on:
@@ -55,7 +65,12 @@ services:
         condition: service_healthy
     healthcheck:
       test:
-        ["CMD", "node", "-e", "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -81,7 +96,7 @@ services:
 
   # ── Infrastructure (not published to the host — internal network only) ──────
   postgres:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     restart: unless-stopped
     env_file: ./.env.production # POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB
     volumes:

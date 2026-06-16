@@ -3,6 +3,7 @@
  * Health check endpoint — verifies PostgreSQL and Redis connectivity.
  * Used by docker-compose healthchecks and monitoring systems.
  */
+import { Redis } from "ioredis";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -34,11 +35,10 @@ export async function GET(): Promise<NextResponse<HealthStatus>> {
 
   // ── Check Redis ────────────────────────────────────────────────────────────
   try {
-    const { Redis } = await import("ioredis");
-    const redis = new Redis(
-      process.env["REDIS_URL"] ?? "redis://localhost:6379",
-      { maxRetriesPerRequest: 1, connectTimeout: 2000 },
-    );
+    const redis = new Redis(process.env["REDIS_URL"] ?? "redis://localhost:6379", {
+      maxRetriesPerRequest: 1,
+      connectTimeout: 2000,
+    });
     await redis.ping();
     await redis.quit();
     services.redis = "ok";
@@ -49,11 +49,7 @@ export async function GET(): Promise<NextResponse<HealthStatus>> {
   const allOk = services.postgres === "ok" && services.redis === "ok";
   const anyOk = services.postgres === "ok" || services.redis === "ok";
 
-  const status: HealthStatus["status"] = allOk
-    ? "ok"
-    : anyOk
-      ? "degraded"
-      : "error";
+  const status: HealthStatus["status"] = allOk ? "ok" : anyOk ? "degraded" : "error";
 
   const httpStatus = allOk ? 200 : anyOk ? 207 : 503;
 

@@ -44,7 +44,7 @@ const credentialsSchema = z.object({
 });
 
 // ─── Auth.js config ───────────────────────────────────────────────────────────
- 
+
 const nextAuth = NextAuth({
   ...authConfig,
   providers: [
@@ -130,7 +130,7 @@ const nextAuth = NextAuth({
     sessionToken: {
       options: {
         httpOnly: true,
-        secure: process.env["NODE_ENV"] === "production",
+        secure: process.env["NEXTAUTH_URL"]?.startsWith("https://") ?? false,
         sameSite: "lax",
         path: "/",
       },
@@ -149,9 +149,7 @@ const nextAuth = NextAuth({
 
         // Migrate guest cart to DB cart on login
         try {
-          const { mergeGuestCartOnLogin } = await import(
-            "@/lib/cart-actions"
-          );
+          const { mergeGuestCartOnLogin } = await import("@/lib/cart-actions");
           await mergeGuestCartOnLogin(user.id);
         } catch (err) {
           // Cart migration failure must not block login
@@ -162,8 +160,7 @@ const nextAuth = NextAuth({
     },
     session({ session, token }) {
       if (session.user) {
-        (session.user as { role?: string }).role =
-          (token["role"] as string) ?? "customer";
+        (session.user as { role?: string }).role = (token["role"] as string) ?? "customer";
         (session.user as { id?: string }).id = token["id"] as string;
       }
       return session;
@@ -171,8 +168,7 @@ const nextAuth = NextAuth({
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isProtected =
-        nextUrl.pathname.startsWith("/account") ||
-        nextUrl.pathname.startsWith("/admin");
+        nextUrl.pathname.startsWith("/account") || nextUrl.pathname.startsWith("/admin");
 
       if (isProtected && !isLoggedIn) {
         const loginUrl = new URL("/login", nextUrl.origin);

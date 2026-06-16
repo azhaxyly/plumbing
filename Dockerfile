@@ -44,6 +44,14 @@ RUN pnpm install --frozen-lockfile
 
 # ─── build: generate Prisma client + build the Next.js app ────────────────────
 FROM deps AS build
+# NEXT_PUBLIC_* and S3_PUBLIC_URL must be baked into the bundle at build time.
+# Pass via --build-arg (or compose build.args) so next build can inline them.
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_SITE_NAME
+ARG S3_PUBLIC_URL
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV NEXT_PUBLIC_SITE_NAME=${NEXT_PUBLIC_SITE_NAME}
+ENV S3_PUBLIC_URL=${S3_PUBLIC_URL}
 # Cap V8 heap so `next build` doesn't OOM-kill on a 4 GB box (see deploy plan).
 ENV NODE_OPTIONS=--max-old-space-size=2048
 COPY . .
@@ -78,4 +86,4 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 COPY --from=build /app/packages ./packages
 COPY --from=build /app/apps/worker ./apps/worker
-CMD ["node_modules/.bin/tsx", "apps/worker/src/index.ts"]
+CMD ["apps/worker/node_modules/.bin/tsx", "apps/worker/src/index.ts"]

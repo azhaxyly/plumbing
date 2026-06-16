@@ -43,9 +43,7 @@ const nextConfig: NextConfig = {
       // (Next already sets immutable on /_next/static itself — not duplicated here.)
       {
         source: "/:path*.(png|jpg|jpeg|gif|webp|avif|svg|ico|woff|woff2)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ];
   },
@@ -63,16 +61,19 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "placehold.co",
       },
+      // Self-hosted MinIO on any HTTP host (VPS direct IP or internal hostname).
+      // Covers the case where S3_PUBLIC_URL wasn't available at build time.
+      {
+        protocol: "http",
+        hostname: "**",
+        port: "9000",
+        pathname: "/media/**",
+      },
       // Production CDN host (cdn.<домен>), derived from S3_PUBLIC_URL.
       ...(prodImagePattern ? [prodImagePattern] : []),
     ],
   },
-  transpilePackages: [
-    "@timsan/ui",
-    "@timsan/shared",
-    "@timsan/domain",
-    "@timsan/search",
-  ],
+  transpilePackages: ["@timsan/ui", "@timsan/shared", "@timsan/domain", "@timsan/search"],
 };
 
 export default nextConfig;
