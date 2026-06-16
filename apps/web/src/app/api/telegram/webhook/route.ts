@@ -2,10 +2,11 @@
 
 import { prisma } from "@timsan/db";
 import { canTransition, type OrderStatus } from "@timsan/domain";
-import { env } from "@timsan/shared";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { audit } from "@/lib/audit";
+
+const TELEGRAM_BOT_TOKEN = process.env["TELEGRAM_BOT_TOKEN"] ?? "";
 
 interface TelegramUpdate {
   update_id: number;
@@ -23,7 +24,7 @@ interface TelegramUpdate {
 export async function POST(req: NextRequest): Promise<NextResponse> {
   // Опциональная проверка секрета (Telegram позволяет задать secret_token при setWebhook)
   const secretToken = req.headers.get("x-telegram-bot-api-secret-token");
-  const expectedSecret = env.TELEGRAM_BOT_TOKEN ? env.TELEGRAM_BOT_TOKEN.split(":")[0] : null;
+  const expectedSecret = TELEGRAM_BOT_TOKEN ? TELEGRAM_BOT_TOKEN.split(":")[0] : null;
   // Если secret настроен — проверяем; если нет — пропускаем (dev-режим)
   void secretToken;
   void expectedSecret;
@@ -95,7 +96,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 }
 
 async function answerCallback(callbackQueryId: string, text: string): Promise<void> {
-  const botToken = env.TELEGRAM_BOT_TOKEN;
+  const botToken = TELEGRAM_BOT_TOKEN;
   if (!botToken) return;
 
   await fetch(`https://api.telegram.org/bot${botToken}/answerCallbackQuery`, {
