@@ -68,9 +68,7 @@ export default async function OrderDetailPage({ params }: PageProps) {
 
   // Verify ownership: must belong to current user or current guest session
   const isOwner =
-    order &&
-    ((userId && order.userId === userId) ||
-      (guestId && order.guestId === guestId));
+    order && ((userId && order.userId === userId) || (guestId && order.guestId === guestId));
 
   if (!isOwner) {
     notFound();
@@ -84,14 +82,14 @@ export default async function OrderDetailPage({ params }: PageProps) {
     <div className="container mx-auto px-4 py-8 md:px-6">
       {/* Header */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-3">
           <Link
             href="/orders"
             className="text-sm text-stone-500 transition-colors hover:text-stone-900"
           >
             ← Мои заказы
           </Link>
-          <span className="text-stone-300">/</span>
+          <span className="hidden text-stone-300 sm:inline">/</span>
           <h1 className="text-xl font-bold text-stone-900 md:text-2xl">
             Заказ <span className="font-mono">#{orderNumber}</span>
           </h1>
@@ -113,20 +111,60 @@ export default async function OrderDetailPage({ params }: PageProps) {
                 Заказ
               </h2>
             </div>
-            <div className="overflow-x-auto">
+            {/* Mobile: stacked cards (a table is too wide for phones) */}
+            <ul className="divide-y divide-stone-100 sm:hidden">
+              {order.items.map((item) => (
+                <li key={item.id} className="flex gap-3 px-4 py-4">
+                  {item.imageUrlSnapshot && (
+                    <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-stone-100 bg-stone-50">
+                      <Image
+                        src={item.imageUrlSnapshot}
+                        alt={item.nameSnapshot}
+                        fill
+                        className="object-contain"
+                        sizes="56px"
+                      />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="break-words text-sm font-medium text-stone-900">
+                      {item.nameSnapshot}
+                    </div>
+                    <div className="mt-0.5 text-xs text-stone-500">Арт. {item.skuSnapshot}</div>
+                    <div className="mt-2 flex items-center justify-between gap-2 text-sm">
+                      <span className="text-stone-500">
+                        {formatMoney(item.unitPriceCents)} × {item.quantity}
+                      </span>
+                      <span className="whitespace-nowrap font-medium text-stone-900">
+                        {formatMoney(item.unitPriceCents * item.quantity)}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              ))}
+              <li className="flex items-center justify-between bg-stone-50 px-4 py-4">
+                <span className="text-sm font-semibold text-stone-700">Итого</span>
+                <span className="whitespace-nowrap text-sm font-bold text-stone-900">
+                  {formatMoney(order.subtotalCents)}
+                </span>
+              </li>
+            </ul>
+
+            {/* Desktop: table */}
+            <div className="hidden overflow-x-auto sm:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-stone-100 bg-stone-50 text-left text-xs font-medium uppercase tracking-wide text-stone-500">
-                    <th className="px-6 py-3">Товар</th>
-                    <th className="px-4 py-3 text-right">Цена</th>
-                    <th className="px-4 py-3 text-right">Кол-во</th>
-                    <th className="px-4 py-3 text-right">Сумма</th>
+                    <th className="px-4 py-3 sm:px-6">Товар</th>
+                    <th className="px-3 py-3 text-right sm:px-4">Цена</th>
+                    <th className="px-3 py-3 text-right sm:px-4">Кол-во</th>
+                    <th className="px-3 py-3 text-right sm:px-4">Сумма</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100">
                   {order.items.map((item) => (
                     <tr key={item.id}>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-4 sm:px-6">
                         <div className="flex items-center gap-3">
                           {item.imageUrlSnapshot && (
                             <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border border-stone-100 bg-stone-50">
@@ -139,8 +177,8 @@ export default async function OrderDetailPage({ params }: PageProps) {
                               />
                             </div>
                           )}
-                          <div>
-                            <div className="font-medium text-stone-900">
+                          <div className="min-w-0">
+                            <div className="break-words font-medium text-stone-900">
                               {item.nameSnapshot}
                             </div>
                             <div className="mt-0.5 text-xs text-stone-500">
@@ -149,13 +187,13 @@ export default async function OrderDetailPage({ params }: PageProps) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-right text-stone-700 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-3 py-4 text-right text-stone-700 sm:px-4">
                         {formatMoney(item.unitPriceCents)}
                       </td>
-                      <td className="px-4 py-4 text-right text-stone-700">
+                      <td className="px-3 py-4 text-right text-stone-700 sm:px-4">
                         {item.quantity}
                       </td>
-                      <td className="px-4 py-4 text-right font-medium text-stone-900 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-3 py-4 text-right font-medium text-stone-900 sm:px-4">
                         {formatMoney(item.unitPriceCents * item.quantity)}
                       </td>
                     </tr>
@@ -165,11 +203,11 @@ export default async function OrderDetailPage({ params }: PageProps) {
                   <tr className="border-t border-stone-200 bg-stone-50">
                     <td
                       colSpan={3}
-                      className="px-6 py-4 text-right text-sm font-semibold text-stone-700"
+                      className="px-4 py-4 text-right text-sm font-semibold text-stone-700 sm:px-6"
                     >
                       Итого
                     </td>
-                    <td className="px-4 py-4 text-right text-sm font-bold text-stone-900 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-3 py-4 text-right text-sm font-bold text-stone-900 sm:px-4">
                       {formatMoney(order.subtotalCents)}
                     </td>
                   </tr>

@@ -22,18 +22,16 @@ function ReviewCard({ review }: { review: ReviewItem }) {
     <div className="relative flex h-full flex-col rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
       <Quote
         aria-hidden
-        className="absolute right-5 top-5 h-8 w-8 text-accent/15"
+        className="text-accent/15 absolute right-5 top-5 h-8 w-8"
         fill="currentColor"
       />
 
       <div className="flex items-center gap-3">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent/10 text-sm font-bold text-accent">
+        <span className="bg-accent/10 text-accent flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold">
           {getInitials(review.authorName)}
         </span>
         <div className="min-w-0">
-          <div className="truncate font-semibold text-stone-900">
-            {review.authorName}
-          </div>
+          <div className="truncate font-semibold text-stone-900">{review.authorName}</div>
           <div className="mt-0.5 flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
@@ -49,9 +47,7 @@ function ReviewCard({ review }: { review: ReviewItem }) {
         </div>
       </div>
 
-      <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-stone-600">
-        {review.text}
-      </p>
+      <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-stone-600">{review.text}</p>
     </div>
   );
 }
@@ -59,7 +55,12 @@ function ReviewCard({ review }: { review: ReviewItem }) {
 export function ReviewsSliderClient({ reviews }: ReviewsSliderClientProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
-    dragFree: true,
+    // Mobile: snap to whole slides (no partial peek). Tablet/desktop keep
+    // the free-scroll feel.
+    dragFree: false,
+    breakpoints: {
+      "(min-width: 640px)": { dragFree: true },
+    },
   });
 
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
@@ -90,7 +91,7 @@ export function ReviewsSliderClient({ reviews }: ReviewsSliderClientProps) {
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="min-w-0 flex-[0_0_88%] pl-4 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
+              className="min-w-0 flex-[0_0_100%] pl-4 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
             >
               <ReviewCard review={review} />
             </div>
@@ -102,7 +103,7 @@ export function ReviewsSliderClient({ reviews }: ReviewsSliderClientProps) {
       {prevBtnEnabled && (
         <button
           onClick={scrollPrev}
-          className="absolute -left-5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white text-stone-600 shadow-md opacity-0 transition-all hover:bg-stone-50 hover:text-stone-900 focus:opacity-100 group-hover/slider:opacity-100 disabled:opacity-0"
+          className="absolute -left-5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white text-stone-600 opacity-0 shadow-md transition-all hover:bg-stone-50 hover:text-stone-900 focus:opacity-100 disabled:opacity-0 group-hover/slider:opacity-100"
           aria-label="Предыдущие отзывы"
         >
           <ChevronLeft className="h-6 w-6" />
@@ -112,7 +113,7 @@ export function ReviewsSliderClient({ reviews }: ReviewsSliderClientProps) {
       {nextBtnEnabled && (
         <button
           onClick={scrollNext}
-          className="absolute -right-5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white text-stone-600 shadow-md opacity-0 transition-all hover:bg-stone-50 hover:text-stone-900 focus:opacity-100 group-hover/slider:opacity-100 disabled:opacity-0"
+          className="absolute -right-5 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white text-stone-600 opacity-0 shadow-md transition-all hover:bg-stone-50 hover:text-stone-900 focus:opacity-100 disabled:opacity-0 group-hover/slider:opacity-100"
           aria-label="Следующие отзывы"
         >
           <ChevronRight className="h-6 w-6" />
