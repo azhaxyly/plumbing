@@ -36,7 +36,7 @@ export async function Footer() {
 
   return (
     <footer className="border-t bg-[#182d47]">
-      <div className="container mx-auto px-4 pt-3 pb-12 md:px-6">
+      <div className="container mx-auto px-4 pb-12 pt-3 md:px-6">
         {/* Prominent phone block */}
         <div className="mb-4 flex flex-col items-start gap-2 border-b border-white/10 pb-3 md:flex-row md:items-center md:justify-between">
           <Link
@@ -49,7 +49,7 @@ export async function Footer() {
               alt="Timsan Сантехника"
               width={160}
               height={110}
-              className="h-[80px] w-[120px] md:h-[130px] md:w-[195px] object-contain"
+              className="h-[80px] w-[120px] object-contain md:h-[130px] md:w-[195px]"
             />
           </Link>
           <a
@@ -64,11 +64,10 @@ export async function Footer() {
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand column */}
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-blue-200/70 leading-relaxed">
-              Интернет-магазин сантехники и мебели для ванной комнаты. Широкий
-              выбор, доставка по Казахстану.
+            <p className="text-sm leading-relaxed text-blue-200/70">
+              Интернет-магазин сантехники и мебели для ванной комнаты. Широкий выбор, доставка по
+              Казахстану.
             </p>
-
           </div>
 
           {/* Catalog column */}
@@ -81,7 +80,7 @@ export async function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href as Route}
-                    className="text-sm text-blue-200/70 hover:text-white transition-colors"
+                    className="text-sm text-blue-200/70 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -100,7 +99,7 @@ export async function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href as Route}
-                    className="text-sm text-blue-200/70 hover:text-white transition-colors"
+                    className="text-sm text-blue-200/70 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -116,7 +115,7 @@ export async function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href as Route}
-                    className="text-sm text-blue-200/70 hover:text-white transition-colors"
+                    className="text-sm text-blue-200/70 transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -134,7 +133,7 @@ export async function Footer() {
               <li>
                 <a
                   href={`tel:${phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-2 text-sm text-blue-200/70 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-sm text-blue-200/70 transition-colors hover:text-white"
                 >
                   <Phone className="h-4 w-4 shrink-0" />
                   {phone}
@@ -143,7 +142,7 @@ export async function Footer() {
               <li>
                 <a
                   href={`mailto:${email}`}
-                  className="flex items-center gap-2 text-sm text-blue-200/70 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-sm text-blue-200/70 transition-colors hover:text-white"
                 >
                   <Mail className="h-4 w-4 shrink-0" />
                   {email}
@@ -156,7 +155,7 @@ export async function Footer() {
         {/* Copyright */}
         <div className="mt-10 border-t border-white/10 pt-6 text-center">
           <p className="text-xs text-blue-200/50">
-            © {currentYear} Timsan. Все права защищены.
+            © 2025-{currentYear} Timsan. Все права защищены.
           </p>
         </div>
       </div>

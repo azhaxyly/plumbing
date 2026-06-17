@@ -41,9 +41,7 @@ const EMPTY_RESULTS: SuggestResults = { products: [], brands: [], categories: []
 /** Builds the listing URL for a category suggestion, scoped by brand when present. */
 function categoryHref(cat: CategoryHit): Route {
   const base = `/category/${cat.slug}`;
-  return (cat.brandSlug
-    ? `${base}?brand=${encodeURIComponent(cat.brandSlug)}`
-    : base) as Route;
+  return (cat.brandSlug ? `${base}?brand=${encodeURIComponent(cat.brandSlug)}` : base) as Route;
 }
 
 function formatPrice(cents: number): string {
@@ -57,10 +55,7 @@ function highlight(text: string, query: string) {
   const parts = text.split(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig"));
   return parts.map((part, i) =>
     part.toLowerCase() === q.toLowerCase() ? (
-      <mark
-        key={i}
-        className="rounded bg-accent/15 px-0.5 font-semibold text-accent"
-      >
+      <mark key={i} className="bg-accent/15 text-accent rounded px-0.5 font-semibold">
         {part}
       </mark>
     ) : (
@@ -88,9 +83,7 @@ export function SearchBar() {
     setLoading(true);
     setOpen(true);
     try {
-      const res = await fetch(
-        `/api/search/suggestions?q=${encodeURIComponent(q)}`,
-      );
+      const res = await fetch(`/api/search/suggestions?q=${encodeURIComponent(q)}`);
       const data = (await res.json()) as Partial<SuggestResults>;
       setResults({
         products: data.products ?? [],
@@ -117,10 +110,7 @@ export function SearchBar() {
   // Close dropdown on outside click
   useEffect(() => {
     function handlePointerDown(e: PointerEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
@@ -155,15 +145,15 @@ export function SearchBar() {
   const totalCount = products.length + brands.length + categories.length;
 
   return (
-    <div ref={containerRef} className="relative flex-1 max-w-2xl">
+    <div ref={containerRef} className="relative max-w-2xl flex-1">
       <form
         onSubmit={handleSubmit}
-        className="flex items-center overflow-hidden rounded-xl border border-stone-200 bg-stone-50 transition-[border-color,box-shadow,background-color] focus-within:border-accent focus-within:bg-white focus-within:ring-2 focus-within:ring-accent/20"
+        className="focus-within:border-accent focus-within:ring-accent/20 flex items-center overflow-hidden rounded-xl border border-stone-200 bg-stone-50 transition-[border-color,box-shadow,background-color] focus-within:bg-white focus-within:ring-2"
       >
         <Search className="ml-3.5 h-4 w-4 shrink-0 text-stone-400" />
         <input
           ref={inputRef}
-          type="search"
+          type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -187,7 +177,7 @@ export function SearchBar() {
         )}
         <button
           type="submit"
-          className="flex h-full items-center gap-1.5 bg-gradient-to-r from-primary to-accent px-4 py-2.5 text-sm font-medium text-white transition-[filter] hover:brightness-110"
+          className="from-primary to-accent flex h-full items-center gap-1.5 bg-gradient-to-r px-4 py-2.5 text-sm font-medium text-white transition-[filter] hover:brightness-110"
           aria-label="Найти"
         >
           <Search className="h-4 w-4" />
@@ -196,7 +186,7 @@ export function SearchBar() {
       </form>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 origin-top animate-dropdown-in overflow-hidden rounded-2xl border border-stone-100 bg-white shadow-2xl ring-1 ring-black/5">
+        <div className="animate-dropdown-in absolute left-0 right-0 top-full z-50 mt-2 origin-top overflow-hidden rounded-2xl border border-stone-100 bg-white shadow-2xl ring-1 ring-black/5">
           {loading && totalCount === 0 ? (
             /* Loading skeleton */
             <div className="p-2">
@@ -217,12 +207,8 @@ export function SearchBar() {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-stone-50 text-stone-300">
                 <SearchX className="h-6 w-6" />
               </div>
-              <p className="text-sm font-medium text-stone-700">
-                Ничего не найдено
-              </p>
-              <p className="text-xs text-stone-400">
-                Попробуйте изменить запрос
-              </p>
+              <p className="text-sm font-medium text-stone-700">Ничего не найдено</p>
+              <p className="text-xs text-stone-400">Попробуйте изменить запрос</p>
             </div>
           ) : (
             <div className="max-h-[70vh] overflow-y-auto">
@@ -238,9 +224,9 @@ export function SearchBar() {
                         <Link
                           href={categoryHref(cat)}
                           onClick={() => setOpen(false)}
-                          className="group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-accent/5"
+                          className="hover:bg-accent/5 group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors"
                         >
-                          <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-stone-100 bg-stone-50 text-accent">
+                          <span className="text-accent relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-stone-100 bg-stone-50">
                             {cat.imageUrl ? (
                               <Image
                                 src={cat.imageUrl}
@@ -257,13 +243,10 @@ export function SearchBar() {
                           <span className="min-w-0 flex-1 truncate text-sm font-medium text-stone-800">
                             {cat.name}
                             {cat.brandName && (
-                              <span className="font-semibold text-accent">
-                                {" "}
-                                {cat.brandName}
-                              </span>
+                              <span className="text-accent font-semibold"> {cat.brandName}</span>
                             )}
                           </span>
-                          <ChevronRight className="h-4 w-4 shrink-0 -translate-x-1 text-accent opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
+                          <ChevronRight className="text-accent h-4 w-4 shrink-0 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
                         </Link>
                       </li>
                     ))}
@@ -283,7 +266,7 @@ export function SearchBar() {
                         <Link
                           href={`/brand/${brand.slug}`}
                           onClick={() => setOpen(false)}
-                          className="group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-accent/5"
+                          className="hover:bg-accent/5 group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors"
                         >
                           <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-stone-100 bg-white text-stone-400">
                             {brand.logoUrl ? (
@@ -302,7 +285,7 @@ export function SearchBar() {
                           <span className="min-w-0 flex-1 truncate text-sm font-semibold text-stone-800">
                             {highlight(brand.name, query)}
                           </span>
-                          <ChevronRight className="h-4 w-4 shrink-0 -translate-x-1 text-accent opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
+                          <ChevronRight className="text-accent h-4 w-4 shrink-0 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
                         </Link>
                       </li>
                     ))}
@@ -322,7 +305,7 @@ export function SearchBar() {
                         <Link
                           href={`/product/${hit.slug}`}
                           onClick={() => setOpen(false)}
-                          className="group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-accent/5"
+                          className="hover:bg-accent/5 group flex items-center gap-3 rounded-xl px-2 py-2 transition-colors"
                         >
                           <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-stone-100 bg-stone-50">
                             {hit.primaryImageUrl ? (
@@ -344,15 +327,13 @@ export function SearchBar() {
                               {highlight(hit.name, query)}
                             </p>
                             {hit.brandName && (
-                              <p className="line-clamp-1 text-xs text-stone-400">
-                                {hit.brandName}
-                              </p>
+                              <p className="line-clamp-1 text-xs text-stone-400">{hit.brandName}</p>
                             )}
                           </div>
-                          <span className="shrink-0 text-sm font-bold text-primary">
+                          <span className="text-primary shrink-0 text-sm font-bold">
                             {formatPrice(hit.priceCents)}
                           </span>
-                          <ChevronRight className="h-4 w-4 shrink-0 -translate-x-1 text-accent opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
+                          <ChevronRight className="text-accent h-4 w-4 shrink-0 -translate-x-1 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100" />
                         </Link>
                       </li>
                     ))}
@@ -365,7 +346,7 @@ export function SearchBar() {
                 <Link
                   href={`/search?q=${encodeURIComponent(query.trim())}`}
                   onClick={() => setOpen(false)}
-                  className="flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent px-4 py-3 text-sm font-semibold text-white transition-[filter] hover:brightness-110"
+                  className="from-primary to-accent flex items-center justify-center gap-2 bg-gradient-to-r px-4 py-3 text-sm font-semibold text-white transition-[filter] hover:brightness-110"
                 >
                   <Search className="h-4 w-4" />
                   Смотреть все результаты по «{query.trim()}»

@@ -14,23 +14,14 @@ export const dynamic = "force-dynamic";
 import { auth } from "@/auth";
 import { NotificationsForm } from "@/components/admin/settings/notifications-form";
 import { SearchReindexButton } from "@/components/admin/settings/search-reindex-button";
-import { ShopContactsForm } from "@/components/admin/settings/shop-contacts-form";
 
 export const metadata: Metadata = {
   title: "Настройки — Timsan Admin",
 };
 
-const SHOP_CONTACT_KEYS = [
-  "shop_phone",
-  "shop_email",
-  "shop_instagram",
-  "shop_legal_name",
-  "shop_bin",
-] as const;
-
 const NOTIFICATION_KEYS = ["owner_emails", "telegram_bot_token", "telegram_chat_ids"] as const;
 
-const ALL_KEYS = [...SHOP_CONTACT_KEYS, ...NOTIFICATION_KEYS];
+const ALL_KEYS = [...NOTIFICATION_KEYS];
 
 export default async function AdminSettingsPage() {
   const rows = await prisma.setting.findMany({
@@ -47,14 +38,6 @@ export default async function AdminSettingsPage() {
   const user = session?.user as { role?: string } | undefined;
   const isAdmin = user?.role === "admin";
 
-  const shopContactsInitial = {
-    shop_phone: settingsMap["shop_phone"] ?? "",
-    shop_email: settingsMap["shop_email"] ?? "",
-    shop_instagram: settingsMap["shop_instagram"] ?? "",
-    shop_legal_name: settingsMap["shop_legal_name"] ?? "",
-    shop_bin: settingsMap["shop_bin"] ?? "",
-  };
-
   const notificationsInitial = {
     owner_emails: settingsMap["owner_emails"] ?? "[]",
     telegram_bot_token: settingsMap["telegram_bot_token"] ?? "",
@@ -65,26 +48,8 @@ export default async function AdminSettingsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Настройки</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          Управление контактами магазина и настройками уведомлений
-        </p>
+        <p className="mt-1 text-sm text-gray-500">Управление настройками уведомлений</p>
       </div>
-
-      {/* Контакты магазина */}
-      <section
-        aria-labelledby="shop-contacts-heading"
-        className="rounded-lg border bg-white p-6 shadow-sm"
-      >
-        <div className="mb-6">
-          <h2 id="shop-contacts-heading" className="text-lg font-semibold text-gray-900">
-            Контакты магазина
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Отображаются в футере сайта и на странице контактов.
-          </p>
-        </div>
-        <ShopContactsForm initialValues={shopContactsInitial} />
-      </section>
 
       {/* Поиск */}
       {isAdmin && (

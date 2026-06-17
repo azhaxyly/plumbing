@@ -58,17 +58,9 @@ export default async function CmsPageRoute({ params }: Props) {
     <div className="container mx-auto max-w-3xl px-4 py-12 md:px-6">
       <h1 className="mb-8 text-3xl font-bold text-gray-900">{page.title}</h1>
       <div
-        className="prose prose-gray max-w-none text-gray-700 [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-6 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mb-3 [&_h2]:mt-5 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:mt-4 [&_p]:mb-4 [&_li]:ml-6 [&_li]:list-disc [&_li]:mb-1 [&_strong]:font-semibold"
+        className="prose prose-gray max-w-none text-gray-700 [&_h1]:mb-4 [&_h1]:mt-6 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:mb-1 [&_li]:ml-6 [&_li]:list-disc [&_p]:mb-4 [&_strong]:font-semibold"
         dangerouslySetInnerHTML={{ __html: html }}
       />
-      <p className="mt-10 text-xs text-gray-400">
-        Последнее обновление:{" "}
-        {new Intl.DateTimeFormat("ru-KZ", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        }).format(page.updatedAt)}
-      </p>
     </div>
   );
 }

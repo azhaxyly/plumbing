@@ -1,4 +1,9 @@
-import { getAllCategoryPaths, getBrandBySlug, getBrandCategories, getBrandProductsPage } from "@timsan/db";
+import {
+  getAllCategoryPaths,
+  getBrandBySlug,
+  getBrandCategories,
+  getBrandProductsPage,
+} from "@timsan/db";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -9,7 +14,10 @@ import { CategoryListing } from "@/components/catalog/category-listing";
 import { FacetPanel } from "@/components/catalog/facet-panel";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
-import { FilterTransitionProvider, ProductsTransitionArea } from "@/contexts/filter-transition-context";
+import {
+  FilterTransitionProvider,
+  ProductsTransitionArea,
+} from "@/contexts/filter-transition-context";
 import { getFacetDataForBrand } from "@/lib/facet-data";
 import { parseFacetFilters } from "@/lib/facet-utils";
 import type { CategoryItem } from "@/lib/homepage-data";
@@ -23,7 +31,10 @@ interface BrandPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export async function generateMetadata({ params, searchParams }: BrandPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: BrandPageProps): Promise<Metadata> {
   const { slug } = await params;
   const brand = await getBrandBySlug(slug);
 
@@ -114,9 +125,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
 
   // slug → canonical full path (slugs are globally unique), so brand→category
   // links point straight at the canonical URL instead of bouncing through a 308.
-  const slugToPath = new Map(
-    categoryPaths.map((c) => [c.path.split("/").pop() as string, c.path]),
-  );
+  const slugToPath = new Map(categoryPaths.map((c) => [c.path.split("/").pop() as string, c.path]));
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -126,8 +135,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
   };
 
   const hasFacets =
-    facetData.attributes.length > 0 ||
-    facetData.priceRange.min !== facetData.priceRange.max;
+    facetData.attributes.length > 0 || facetData.priceRange.min !== facetData.priceRange.max;
 
   // Cast to CategoryItem for CategoryGrid (shapes are compatible)
   const categoryItems: CategoryItem[] = brandCategories.map((c) => ({
@@ -179,14 +187,6 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900" />
               )}
-
-              {/* Gradient overlay — darkens top for title readability */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-transparent" />
-
-              {/* Brand name — top left */}
-              <div className="absolute left-0 top-0 z-10 px-4 pt-6 md:px-6 md:pt-8">
-                <h1 className="text-2xl font-bold text-white drop-shadow-md md:text-4xl">{brand.name}</h1>
-              </div>
             </div>
 
             {/* Logo — overflows half outside the banner bottom edge */}
@@ -211,9 +211,7 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
           <div className="border-b bg-white">
             <div className="container mx-auto flex flex-col items-start gap-8 px-4 pb-6 pt-12 md:flex-row md:px-6 md:pb-10 md:pt-16">
               {brand.logoUrl && <div className="hidden w-44 shrink-0 md:block" />}
-              {brand.description && (
-                <BrandDescription description={brand.description} />
-              )}
+              {brand.description && <BrandDescription description={brand.description} />}
             </div>
           </div>
         )}
@@ -246,7 +244,9 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
               </Suspense>
             </div>
             <ProductsTransitionArea className="min-w-0 flex-1">
-              {!showHero && <h1 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">{brand.name}</h1>}
+              {!showHero && (
+                <h1 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">{brand.name}</h1>
+              )}
               <CategoryListing {...listingPropsBase} showHeader={false} />
             </ProductsTransitionArea>
           </div>

@@ -108,11 +108,11 @@ function mapToProductCardData(
     brand: Brand | null;
     images: ProductImage[];
     variants: Pick<ProductVariant, "quantity" | "reserved">[];
-  }
+  },
 ): ProductCardData {
   const totalAvailable = product.variants.reduce(
     (sum, v) => sum + Math.max(0, v.quantity - v.reserved),
-    0
+    0,
   );
   return {
     id: product.id,
@@ -186,7 +186,7 @@ export async function getSaleProducts(limit = 20): Promise<ProductCardData[]> {
       },
     });
     const saleProducts = products.filter(
-      (p) => p.compareAtPriceCents && p.compareAtPriceCents > p.priceCents
+      (p) => p.compareAtPriceCents && p.compareAtPriceCents > p.priceCents,
     );
     return saleProducts.slice(0, limit).map(mapToProductCardData);
   } catch (error) {
@@ -194,8 +194,6 @@ export async function getSaleProducts(limit = 20): Promise<ProductCardData[]> {
     return [];
   }
 }
-
-const BRAND_GRID_COLS = 5;
 
 export async function getActivePromoSlides(): Promise<PromoSlide[]> {
   try {
@@ -243,9 +241,7 @@ export async function getBrandsWithLogo(): Promise<BrandItem[]> {
       where: { showInGrid: true },
       orderBy: [{ gridOrder: "asc" }, { name: "asc" }],
     });
-    // Trim to complete rows so no empty cells appear in the grid
-    const completeCount = Math.floor(brands.length / BRAND_GRID_COLS) * BRAND_GRID_COLS;
-    return brands.slice(0, completeCount).map((b) => ({
+    return brands.map((b) => ({
       id: b.id,
       slug: b.slug,
       name: b.name,
@@ -256,4 +252,3 @@ export async function getBrandsWithLogo(): Promise<BrandItem[]> {
     return [];
   }
 }
-

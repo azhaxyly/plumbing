@@ -9,10 +9,22 @@ interface BrandsSectionProps {
   brands: BrandItem[];
 }
 
+const DESKTOP_COLS = 5;
+const MOBILE_COLS = 3;
+const MOBILE_MAX_ROWS = 3;
+
 export function BrandsSection({ brands }: BrandsSectionProps) {
   if (!brands || brands.length === 0) {
     return null;
   }
+
+  // Trim to complete rows per breakpoint
+  const desktopCount = Math.floor(brands.length / DESKTOP_COLS) * DESKTOP_COLS;
+  const mobileCount = Math.min(
+    Math.floor(brands.length / MOBILE_COLS) * MOBILE_COLS,
+    MOBILE_COLS * MOBILE_MAX_ROWS,
+  );
+  const visibleBrands = brands.slice(0, desktopCount);
 
   return (
     <section className="bg-white py-6 md:py-12">
@@ -30,13 +42,13 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
 
         <div className="overflow-hidden border border-stone-200">
           <div className="grid grid-cols-3 md:grid-cols-5">
-            {brands.map((brand, index) => (
+            {visibleBrands.map((brand, index) => (
               <Link
                 key={brand.id}
                 href={`/brand/${brand.slug}` as Route}
                 className={[
                   "flex flex-col items-center justify-center gap-2 border-b border-r border-stone-200 p-3 transition-colors hover:bg-stone-50 md:gap-3 md:p-6",
-                  index >= 9 ? "hidden md:flex" : "",
+                  index >= mobileCount ? "hidden md:flex" : "",
                 ]
                   .join(" ")
                   .trim()}
