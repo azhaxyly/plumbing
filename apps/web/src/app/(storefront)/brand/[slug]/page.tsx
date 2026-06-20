@@ -168,31 +168,31 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
   return (
     <FilterTransitionProvider>
       <>
-        <Breadcrumbs items={breadcrumbItems} />
+        {/* When there's a hero, breadcrumbs are overlaid on the banner instead. */}
+        {!showHero && <Breadcrumbs items={breadcrumbItems} />}
 
         {/* Brand hero banner */}
         {showHero && (
           <div className="relative w-full">
-            {/* Banner — clips the background image */}
-            <div className="relative h-[240px] overflow-hidden md:h-[420px]">
-              {brand.coverImageUrl ? (
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundImage: `url(${brand.coverImageUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center center",
-                  }}
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900" />
-              )}
+            {brand.coverImageUrl ? (
+              // Mobile: ~2:1 cover crop (small zoom, ≈390×190). Desktop: 420px.
+              <div
+                className="relative aspect-[39/19] w-full overflow-hidden bg-cover bg-center md:aspect-auto md:h-[420px]"
+                style={{ backgroundImage: `url(${brand.coverImageUrl})` }}
+              />
+            ) : (
+              <div className="aspect-[39/19] w-full bg-gradient-to-br from-slate-700 to-slate-900 md:aspect-auto md:h-[420px]" />
+            )}
+
+            {/* Breadcrumbs — overlaid top-left with a scrim for legibility */}
+            <div className="absolute inset-x-0 top-0 z-20 bg-gradient-to-b from-black/50 to-transparent px-4 py-3 md:px-6">
+              <Breadcrumbs items={breadcrumbItems} variant="overlay" />
             </div>
 
             {/* Logo — overflows half outside the banner bottom edge */}
             {brand.logoUrl && (
               <div className="absolute bottom-0 left-4 z-20 translate-y-1/2 md:left-6">
-                <div className="relative h-20 w-32 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg md:h-28 md:w-44">
+                <div className="relative h-14 w-24 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-lg md:h-28 md:w-44">
                   <Image
                     src={brand.logoUrl}
                     alt={brand.name}

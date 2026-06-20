@@ -4,11 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { FavoritesProvider } from "@/contexts/favorites-context";
 
-export default async function StorefrontLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function StorefrontLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   const userId = (session?.user as { id?: string } | undefined)?.id ?? null;
 
@@ -28,13 +24,10 @@ export default async function StorefrontLayout({
   }
 
   return (
-    <FavoritesProvider
-      initialProductIds={initialFavoriteIds}
-      isAuthenticated={!!userId}
-    >
+    <FavoritesProvider initialProductIds={initialFavoriteIds} isAuthenticated={!!userId}>
       <div className="flex min-h-screen flex-col">
         <Header />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <Footer />
         <CookiesBanner />
       </div>
