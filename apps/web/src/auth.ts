@@ -17,12 +17,18 @@ const LOCKOUT_TTL_SECONDS = 15 * 60; // 15 minutes
 /**
  * Resolves NEXTAUTH_SECRET, failing fast if it's missing or too weak.
  * An empty/short secret means JWT session tokens can be forged, so we refuse to
- * boot with one. `next build` runs without real secrets (SKIP_ENV_VALIDATION),
- * so the check is skipped there — it only guards the actual runtime.
+ * boot with one.
+ *
+ * The check is skipped during `next build` (real secrets aren't present then):
+ * Next sets NEXT_PHASE=phase-production-build while collecting page data, and the
+ * Dockerfile additionally sets SKIP_ENV_VALIDATION. At actual runtime neither is
+ * set, so the guard is enforced.
  */
 function resolveAuthSecret(): string {
   const secret = process.env["NEXTAUTH_SECRET"] ?? "";
-  const isBuild = process.env["SKIP_ENV_VALIDATION"] === "true";
+  const isBuild =
+    process.env["SKIP_ENV_VALIDATION"] === "true" ||
+    process.env["NEXT_PHASE"] === "phase-production-build";
   if (!isBuild && secret.length < 32) {
     throw new Error(
       "NEXTAUTH_SECRET is missing or too short (need ≥32 chars). " +
