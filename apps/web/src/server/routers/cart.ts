@@ -13,20 +13,22 @@
  * See design.md → «Корзина гостя», task 19.2.
  */
 
-import type { Cart, CartItem , CartId, CartItemId, ProductId, VariantId, UserId } from "@timsan/domain";
+import type {
+  Cart,
+  CartItem,
+  CartId,
+  CartItemId,
+  ProductId,
+  VariantId,
+  UserId,
+} from "@timsan/domain";
 import { TRPCError } from "@trpc/server";
 import { cookies } from "next/headers";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
-import {
-  getGuestCart,
-  setGuestCart,
-  getOrCreateGuestId,
-} from "@/lib/cart-redis";
+import { getGuestCart, setGuestCart, getOrCreateGuestId } from "@/lib/cart-redis";
 import { createTRPCRouter, publicProcedure } from "@/server/trpc";
-
-
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -73,9 +75,7 @@ async function getDbCart(userId: string): Promise<Cart | null> {
       unitPrice: { amount: item.unitPriceCents, currency: "KZT" as const },
       productName: item.productName,
       productSku: item.productSku,
-      ...(item.productImageUrl !== null
-        ? { productImageUrl: item.productImageUrl }
-        : {}),
+      ...(item.productImageUrl !== null ? { productImageUrl: item.productImageUrl } : {}),
     })) as CartItem[],
   };
 }
@@ -104,15 +104,67 @@ async function getOrCreateDbCart(userId: string): Promise<Cart> {
   };
 }
 
+/**
+ * Authoritative cart-line data resolved from the DB by variantId.
+ *
+ * Security: the client is NEVER trusted for price/name/sku/image — only for
+ * `variantId` and `quantity`. Otherwise a crafted `cart.add` request could set
+ * `unitPrice` to an arbitrary value and check out at any price.
+ *
+ * Returns null if the variant doesn't exist or its product isn't purchasable
+ * (status ≠ active).
+ */
+async function loadVariantForCart(variantId: string): Promise<{
+  productId: string;
+  unitPriceCents: number;
+  productName: string;
+  productSku: string;
+  productImageUrl: string | null;
+} | null> {
+  const prisma = await getPrisma();
+  const variant = await prisma.productVariant.findUnique({
+    where: { id: variantId },
+    select: {
+      sku: true,
+      priceCents: true,
+      product: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          images: {
+            select: { url: true },
+            orderBy: [{ isPrimary: "desc" }, { position: "asc" }],
+            take: 1,
+          },
+        },
+      },
+    },
+  });
+
+  if (!variant || variant.product.status !== "active") return null;
+
+  return {
+    productId: variant.product.id,
+    unitPriceCents: variant.priceCents,
+    productName: variant.product.name,
+    productSku: variant.sku,
+    productImageUrl: variant.product.images[0]?.url ?? null,
+  };
+}
+
 // ─── Input schemas ────────────────────────────────────────────────────────────
 
 const addItemInput = z.object({
   variantId: z.string().min(1),
-  productId: z.string().min(1),
   quantity: z.number().int().positive(),
-  unitPrice: z.number().int().nonnegative(),
-  productName: z.string().min(1),
-  productSku: z.string().min(1),
+  // Deprecated/ignored: price, name, sku and image are resolved server-side
+  // from the DB variant (never trust the client for price). Kept optional for
+  // backward compatibility with clients that still send them.
+  productId: z.string().min(1).optional(),
+  unitPrice: z.number().int().nonnegative().optional(),
+  productName: z.string().min(1).optional(),
+  productSku: z.string().min(1).optional(),
   productImageUrl: z.string().url().optional(),
 });
 
@@ -148,6 +200,13 @@ export const cartRouter = createTRPCRouter({
    * For authenticated users: reads/writes DB.
    */
   add: publicProcedure.input(addItemInput).mutation(async ({ ctx, input }) => {
+    // Resolve authoritative price/name/sku/image from the DB. Never trust the
+    // client-supplied values (price manipulation guard).
+    const variant = await loadVariantForCart(input.variantId);
+    if (!variant) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Товар недоступен" });
+    }
+
     if (ctx.userId) {
       // ── Authenticated: DB cart ─────────────────────────────────────────────
       const cart = await getOrCreateDbCart(ctx.userId);
@@ -168,13 +227,13 @@ export const cartRouter = createTRPCRouter({
           data: {
             cartId: cart.id,
             variantId: input.variantId,
-            productId: input.productId,
+            productId: variant.productId,
             quantity: input.quantity,
-            unitPriceCents: input.unitPrice,
-            productName: input.productName,
-            productSku: input.productSku,
-            ...(input.productImageUrl !== undefined
-              ? { productImageUrl: input.productImageUrl }
+            unitPriceCents: variant.unitPriceCents,
+            productName: variant.productName,
+            productSku: variant.productSku,
+            ...(variant.productImageUrl !== null
+              ? { productImageUrl: variant.productImageUrl }
               : {}),
           },
         });
@@ -211,9 +270,7 @@ export const cartRouter = createTRPCRouter({
     };
 
     // Check if variant already in cart
-    const existingItemIndex = cart.items.findIndex(
-      (item) => item.variantId === input.variantId,
-    );
+    const existingItemIndex = cart.items.findIndex((item) => item.variantId === input.variantId);
 
     if (existingItemIndex >= 0) {
       const existingItem = cart.items[existingItemIndex];
@@ -228,14 +285,12 @@ export const cartRouter = createTRPCRouter({
         id: uuidv4() as CartItemId,
         cartId: cart.id,
         variantId: input.variantId as VariantId,
-        productId: input.productId as ProductId,
+        productId: variant.productId as ProductId,
         quantity: input.quantity,
-        unitPrice: { amount: input.unitPrice, currency: "KZT" },
-        productName: input.productName,
-        productSku: input.productSku,
-        ...(input.productImageUrl !== undefined
-          ? { productImageUrl: input.productImageUrl }
-          : {}),
+        unitPrice: { amount: variant.unitPriceCents, currency: "KZT" },
+        productName: variant.productName,
+        productSku: variant.productSku,
+        ...(variant.productImageUrl !== null ? { productImageUrl: variant.productImageUrl } : {}),
       };
       cart.items.push(newItem);
     }
@@ -248,76 +303,72 @@ export const cartRouter = createTRPCRouter({
   /**
    * Update item quantity. If quantity === 0, removes the item.
    */
-  update: publicProcedure
-    .input(updateItemInput)
-    .mutation(async ({ ctx, input }) => {
-      if (ctx.userId) {
-        // ── Authenticated: DB cart ───────────────────────────────────────────
-        const prisma = await getPrisma();
-
-        if (input.quantity === 0) {
-          await prisma.cartItem.delete({ where: { id: input.itemId } });
-        } else {
-          await prisma.cartItem.update({
-            where: { id: input.itemId },
-            data: { quantity: input.quantity },
-          });
-        }
-
-        return getDbCart(ctx.userId);
-      }
-
-      // ── Guest: Redis cart ────────────────────────────────────────────────
-      const cookieStore = await cookies();
-      const guestId = getOrCreateGuestId(cookieStore);
-      const cart = await getGuestCart(guestId);
-
-      if (!cart) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Cart not found" });
-      }
+  update: publicProcedure.input(updateItemInput).mutation(async ({ ctx, input }) => {
+    if (ctx.userId) {
+      // ── Authenticated: DB cart ───────────────────────────────────────────
+      const prisma = await getPrisma();
 
       if (input.quantity === 0) {
-        cart.items = cart.items.filter((item) => item.id !== input.itemId);
+        await prisma.cartItem.delete({ where: { id: input.itemId } });
       } else {
-        const idx = cart.items.findIndex((item) => item.id === input.itemId);
-        if (idx >= 0) {
-          const item = cart.items[idx];
-          if (item) {
-            cart.items[idx] = { ...item, quantity: input.quantity };
-          }
-        }
+        await prisma.cartItem.update({
+          where: { id: input.itemId },
+          data: { quantity: input.quantity },
+        });
       }
 
-      cart.updatedAt = new Date();
-      await setGuestCart(guestId, cart);
-      return cart;
-    }),
+      return getDbCart(ctx.userId);
+    }
+
+    // ── Guest: Redis cart ────────────────────────────────────────────────
+    const cookieStore = await cookies();
+    const guestId = getOrCreateGuestId(cookieStore);
+    const cart = await getGuestCart(guestId);
+
+    if (!cart) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Cart not found" });
+    }
+
+    if (input.quantity === 0) {
+      cart.items = cart.items.filter((item) => item.id !== input.itemId);
+    } else {
+      const idx = cart.items.findIndex((item) => item.id === input.itemId);
+      if (idx >= 0) {
+        const item = cart.items[idx];
+        if (item) {
+          cart.items[idx] = { ...item, quantity: input.quantity };
+        }
+      }
+    }
+
+    cart.updatedAt = new Date();
+    await setGuestCart(guestId, cart);
+    return cart;
+  }),
 
   /**
    * Remove an item from the cart by itemId.
    */
-  remove: publicProcedure
-    .input(removeItemInput)
-    .mutation(async ({ ctx, input }) => {
-      if (ctx.userId) {
-        // ── Authenticated: DB cart ───────────────────────────────────────────
-        const prisma = await getPrisma();
-        await prisma.cartItem.delete({ where: { id: input.itemId } });
-        return getDbCart(ctx.userId);
-      }
+  remove: publicProcedure.input(removeItemInput).mutation(async ({ ctx, input }) => {
+    if (ctx.userId) {
+      // ── Authenticated: DB cart ───────────────────────────────────────────
+      const prisma = await getPrisma();
+      await prisma.cartItem.delete({ where: { id: input.itemId } });
+      return getDbCart(ctx.userId);
+    }
 
-      // ── Guest: Redis cart ────────────────────────────────────────────────
-      const cookieStore = await cookies();
-      const guestId = getOrCreateGuestId(cookieStore);
-      const cart = await getGuestCart(guestId);
+    // ── Guest: Redis cart ────────────────────────────────────────────────
+    const cookieStore = await cookies();
+    const guestId = getOrCreateGuestId(cookieStore);
+    const cart = await getGuestCart(guestId);
 
-      if (!cart) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Cart not found" });
-      }
+    if (!cart) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Cart not found" });
+    }
 
-      cart.items = cart.items.filter((item) => item.id !== input.itemId);
-      cart.updatedAt = new Date();
-      await setGuestCart(guestId, cart);
-      return cart;
-    }),
+    cart.items = cart.items.filter((item) => item.id !== input.itemId);
+    cart.updatedAt = new Date();
+    await setGuestCart(guestId, cart);
+    return cart;
+  }),
 });

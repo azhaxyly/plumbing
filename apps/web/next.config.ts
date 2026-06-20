@@ -37,6 +37,22 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // Force HTTPS for 2 years (browsers ignore this over plain HTTP, so it
+          // is inert in local dev and active behind Caddy's TLS in prod).
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          // Clickjacking protection (esp. /admin). frame-ancestors is the modern
+          // equivalent; X-Frame-Options covers older browsers. CSP is kept
+          // intentionally minimal — a full script-src policy would break Next.js'
+          // inline runtime without nonces.
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
         ],
       },
       // Long-lived caching for static assets served from /public.
