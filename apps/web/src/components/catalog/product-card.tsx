@@ -4,7 +4,7 @@ import { ShoppingCart } from "lucide-react";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { BRAND_COUNTRY } from "@/lib/brand-country";
 import { formatPrice } from "@/lib/format-price";
@@ -43,6 +43,14 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         : [];
 
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Hover-zone image switching is mouse-only. On touch devices the emulated
+  // mousemove on first tap makes the browser treat it as "hover" and swallow the
+  // navigation, requiring a second tap. Gate the handlers behind hover capability.
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => {
+    setCanHover(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+  }, []);
 
   const hasDiscount =
     product.compareAtPriceCents !== null && product.compareAtPriceCents > product.priceCents;
@@ -92,8 +100,9 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         className="relative block aspect-[4/3] overflow-hidden bg-gray-50 sm:rounded-t-xl"
         aria-label={product.name}
         tabIndex={-1}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setActiveIndex(0)}
+        {...(canHover
+          ? { onMouseMove: handleMouseMove, onMouseLeave: () => setActiveIndex(0) }
+          : {})}
       >
         {images.length > 0 ? (
           <>
