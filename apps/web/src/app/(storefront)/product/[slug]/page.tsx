@@ -1,21 +1,23 @@
 import { getProductBySlug } from "@timsan/db";
 import type { ProductFull } from "@timsan/db";
-import type { Metadata , Route } from "next";
+import type { Metadata, Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCartButton } from "@/components/catalog/add-to-cart-button";
+import type { ProductCardData } from "@/components/catalog/product-card";
 import { ProductGallery } from "@/components/catalog/product-gallery";
+import { TrackRecentlyViewed } from "@/components/catalog/track-recently-viewed";
 import { WishlistButton } from "@/components/catalog/wishlist-button";
+import { RelatedProductsSection } from "@/components/home/related-products-section";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { BRAND_COUNTRY } from "@/lib/brand-country";
-
+import { getRelatedProducts } from "@/lib/homepage-data";
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
-const SITE_URL =
-  process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
+const SITE_URL = process.env["NEXT_PUBLIC_SITE_URL"] ?? "http://localhost:3000";
 
 /** Turns a possibly-relative path into an absolute URL (schema.org requires absolute). */
 function absoluteUrl(path: string): string {
@@ -39,9 +41,7 @@ function formatPrice(tiyins: number): string {
 }
 
 /** Returns the primary image or the first image */
-function getPrimaryImage(
-  images: ProductFull["images"]
-): ProductFull["images"][number] | null {
+function getPrimaryImage(images: ProductFull["images"]): ProductFull["images"][number] | null {
   return images.find((img) => img.isPrimary) ?? images[0] ?? null;
 }
 
@@ -53,16 +53,12 @@ function getTotalAvailable(variants: ProductFull["variants"]): number {
 /** Returns true if the product has variants with differing attributes */
 function hasVariantAttributes(variants: ProductFull["variants"]): boolean {
   if (variants.length <= 1) return false;
-  return variants.some(
-    (v) => v.attributes && Object.keys(v.attributes).length > 0
-  );
+  return variants.some((v) => v.attributes && Object.keys(v.attributes).length > 0);
 }
 
 // ─── generateMetadata ─────────────────────────────────────────────────────────
 
-export async function generateMetadata({
-  params,
-}: ProductPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
 
@@ -72,8 +68,7 @@ export async function generateMetadata({
 
   const primaryImage = getPrimaryImage(product.images);
   const title = product.seoTitle ?? product.name;
-  const description =
-    product.seoDescription ?? product.shortDescription ?? undefined;
+  const description = product.seoDescription ?? product.shortDescription ?? undefined;
   const canonicalUrl = `/product/${product.slug}`;
 
   return {
@@ -115,24 +110,40 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const defaultVariant = product.variants[0] ?? null;
 
   const hasDiscount =
-    product.compareAtPriceCents !== null &&
-    product.compareAtPriceCents > product.priceCents;
+    product.compareAtPriceCents !== null && product.compareAtPriceCents > product.priceCents;
 
   const discountPercent =
     hasDiscount && product.compareAtPriceCents
-      ? Math.round(
-          (1 - product.priceCents / product.compareAtPriceCents) * 100
-        )
+      ? Math.round((1 - product.priceCents / product.compareAtPriceCents) * 100)
       : 0;
 
   const showVariants = hasVariantAttributes(product.variants);
 
+  // Related products ("Рекомендуем вам") — other products in the same categories.
+  const categoryIds = product.categories.map((c) => c.category.id);
+  const relatedProducts = await getRelatedProducts(product.id, categoryIds);
+
+  // Card representation of this product for the recently-viewed tracker.
+  const primaryImage = getPrimaryImage(product.images);
+  const cardData: ProductCardData = {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    sku: product.sku,
+    priceCents: product.priceCents,
+    compareAtPriceCents: product.compareAtPriceCents,
+    primaryImageUrl: primaryImage?.url ?? null,
+    primaryImageAlt: primaryImage?.alt ?? "",
+    brandName: product.brand?.name ?? null,
+    brandSlug: product.brand?.slug ?? null,
+    inStock,
+    imageUrls: product.images.map((img) => img.url),
+  };
+
   // Build breadcrumb items
   // Use the first category's path for breadcrumbs
   const firstCategory = product.categories[0]?.category ?? null;
-  const breadcrumbItems: { name: string; href: string }[] = [
-    { name: "Главная", href: "/" },
-  ];
+  const breadcrumbItems: { name: string; href: string }[] = [{ name: "Главная", href: "/" }];
   if (firstCategory) {
     breadcrumbItems.push({
       name: firstCategory.name,
@@ -164,13 +175,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
       price: (product.priceCents / 100).toFixed(0),
       // ISR (revalidate=300) keeps this rolling ~30 days ahead; satisfies Google's
       // requirement for a priceValidUntil on offers.
-      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .slice(0, 10),
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
       itemCondition: "https://schema.org/NewCondition",
-      availability: inStock
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
+      availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       url: absoluteUrl(`/product/${product.slug}`),
     },
   };
@@ -182,6 +189,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
+
+      {/* Records this product in the recently-viewed list (client only) */}
+      <TrackRecentlyViewed product={cardData} />
 
       <Breadcrumbs items={breadcrumbItems} />
 
@@ -217,9 +227,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
 
             {/* Name */}
-            <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">
-              {product.name}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900 md:text-3xl">{product.name}</h1>
 
             {/* SKU */}
             <p className="text-xs text-gray-400">Артикул: {product.sku}</p>
@@ -250,18 +258,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 aria-hidden="true"
               />
               <span
-                className={`text-sm font-medium ${
-                  inStock ? "text-green-600" : "text-red-500"
-                }`}
+                className={`text-sm font-medium ${inStock ? "text-green-600" : "text-red-500"}`}
               >
                 {inStock ? "В наличии" : "Нет в наличии"}
               </span>
             </div>
 
             {/* Variants selector */}
-            {showVariants && (
-              <VariantsSelector variants={product.variants} />
-            )}
+            {showVariants && <VariantsSelector variants={product.variants} />}
 
             {/* Actions */}
             <div className="flex gap-3">
@@ -282,9 +286,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {/* Short description */}
             {product.shortDescription && (
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {product.shortDescription}
-              </p>
+              <p className="text-sm leading-relaxed text-gray-600">{product.shortDescription}</p>
             )}
 
             {/* Variant attributes as key-value pairs */}
@@ -292,9 +294,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               !showVariants &&
               defaultVariant &&
               Object.keys(defaultVariant.attributes).length > 0 && (
-                <AttributesTable
-                  attributes={defaultVariant.attributes as Record<string, string>}
-                />
+                <AttributesTable attributes={defaultVariant.attributes as Record<string, string>} />
               )}
           </div>
         </div>
@@ -302,9 +302,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Full description */}
         {product.description && (
           <section className="mt-12" aria-label="Описание товара">
-            <h2 className="mb-4 text-xl font-semibold text-gray-900">
-              Описание
-            </h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">Описание</h2>
             <div className="prose prose-gray max-w-none text-gray-600">
               <p className="whitespace-pre-line">{product.description}</p>
             </div>
@@ -312,43 +310,65 @@ export default async function ProductPage({ params }: ProductPageProps) {
         )}
 
         {/* Characteristics */}
-        {(product.productAttributes.length > 0 || (product.brand && BRAND_COUNTRY[product.brand.slug])) && (
+        {(product.productAttributes.length > 0 ||
+          (product.brand && BRAND_COUNTRY[product.brand.slug])) && (
           <section className="mt-8" aria-label="Характеристики товара">
-            <h2 className="mb-4 text-xl font-semibold text-gray-900">
-              Характеристики
-            </h2>
-            <div className="rounded-xl border border-gray-200 overflow-hidden">
-              {product.brand && (() => {
-                const bc = BRAND_COUNTRY[product.brand.slug];
-                if (!bc) return null;
-                return (
-                  <div className="flex items-center justify-between px-5 py-3 bg-white border-b border-gray-100">
-                    <span className="text-sm font-semibold text-gray-800">Страна производителя</span>
-                    <div className="flex items-center gap-2 ml-4">
-                      <span className={`fi fi-${bc.countryCode}`} style={{ width: 20, height: 15, display: "inline-block", borderRadius: 2 }} />
-                      <span className="text-sm font-semibold text-gray-800">{bc.country}</span>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">Характеристики</h2>
+            <div className="overflow-hidden rounded-xl border border-gray-200">
+              {product.brand &&
+                (() => {
+                  const bc = BRAND_COUNTRY[product.brand.slug];
+                  if (!bc) return null;
+                  return (
+                    <div className="flex items-center justify-between border-b border-gray-100 bg-white px-5 py-3">
+                      <span className="text-sm font-semibold text-gray-800">
+                        Страна производителя
+                      </span>
+                      <div className="ml-4 flex items-center gap-2">
+                        <span
+                          className={`fi fi-${bc.countryCode}`}
+                          style={{
+                            width: 20,
+                            height: 15,
+                            display: "inline-block",
+                            borderRadius: 2,
+                          }}
+                        />
+                        <span className="text-sm font-semibold text-gray-800">{bc.country}</span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })()}
+                  );
+                })()}
               <dl>
-                {product.productAttributes.filter(({ attribute }) =>
-                  !["страна производитель", "страна производителя", "страна-производитель"].includes(attribute.name.toLowerCase())
-                ).map(({ attribute, attributeValue }, index) => (
-                  <div
-                    key={attribute.name}
-                    className={`flex items-center justify-between px-5 py-3 border-b border-gray-100 last:border-0 ${
-                      index % 2 === 0 ? "bg-[#f5f5f5]" : "bg-white"
-                    }`}
-                  >
-                    <dt className="text-sm font-semibold text-gray-800">{attribute.name}</dt>
-                    <dd className="text-sm text-gray-500 text-right ml-4">{attributeValue.value}</dd>
-                  </div>
-                ))}
+                {product.productAttributes
+                  .filter(
+                    ({ attribute }) =>
+                      ![
+                        "страна производитель",
+                        "страна производителя",
+                        "страна-производитель",
+                      ].includes(attribute.name.toLowerCase()),
+                  )
+                  .map(({ attribute, attributeValue }, index) => (
+                    <div
+                      key={attribute.name}
+                      className={`flex items-center justify-between border-b border-gray-100 px-5 py-3 last:border-0 ${
+                        index % 2 === 0 ? "bg-[#f5f5f5]" : "bg-white"
+                      }`}
+                    >
+                      <dt className="text-sm font-semibold text-gray-800">{attribute.name}</dt>
+                      <dd className="ml-4 text-right text-sm text-gray-500">
+                        {attributeValue.value}
+                      </dd>
+                    </div>
+                  ))}
               </dl>
             </div>
           </section>
         )}
+
+        {/* Рекомендуем вам — товары из той же категории */}
+        <RelatedProductsSection products={relatedProducts} />
       </div>
     </>
   );
@@ -362,9 +382,7 @@ interface VariantsSelectorProps {
 
 function VariantsSelector({ variants }: VariantsSelectorProps) {
   // Collect all unique attribute keys across variants
-  const allKeys = Array.from(
-    new Set(variants.flatMap((v) => Object.keys(v.attributes)))
-  );
+  const allKeys = Array.from(new Set(variants.flatMap((v) => Object.keys(v.attributes))));
 
   if (allKeys.length === 0) return null;
 
@@ -378,15 +396,13 @@ function VariantsSelector({ variants }: VariantsSelectorProps) {
                 const val = (v.attributes as Record<string, unknown>)[key];
                 return typeof val === "string" ? val : null;
               })
-              .filter((v): v is string => v !== null)
-          )
+              .filter((v): v is string => v !== null),
+          ),
         );
 
         return (
           <div key={key}>
-            <p className="mb-2 text-sm font-medium text-gray-700 capitalize">
-              {key}
-            </p>
+            <p className="mb-2 text-sm font-medium capitalize text-gray-700">{key}</p>
             <div className="flex flex-wrap gap-2" role="group" aria-label={key}>
               {values.map((value) => (
                 <button
@@ -415,20 +431,22 @@ function AttributesTable({ attributes, title = "Характеристики" }:
   if (entries.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-gray-200 overflow-hidden">
+    <div className="overflow-hidden rounded-xl border border-gray-200">
       {title && (
-        <h3 className="px-5 py-3 text-sm font-semibold text-gray-700 bg-gray-50 border-b border-gray-200">{title}</h3>
+        <h3 className="border-b border-gray-200 bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700">
+          {title}
+        </h3>
       )}
       <dl>
         {entries.map(([key, value], index) => (
           <div
             key={key}
-            className={`flex items-center justify-between px-5 py-3 border-b border-gray-100 last:border-0 ${
+            className={`flex items-center justify-between border-b border-gray-100 px-5 py-3 last:border-0 ${
               index % 2 === 0 ? "bg-white" : "bg-[#f5f5f5]"
             }`}
           >
             <dt className="text-sm font-semibold text-gray-800">{key}</dt>
-            <dd className="text-sm text-gray-500 text-right ml-4">{value}</dd>
+            <dd className="ml-4 text-right text-sm text-gray-500">{value}</dd>
           </div>
         ))}
       </dl>

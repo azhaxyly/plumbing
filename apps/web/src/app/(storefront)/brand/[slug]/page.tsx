@@ -18,6 +18,7 @@ import {
   FilterTransitionProvider,
   ProductsTransitionArea,
 } from "@/contexts/filter-transition-context";
+import { filterBrandFacetData } from "@/lib/facet-config";
 import { getFacetDataForBrand } from "@/lib/facet-data";
 import { parseFacetFilters } from "@/lib/facet-utils";
 import type { CategoryItem } from "@/lib/homepage-data";
@@ -107,21 +108,25 @@ export default async function BrandPage({ params, searchParams }: BrandPageProps
   }
 
   // Fetch in parallel: categories, products, facets, canonical category paths
-  const [brandCategories, { products, totalCount }, facetData, categoryPaths] = await Promise.all([
-    getBrandCategories(brand.id),
-    getBrandProductsPage({
-      brandId: brand.id,
-      sort: currentSort,
-      page,
-      pageSize: PAGE_SIZE,
-      ...(currentFilters.price
-        ? { priceMin: currentFilters.price.min, priceMax: currentFilters.price.max }
-        : {}),
-      attributeFilters,
-    }),
-    getFacetDataForBrand(brand.id),
-    getAllCategoryPaths(),
-  ]);
+  const [brandCategories, { products, totalCount }, rawFacetData, categoryPaths] =
+    await Promise.all([
+      getBrandCategories(brand.id),
+      getBrandProductsPage({
+        brandId: brand.id,
+        sort: currentSort,
+        page,
+        pageSize: PAGE_SIZE,
+        ...(currentFilters.price
+          ? { priceMin: currentFilters.price.min, priceMax: currentFilters.price.max }
+          : {}),
+        attributeFilters,
+      }),
+      getFacetDataForBrand(brand.id),
+      getAllCategoryPaths(),
+    ]);
+
+  // Narrow attribute facets to the curated set (same approach as category pages).
+  const facetData = filterBrandFacetData(rawFacetData);
 
   // slug → canonical full path (slugs are globally unique), so brand→category
   // links point straight at the canonical URL instead of bouncing through a 308.

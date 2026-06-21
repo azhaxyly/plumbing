@@ -195,6 +195,37 @@ export async function getSaleProducts(limit = 20): Promise<ProductCardData[]> {
   }
 }
 
+/**
+ * Products related to the given one — other active products that share at least
+ * one of its categories. Used for the "Рекомендуем вам" slider on product pages.
+ */
+export async function getRelatedProducts(
+  productId: string,
+  categoryIds: string[],
+  limit = 12,
+): Promise<ProductCardData[]> {
+  if (categoryIds.length === 0) return [];
+  try {
+    const products = await prisma.product.findMany({
+      where: {
+        status: "active",
+        id: { not: productId },
+        categories: { some: { categoryId: { in: categoryIds } } },
+      },
+      include: {
+        images: { orderBy: [{ isPrimary: "desc" }, { position: "asc" }], take: 4 },
+        brand: true,
+        variants: { select: { quantity: true, reserved: true } },
+      },
+      take: limit,
+    });
+    return products.map(mapToProductCardData);
+  } catch (error) {
+    console.error("Failed to fetch related products:", error);
+    return [];
+  }
+}
+
 export async function getActivePromoSlides(): Promise<PromoSlide[]> {
   try {
     const now = new Date();

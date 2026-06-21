@@ -12,7 +12,6 @@ import { formatPrice } from "@/lib/format-price";
 import { AddToCartButton } from "./add-to-cart-button";
 import { WishlistButton } from "./wishlist-button";
 
-
 export interface ProductCardData {
   id: string;
   slug: string;
@@ -33,27 +32,24 @@ interface ProductCardProps {
   badge?: "Хит" | "Новинка" | null | undefined;
 }
 
-
 export function ProductCard({ product, badge }: ProductCardProps) {
   const noPriceSet = !product.priceCents || product.priceCents <= 0;
 
-  const images = product.imageUrls && product.imageUrls.length > 0
-    ? product.imageUrls
-    : product.primaryImageUrl
-    ? [product.primaryImageUrl]
-    : [];
+  const images =
+    product.imageUrls && product.imageUrls.length > 0
+      ? product.imageUrls
+      : product.primaryImageUrl
+        ? [product.primaryImageUrl]
+        : [];
 
   const [activeIndex, setActiveIndex] = useState(0);
 
   const hasDiscount =
-    product.compareAtPriceCents !== null &&
-    product.compareAtPriceCents > product.priceCents;
+    product.compareAtPriceCents !== null && product.compareAtPriceCents > product.priceCents;
 
   const discountPercent =
     hasDiscount && product.compareAtPriceCents
-      ? Math.round(
-          (1 - product.priceCents / product.compareAtPriceCents) * 100
-        )
+      ? Math.round((1 - product.priceCents / product.compareAtPriceCents) * 100)
       : 0;
 
   function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -105,10 +101,10 @@ export function ProductCard({ product, badge }: ProductCardProps) {
               <Image
                 key={url}
                 src={url}
-                alt={i === 0 ? (product.primaryImageAlt || product.name) : product.name}
+                alt={i === 0 ? product.primaryImageAlt || product.name : product.name}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                className={`object-contain p-2 sm:p-4 transition-opacity duration-150 ${
+                className={`object-contain p-2 transition-opacity duration-150 sm:p-4 ${
                   i === activeIndex ? "opacity-100" : "opacity-0"
                 }`}
                 loading={i === 0 ? "eager" : "lazy"}
@@ -139,12 +135,15 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         {(() => {
           const bc = product.brandSlug ? BRAND_COUNTRY[product.brandSlug] : undefined;
           return bc ? (
-            <div className="flex items-center gap-1.5 min-h-[1rem]">
-              <span className={`fi fi-${bc.countryCode}`} style={{ width: 20, height: 15, display: "inline-block", borderRadius: 2 }} />
+            <div className="flex min-h-[1rem] items-center gap-1.5">
+              <span
+                className={`fi fi-${bc.countryCode}`}
+                style={{ width: 20, height: 15, display: "inline-block", borderRadius: 2 }}
+              />
               <span className="text-xs font-semibold text-gray-600">{bc.country}</span>
             </div>
           ) : (
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-400 min-h-[1rem]">
+            <p className="min-h-[1rem] text-xs font-medium uppercase tracking-wide text-gray-400">
               {product.brandName ?? " "}
             </p>
           );
@@ -152,7 +151,7 @@ export function ProductCard({ product, badge }: ProductCardProps) {
 
         <Link
           href={`/product/${product.slug}` as Route}
-          className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-800 hover:text-amber-600 transition-colors"
+          className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-gray-800 transition-colors hover:text-amber-600"
         >
           {product.name}
         </Link>
@@ -165,7 +164,9 @@ export function ProductCard({ product, badge }: ProductCardProps) {
               <span className="text-lg font-bold text-gray-900">
                 {formatPrice(product.priceCents)}
               </span>
-              <span className={`text-sm line-through text-red-400 ${(!hasDiscount || !product.compareAtPriceCents) ? "invisible" : ""}`}>
+              <span
+                className={`text-sm text-red-400 line-through ${!hasDiscount || !product.compareAtPriceCents ? "invisible" : ""}`}
+              >
                 {product.compareAtPriceCents ? formatPrice(product.compareAtPriceCents) : " "}
               </span>
             </>
@@ -188,7 +189,6 @@ export function ProductCard({ product, badge }: ProductCardProps) {
         </span>
 
         <AddToCartButton
-          variantId={product.id}
           productId={product.id}
           unitPrice={product.priceCents}
           productName={product.name}

@@ -14,7 +14,9 @@ import { ShoppingCart, Check } from "lucide-react";
 import { useState, useTransition } from "react";
 
 interface AddToCartButtonProps {
-  variantId: string;
+  /** Concrete variant id (product page). Omit on catalog cards — the server
+   *  resolves the product's default variant from `productId`. */
+  variantId?: string;
   productId: string;
   unitPrice: number; // in tiyins
   productName: string;
@@ -48,7 +50,7 @@ export function AddToCartButton({
       try {
         const body = {
           json: {
-            variantId,
+            ...(variantId ? { variantId } : {}),
             productId,
             quantity,
             unitPrice,

@@ -30,11 +30,13 @@ function formatPrice(tiyins: number): string {
 
 interface CartClientProps {
   initialCart: Cart | null;
+  /** Maps productId → slug so each row can link to the product page. */
+  slugMap?: Record<string, string>;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function CartClient({ initialCart }: CartClientProps) {
+export function CartClient({ initialCart, slugMap = {} }: CartClientProps) {
   const [cart, setCart] = useState<Cart | null>(initialCart);
   const [, startTransition] = useTransition();
 
@@ -87,12 +89,8 @@ export function CartClient({ initialCart }: CartClientProps) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <ShoppingBag className="mb-4 h-16 w-16 text-gray-300" aria-hidden="true" />
-        <h2 className="mb-2 text-xl font-semibold text-gray-700">
-          Корзина пуста
-        </h2>
-        <p className="mb-6 text-gray-500">
-          Добавьте товары из каталога, чтобы оформить заказ
-        </p>
+        <h2 className="mb-2 text-xl font-semibold text-gray-700">Корзина пуста</h2>
+        <p className="mb-6 text-gray-500">Добавьте товары из каталога, чтобы оформить заказ</p>
         <Button asChild>
           <Link href={"/category" as Route}>Перейти в каталог</Link>
         </Button>
@@ -106,28 +104,28 @@ export function CartClient({ initialCart }: CartClientProps) {
       {/* Items list */}
       <div className="lg:col-span-2">
         <ul aria-label="Товары в корзине">
-          {totals?.items.map((item) => (
-            <CartItemRow
-              key={item.id}
-              item={item}
-              onUpdate={handleUpdate}
-              onRemove={handleRemove}
-            />
-          ))}
+          {totals?.items.map((item) => {
+            const slug = slugMap[item.productId];
+            return (
+              <CartItemRow
+                key={item.id}
+                item={item}
+                {...(slug ? { productSlug: slug } : {})}
+                onUpdate={handleUpdate}
+                onRemove={handleRemove}
+              />
+            );
+          })}
         </ul>
       </div>
 
       {/* Order summary */}
-      <aside className="rounded-xl border bg-gray-50 p-6 h-fit">
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">
-          Итого
-        </h2>
+      <aside className="h-fit rounded-xl border bg-gray-50 p-6">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Итого</h2>
 
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <dt className="text-gray-600">
-              Товары ({totals?.itemCount ?? 0} шт.)
-            </dt>
+            <dt className="text-gray-600">Товары ({totals?.itemCount ?? 0} шт.)</dt>
             <dd className="font-medium text-gray-900">
               {totals ? formatPrice(totals.subtotal.amount) : "—"}
             </dd>
@@ -149,12 +147,7 @@ export function CartClient({ initialCart }: CartClientProps) {
           <Link href={"/checkout" as Route}>Оформить заявку</Link>
         </Button>
 
-        <Button
-          asChild
-          variant="ghost"
-          className="mt-2 w-full text-gray-500"
-          size="sm"
-        >
+        <Button asChild variant="ghost" className="mt-2 w-full text-gray-500" size="sm">
           <Link href={"/category" as Route}>Продолжить покупки</Link>
         </Button>
       </aside>

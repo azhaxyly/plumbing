@@ -13,6 +13,7 @@
  * See design.md → «Корзина гостя», task 19.2.
  */
 
+import type { Prisma } from "@timsan/db";
 import type {
   Cart,
   CartItem,
@@ -114,37 +115,39 @@ async function getOrCreateDbCart(userId: string): Promise<Cart> {
  * Returns null if the variant doesn't exist or its product isn't purchasable
  * (status ≠ active).
  */
-async function loadVariantForCart(variantId: string): Promise<{
+interface ResolvedVariant {
+  variantId: string;
   productId: string;
   unitPriceCents: number;
   productName: string;
   productSku: string;
   productImageUrl: string | null;
-} | null> {
-  const prisma = await getPrisma();
-  const variant = await prisma.productVariant.findUnique({
-    where: { id: variantId },
+}
+
+const variantSelect = {
+  id: true,
+  sku: true,
+  priceCents: true,
+  product: {
     select: {
-      sku: true,
-      priceCents: true,
-      product: {
-        select: {
-          id: true,
-          name: true,
-          status: true,
-          images: {
-            select: { url: true },
-            orderBy: [{ isPrimary: "desc" }, { position: "asc" }],
-            take: 1,
-          },
-        },
+      id: true,
+      name: true,
+      status: true,
+      images: {
+        select: { url: true },
+        orderBy: [{ isPrimary: "desc" }, { position: "asc" }],
+        take: 1,
       },
     },
-  });
+  },
+} satisfies Prisma.ProductVariantSelect;
 
-  if (!variant || variant.product.status !== "active") return null;
+type VariantPayload = Prisma.ProductVariantGetPayload<{ select: typeof variantSelect }>;
 
+function toResolvedVariant(variant: VariantPayload): ResolvedVariant | null {
+  if (variant.product.status !== "active") return null;
   return {
+    variantId: variant.id,
     productId: variant.product.id,
     unitPriceCents: variant.priceCents,
     productName: variant.product.name,
@@ -153,20 +156,53 @@ async function loadVariantForCart(variantId: string): Promise<{
   };
 }
 
+async function loadVariantForCart(variantId: string): Promise<ResolvedVariant | null> {
+  const prisma = await getPrisma();
+  const variant = await prisma.productVariant.findUnique({
+    where: { id: variantId },
+    select: variantSelect,
+  });
+
+  if (!variant) return null;
+  return toResolvedVariant(variant);
+}
+
+/**
+ * Resolves the default (first) variant of a product. Used when a catalog mini-card
+ * adds to cart by productId — it has no variantId at hand.
+ */
+async function loadDefaultVariantForProduct(productId: string): Promise<ResolvedVariant | null> {
+  const prisma = await getPrisma();
+  const variant = await prisma.productVariant.findFirst({
+    where: { productId, product: { status: "active" } },
+    orderBy: { createdAt: "asc" },
+    select: variantSelect,
+  });
+
+  if (!variant) return null;
+  return toResolvedVariant(variant);
+}
+
 // ─── Input schemas ────────────────────────────────────────────────────────────
 
-const addItemInput = z.object({
-  variantId: z.string().min(1),
-  quantity: z.number().int().positive(),
-  // Deprecated/ignored: price, name, sku and image are resolved server-side
-  // from the DB variant (never trust the client for price). Kept optional for
-  // backward compatibility with clients that still send them.
-  productId: z.string().min(1).optional(),
-  unitPrice: z.number().int().nonnegative().optional(),
-  productName: z.string().min(1).optional(),
-  productSku: z.string().min(1).optional(),
-  productImageUrl: z.string().url().optional(),
-});
+const addItemInput = z
+  .object({
+    // Either a concrete variantId (product page) or just a productId (catalog
+    // mini-card, which has no variant at hand) must be supplied.
+    variantId: z.string().min(1).optional(),
+    productId: z.string().min(1).optional(),
+    quantity: z.number().int().positive(),
+    // Deprecated/ignored: price, name, sku and image are resolved server-side
+    // from the DB variant (never trust the client for price). Kept optional for
+    // backward compatibility with clients that still send them.
+    unitPrice: z.number().int().nonnegative().optional(),
+    productName: z.string().min(1).optional(),
+    productSku: z.string().min(1).optional(),
+    productImageUrl: z.string().url().optional(),
+  })
+  .refine((v) => Boolean(v.variantId || v.productId), {
+    message: "variantId or productId is required",
+  });
 
 const updateItemInput = z.object({
   itemId: z.string().min(1),
@@ -201,8 +237,12 @@ export const cartRouter = createTRPCRouter({
    */
   add: publicProcedure.input(addItemInput).mutation(async ({ ctx, input }) => {
     // Resolve authoritative price/name/sku/image from the DB. Never trust the
-    // client-supplied values (price manipulation guard).
-    const variant = await loadVariantForCart(input.variantId);
+    // client-supplied values (price manipulation guard). Prefer the explicit
+    // variantId; fall back to the product's default variant when only a
+    // productId is supplied (catalog mini-card add-to-cart).
+    const variant =
+      (input.variantId ? await loadVariantForCart(input.variantId) : null) ??
+      (input.productId ? await loadDefaultVariantForProduct(input.productId) : null);
     if (!variant) {
       throw new TRPCError({ code: "NOT_FOUND", message: "Товар недоступен" });
     }
@@ -214,7 +254,7 @@ export const cartRouter = createTRPCRouter({
 
       // Check if variant already in cart
       const existing = await prisma.cartItem.findFirst({
-        where: { cartId: cart.id, variantId: input.variantId },
+        where: { cartId: cart.id, variantId: variant.variantId },
       });
 
       if (existing) {
@@ -226,7 +266,7 @@ export const cartRouter = createTRPCRouter({
         await prisma.cartItem.create({
           data: {
             cartId: cart.id,
-            variantId: input.variantId,
+            variantId: variant.variantId,
             productId: variant.productId,
             quantity: input.quantity,
             unitPriceCents: variant.unitPriceCents,
@@ -270,7 +310,7 @@ export const cartRouter = createTRPCRouter({
     };
 
     // Check if variant already in cart
-    const existingItemIndex = cart.items.findIndex((item) => item.variantId === input.variantId);
+    const existingItemIndex = cart.items.findIndex((item) => item.variantId === variant.variantId);
 
     if (existingItemIndex >= 0) {
       const existingItem = cart.items[existingItemIndex];
@@ -284,7 +324,7 @@ export const cartRouter = createTRPCRouter({
       const newItem: CartItem = {
         id: uuidv4() as CartItemId,
         cartId: cart.id,
-        variantId: input.variantId as VariantId,
+        variantId: variant.variantId as VariantId,
         productId: variant.productId as ProductId,
         quantity: input.quantity,
         unitPrice: { amount: variant.unitPriceCents, currency: "KZT" },

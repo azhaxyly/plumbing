@@ -28,8 +28,8 @@ const ALLOWED_ЦВЕТОТТЕНОК_SLUGS = new Set([
 ]);
 
 const GLOBAL_VALUE_FILTERS: Record<string, Set<string>> = {
-  "цвет": ALLOWED_COLOR_SLUGS,
-  "цветоттенок": ALLOWED_ЦВЕТОТТЕНОК_SLUGS,
+  цвет: ALLOWED_COLOR_SLUGS,
+  цветоттенок: ALLOWED_ЦВЕТОТТЕНОК_SLUGS,
 };
 
 // ─── Per-category attribute allowlists ────────────────────────────────────────
@@ -83,15 +83,7 @@ const CATEGORY_ATTRIBUTE_ALLOWLISTS: Record<string, string[]> = {
     "сиденье-с-микролифтом",
     "цвет",
   ],
-  polotentsesushiteli: [
-    "вид-подключения",
-    "тип",
-    "форма",
-    "материал",
-    "высота",
-    "ширина",
-    "цвет",
-  ],
+  polotentsesushiteli: ["вид-подключения", "тип", "форма", "материал", "высота", "ширина", "цвет"],
   "dushevye-kabiny": [
     "тип",
     "форма",
@@ -101,13 +93,7 @@ const CATEGORY_ATTRIBUTE_ALLOWLISTS: Record<string, string[]> = {
     "цвет-профиля",
   ],
   armatura: [],
-  "aksessuary-dlya-vannoj": [
-    "тип",
-    "материал",
-    "назначение",
-    "длина",
-    "ширина",
-  ],
+  "aksessuary-dlya-vannoj": ["тип", "материал", "назначение", "длина", "ширина"],
   vanny: [
     "типоразмер-длина",
     "типоразмер-ширина",
@@ -118,12 +104,7 @@ const CATEGORY_ATTRIBUTE_ALLOWLISTS: Record<string, string[]> = {
     "стилистика-дизайна",
     "расположение-перелива",
   ],
-  vodonagrevateli: [
-    "объем",
-    "мощность",
-    "макс-температура-нагрева",
-    "количество-режимов-нагрева",
-  ],
+  vodonagrevateli: ["объем", "мощность", "макс-температура-нагрева", "количество-режимов-нагрева"],
   "dushevye-trapy": [
     "материал",
     "тип",
@@ -138,16 +119,8 @@ const CATEGORY_ATTRIBUTE_ALLOWLISTS: Record<string, string[]> = {
     "организация-смывающего-потока",
     "быстросъемное-сиденье",
   ],
-  komplektuyushchie: [
-    "тип",
-    "материал",
-    "назначение",
-    "диаметр-подключения",
-  ],
-  "moyki-kukhonnye": [
-    "материал",
-    "комплектация",
-  ],
+  komplektuyushchie: ["тип", "материал", "назначение", "диаметр-подключения"],
+  "moyki-kukhonnye": ["материал", "комплектация"],
   rakoviny: [
     "материал",
     "форма",
@@ -156,37 +129,37 @@ const CATEGORY_ATTRIBUTE_ALLOWLISTS: Record<string, string[]> = {
     "расположение-смесителя",
     "цвет",
   ],
-  sifony: [
-    "материал",
-    "тип",
-    "назначение",
-    "диаметр-подключения",
-    "покрытие",
-    "цвет",
-  ],
-  "tumby-dlya-vannoj": [
-    "коллекция",
-    "ширина",
-    "высота",
-    "глубина",
-  ],
+  sifony: ["материал", "тип", "назначение", "диаметр-подключения", "покрытие", "цвет"],
+  "tumby-dlya-vannoj": ["коллекция", "ширина", "высота", "глубина"],
 };
 
-// ─── Filter function ───────────────────────────────────────────────────────────
+// Union of every per-category allowlisted attribute slug — the set of attributes
+// considered "useful" across the whole catalog. Used to narrow brand pages, which
+// span multiple categories and so have no single category allowlist.
+const GLOBAL_ATTRIBUTE_ALLOWLIST = new Set(Object.values(CATEGORY_ATTRIBUTE_ALLOWLISTS).flat());
+
+// ─── Filter functions ──────────────────────────────────────────────────────────
+
+/** Applies global per-value filters (color cleanup) and drops emptied attributes. */
+function applyGlobalValueFilters(attributes: FacetData["attributes"]): FacetData["attributes"] {
+  return (
+    attributes
+      .map((attr) => {
+        const allowed = GLOBAL_VALUE_FILTERS[attr.slug];
+        if (!allowed) return attr;
+        const filtered = attr.values.filter((v) => allowed.has(v.slug));
+        return { ...attr, values: filtered };
+      })
+      // Drop attributes whose values were fully filtered out
+      .filter((attr) => attr.values.length > 0)
+  );
+}
 
 export function filterFacetData(data: FacetData, categorySlug: string): FacetData {
   const allowlist = CATEGORY_ATTRIBUTE_ALLOWLISTS[categorySlug];
 
   // Step 1: apply global value filters (color cleanup) to all attributes
-  const attributesWithValueFilters = data.attributes
-    .map((attr) => {
-      const allowed = GLOBAL_VALUE_FILTERS[attr.slug];
-      if (!allowed) return attr;
-      const filtered = attr.values.filter((v) => allowed.has(v.slug));
-      return { ...attr, values: filtered };
-    })
-    // Drop attributes whose values were fully filtered out
-    .filter((attr) => attr.values.length > 0);
+  const attributesWithValueFilters = applyGlobalValueFilters(data.attributes);
 
   // Step 2: if no allowlist for this category, return with only value filters applied
   if (!allowlist) {
@@ -200,4 +173,17 @@ export function filterFacetData(data: FacetData, categorySlug: string): FacetDat
     .filter((a): a is NonNullable<typeof a> => a !== undefined);
 
   return { ...data, attributes: filtered };
+}
+
+/**
+ * Narrows brand-page facets to the curated attribute set (union of all category
+ * allowlists), applying the same color cleanup. A brand spans many categories, so
+ * there's no single allowlist — anything not useful in *any* category is hidden.
+ */
+export function filterBrandFacetData(data: FacetData): FacetData {
+  const attributes = applyGlobalValueFilters(data.attributes).filter((attr) =>
+    GLOBAL_ATTRIBUTE_ALLOWLIST.has(attr.slug),
+  );
+
+  return { ...data, attributes };
 }

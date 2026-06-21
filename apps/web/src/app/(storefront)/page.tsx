@@ -5,6 +5,7 @@ import { BrandsSection } from "@/components/home/brands-section";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
 import { PromoBannerSection } from "@/components/home/promo-banner-section";
+import { RecentlyViewedSection } from "@/components/home/recently-viewed-section";
 import { ReviewsSection } from "@/components/home/reviews-section";
 import { SaleSection } from "@/components/home/sale-section";
 import { StoreInfoSection } from "@/components/home/store-info-section";
@@ -70,6 +71,8 @@ export default async function HomePage() {
     "@type": "Organization",
     name: SITE_NAME,
     url: SITE_URL,
+    logo: `${SITE_URL}/logo.png`,
+    sameAs: ["https://instagram.com/Timsan.kz"],
   };
 
   const websiteJsonLd = {
@@ -109,6 +112,7 @@ export default async function HomePage() {
       <NewArrivalsSection products={newArrivals} />
       <SaleSection products={saleProducts} />
       <BrandsSection brands={brands} />
+      <RecentlyViewedSection />
       <ReviewsSection reviews={reviews} />
       <StoreInfoSection categories={categories} />
     </>
