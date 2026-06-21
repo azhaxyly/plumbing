@@ -46,9 +46,13 @@ export function WishlistButton({
       aria-label={favorited ? "Убрать из избранного" : "Добавить в избранное"}
       className={cn(
         "flex h-8 w-8 items-center justify-center rounded-full bg-white/80 shadow transition-all",
+        // On touch devices the heart is always visible. The hover-reveal
+        // (opacity-0 → group-hover) is gated to hover-capable devices, otherwise
+        // the first tap on a card is consumed as "hover" (revealing the heart)
+        // instead of following the product link — forcing a second tap.
         favorited
           ? "text-red-500 opacity-100"
-          : "text-gray-400 opacity-0 group-hover:opacity-100",
+          : "text-gray-400 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100",
         className,
       )}
       onClick={(e) => {
